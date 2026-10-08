@@ -1,5 +1,10 @@
 import type { SiteConfig } from "@/lib/types"
 import { TEMPLATE_CSS } from "./templates"
+import { siDiscord, siInstagram, siSolana, siTelegram, siTiktok, siX, siYoutube, type SimpleIcon } from "simple-icons"
+import { HOW_TO_BUY, isSolanaAddress, socialLinks, tokenLinks, type SocialKey } from "./token-links"
+
+const ICONS: Partial<Record<SocialKey, SimpleIcon>> = { x: siX, telegram: siTelegram, discord: siDiscord, tiktok: siTiktok, instagram: siInstagram, youtube: siYoutube }
+const icon = (i: SimpleIcon | undefined, size = 16) => (i ? `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor" aria-hidden="true"><path d="${i.path}"/></svg>` : "")
 
 const FONT_STACK: Record<SiteConfig["theme"]["font"], { css: string; google?: string }> = {
   bricolage: { css: "'Bricolage Grotesque', system-ui, sans-serif", google: "Bricolage+Grotesque:wght@400;700;800" },
@@ -35,15 +40,31 @@ export function renderSiteHTML(config: SiteConfig): string {
   const b = config.brand
   const art = imgSrc(b.mascotImage) || imgSrc(b.mascot)
 
-  const links = (["x", "telegram", "discord"] as const)
-    .map((k) => {
-      const label = { x: "X / Twitter", telegram: "Telegram", discord: "Discord" }[k]
-      const href = config.community.links[k]
-      return href
-        ? `<a class="btn ms-btn ${k === "x" ? "primary ms-btn-primary" : ""}" href="${safeUrl(href)}" target="_blank" rel="noopener noreferrer">${label}</a>`
-        : `<span class="btn ms-btn">${label} <small>(link soon)</small></span>`
-    })
-    .join("")
+  const socials = socialLinks(config.community.links)
+  const links = socials.length
+    ? socials
+        .map((l, i) => `<a class="btn ms-btn ${i === 0 ? "primary ms-btn-primary" : ""}" href="${safeUrl(l.url)}" target="_blank" rel="noopener noreferrer">${icon(ICONS[l.key])}${esc(l.label)}</a>`)
+        .join("")
+    : (["x", "telegram", "discord"] as const)
+        .map((k) => `<span class="btn ms-btn">${icon(ICONS[k])}${{ x: "X / Twitter", telegram: "Telegram", discord: "Discord" }[k]} <small>(link soon)</small></span>`)
+        .join("")
+
+  const tk = tokenLinks(config.token, b.ticker)
+  const ext = (href: string, label: string, primary = false) => `<a class="btn ms-btn${primary ? " primary ms-btn-primary" : ""}" href="${safeUrl(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`
+  const solana = isSolanaAddress(config.token.contract) || /solana/i.test(config.token.network)
+  const tokenExtra = tk.live
+    ? `<div class="card" style="margin-top:12px;text-align:center"><dt>Contract address</dt><dd style="font-family:ui-monospace,monospace;font-size:14px;word-break:break-all">${esc(config.token.contract!)}</dd><button type="button" class="btn primary ms-btn-primary" style="margin-top:10px;padding:8px 16px;font-size:12px;border:0;cursor:pointer" data-ca="${esc(config.token.contract!)}" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.dataset.ca).then(()=>{this.textContent='Copied'})">Copy address</button></div>${
+        tk.buy || tk.markets.length
+          ? `<div class="btns" style="justify-content:center;margin-top:18px">${tk.buy ? ext(tk.buy.url, tk.buy.label, true) : ""}${tk.markets.map((m) => ext(m.url, m.label)).join("")}</div>`
+          : ""
+      }${
+        config.token.howToBuy !== false
+          ? `<h3 style="text-align:center;margin:36px 0 16px;font-size:20px">How to buy</h3><ol class="grid" style="list-style:none;padding:0">${HOW_TO_BUY.map(
+              (st, i) => `<li class="card ms-card"><dt>Step ${i + 1}</dt><dd style="font-size:16px">${esc(st.title)}</dd><p style="margin-top:6px;font-size:13px;opacity:.75">${esc(st.text)}</p></li>`,
+            ).join("")}</ol>`
+          : ""
+      }`
+    : ""
 
   return `<!doctype html>
 <html lang="en">
@@ -100,7 +121,7 @@ ${
   s.hero
     ? `<div class="wrap hero ms-hero"><div class="ms-hero-copy" style="display:flex;flex-direction:column;align-items:flex-start"><span class="tag ms-tag">$${esc(b.ticker)}</span><h1 class="ms-h1">${esc(config.hero.headline)}</h1><p class="sub">${esc(
         config.hero.subheadline,
-      )}</p><p class="quote ms-quote">“${esc(config.hero.quote)}”</p><div class="btns"><a class="btn primary ms-btn ms-btn-primary" href="#community">${esc(
+      )}</p><p class="quote ms-quote">“${esc(config.hero.quote)}”</p><div class="btns">${tk.buy ? ext(tk.buy.url, tk.buy.label, true) : ""}<a class="btn ${tk.buy ? "" : "primary ms-btn-primary "}ms-btn" href="#community">${esc(
         config.hero.primaryCta,
       )}</a><a class="btn ms-btn" href="#memes">${esc(config.hero.secondaryCta)}</a></div></div><div class="ms-mascot-wrap">${
         art
@@ -131,14 +152,14 @@ ${
 }
 ${
   s.token
-    ? `<section id="token"><div class="wrap ms-section"><h2 class="ms-h2">${esc(config.token.title)} <span class="badge">${config.token.contract ? "Live" : "Launching soon"}</span></h2><dl class="grid">${[
+    ? `<section id="token"><div class="wrap ms-section"><h2 class="ms-h2">${esc(config.token.title)} <span class="badge">${tk.live ? "Live" : "Launching soon"}</span>${solana ? ` <span class="badge" style="display:inline-flex;align-items:center;gap:4px">${icon(siSolana, 11)}Solana</span>` : ""}</h2><dl class="grid">${[
         ["Name", b.name],
         ["Ticker", `$${b.ticker}`],
         ["Network", config.token.network],
         ["Supply", config.token.supply],
       ]
         .map(([k, v]) => `<div class="card ms-card"><dt>${k}</dt><dd>${esc(v)}</dd></div>`)
-        .join("")}</dl>${config.token.contract ? `<div class="card" style="margin-top:12px;text-align:center"><dt>Contract address</dt><dd style="font-family:ui-monospace,monospace;font-size:14px;word-break:break-all">${esc(config.token.contract)}</dd></div>` : ""}<p class="note">${esc(config.token.note)}</p></div></section>`
+        .join("")}</dl>${tokenExtra}<p class="note">${esc(config.token.note)}</p></div></section>`
     : ""
 }
 ${

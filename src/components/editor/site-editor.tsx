@@ -26,10 +26,13 @@ type MobilePane = "sections" | "preview" | "style"
 
 /** Clean up a config before it's stored or exported: safe links, guardrail text, fixed disclaimer. */
 function finalize(site: SiteConfig, defaults: SiteConfig): SiteConfig {
+  const httpsOnly = (u: string | undefined) => (u && /^https:\/\/\S+$/i.test(u) ? u : "")
   const links = { ...site.community.links }
-  for (const k of Object.keys(links) as (keyof typeof links)[]) if (links[k] && !/^https:\/\/\S+$/i.test(links[k])) links[k] = ""
-  const clean = sanitizeDeep({ ...site, community: { ...site.community, links } })
-  return { ...clean, community: { ...clean.community, links }, token: { ...clean.token, note: clean.token.note || defaults.token.note } }
+  for (const k of Object.keys(links) as (keyof typeof links)[]) links[k] = httpsOnly(links[k])
+  const token = { ...site.token, buyUrl: httpsOnly(site.token.buyUrl), dexUrl: httpsOnly(site.token.dexUrl), contract: site.token.contract?.trim() ?? "" }
+  // Links and the contract address are kept verbatim (sanitizing text must never alter an address).
+  const clean = sanitizeDeep({ ...site, community: { ...site.community, links }, token })
+  return { ...clean, community: { ...clean.community, links }, token: { ...clean.token, buyUrl: token.buyUrl, dexUrl: token.dexUrl, contract: token.contract, note: clean.token.note || defaults.token.note } }
 }
 
 export function SiteEditor({ projectId }: { projectId: string }) {

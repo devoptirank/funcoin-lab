@@ -3,7 +3,8 @@ import { BookOpen, ChevronRight, Coins, Eye, EyeOff, Images, PanelBottom, Plus, 
 import type { SiteConfig, SiteSectionId } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { TextField } from "./fields"
+import { Segmented, TextField } from "./fields"
+import { SOCIAL_KEYS, SOCIAL_LABELS, isSolanaAddress, tokenLinks } from "@/lib/site/token-links"
 
 export type EditorSection = "brand" | SiteSectionId
 
@@ -113,18 +114,52 @@ export function SectionPanel({ site, active, onActive, update }: Props) {
         {active === "token" && (
           <>
             <p className="rounded-lg bg-foreground/5 p-2.5 text-xs text-muted-foreground">
-              Add the contract address once your token is live. The site always shows a risk notice, and never shows prices or buy buttons.
+              Paste your contract address once the token is live. The site then shows a Buy button, pump.fun, DexScreener, Birdeye and Solscan links, a copy button and How to buy steps. A risk notice always stays on the page.
             </p>
             <TextField label="Title" value={site.token.title} maxLength={40} onChange={(v) => set("token", { title: v })} />
             <TextField label="Network" value={site.token.network} maxLength={30} onChange={(v) => set("token", { network: v })} />
             <TextField label="Supply" value={site.token.supply} maxLength={30} onChange={(v) => set("token", { supply: v })} />
             <TextField
-              label="Contract address (optional)"
-              placeholder="Paste after launch"
+              label="Contract address (CA)"
+              placeholder="Paste the Solana mint after launch"
               value={site.token.contract ?? ""}
               maxLength={64}
               onChange={(v) => set("token", { contract: v.trim().replace(/[^1-9A-HJ-NP-Za-km-z0-9xX]/g, "") })}
             />
+            {site.token.contract && !isSolanaAddress(site.token.contract) && (
+              <p className="text-xs text-destructive">That doesn&apos;t look like a Solana address (32 to 44 letters and numbers). Market links stay off until it does.</p>
+            )}
+            {site.token.contract && (
+              <>
+                <Segmented
+                  label="Launched on pump.fun?"
+                  value={site.token.pumpfun === false ? "no" : "yes"}
+                  options={[
+                    { id: "yes", label: "Yes, show link" },
+                    { id: "no", label: "No" },
+                  ]}
+                  onChange={(v) => set("token", { pumpfun: v === "yes" })}
+                />
+                <Segmented
+                  label="How to buy steps"
+                  value={site.token.howToBuy === false ? "hide" : "show"}
+                  options={[
+                    { id: "show", label: "Show" },
+                    { id: "hide", label: "Hide" },
+                  ]}
+                  onChange={(v) => set("token", { howToBuy: v === "show" })}
+                />
+                <TextField label="Custom buy link (optional, https://...)" placeholder="Defaults to a Jupiter swap" value={site.token.buyUrl ?? ""} maxLength={300} onChange={(v) => set("token", { buyUrl: v.trim() })} />
+                <TextField label="Chart link (optional, https://...)" placeholder="Defaults to DexScreener" value={site.token.dexUrl ?? ""} maxLength={300} onChange={(v) => set("token", { dexUrl: v.trim() })} />
+                <p className="text-xs text-muted-foreground">
+                  Buttons on your site:{" "}
+                  {(() => {
+                    const l = tokenLinks(site.token, site.brand.ticker)
+                    return [l.buy?.label, ...l.markets.map((m) => m.label)].filter(Boolean).join(", ") || "none yet"
+                  })()}
+                </p>
+              </>
+            )}
             <TextField label="Note" value={site.token.note} maxLength={200} onChange={(v) => set("token", { note: v })} />
           </>
         )}
@@ -152,12 +187,12 @@ export function SectionPanel({ site, active, onActive, update }: Props) {
           <>
             <TextField label="Title" value={site.community.title} maxLength={60} onChange={(v) => set("community", { title: v })} />
             <TextField label="Subtitle" value={site.community.subtitle} maxLength={200} onChange={(v) => set("community", { subtitle: v })} />
-            {(["x", "telegram", "discord"] as const).map((k) => (
+            {SOCIAL_KEYS.map((k) => (
               <TextField
                 key={k}
-                label={`${{ x: "X / Twitter", telegram: "Telegram", discord: "Discord" }[k]} link (https://…)`}
-                placeholder="Leave empty for a placeholder"
-                value={site.community.links[k]}
+                label={`${SOCIAL_LABELS[k]} link (https://...)`}
+                placeholder={k === "x" || k === "telegram" || k === "discord" ? "Leave empty for a placeholder" : "Optional"}
+                value={(site.community.links as Record<string, string | undefined>)[k] ?? ""}
                 maxLength={200}
                 onChange={(v) => set("community", { links: { ...site.community.links, [k]: v.trim() } })}
               />

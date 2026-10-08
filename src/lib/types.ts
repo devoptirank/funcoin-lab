@@ -176,9 +176,24 @@ export type SiteConfig = {
   hero: { headline: string; subheadline: string; quote: string; primaryCta: string; secondaryCta: string }
   about: { title: string; body: string }
   lore: { title: string; steps: LoreStep[] }
-  token: { title: string; network: string; supply: string; note: string; contract?: string }
+  token: {
+    title: string
+    network: string
+    supply: string
+    note: string
+    /** Contract address (Solana mint). Turns on the buy button, market links and "How to buy". */
+    contract?: string
+    /** Custom buy link (https). Defaults to a Jupiter swap for the contract. */
+    buyUrl?: string
+    /** Custom DexScreener (or other chart) link. Defaults to the contract's DexScreener page. */
+    dexUrl?: string
+    /** Show the pump.fun link (default true). */
+    pumpfun?: boolean
+    /** Show the "How to buy" steps (default true). */
+    howToBuy?: boolean
+  }
   memes: { title: string; items: { caption: string; image?: string; emoji?: string }[] }
-  community: { title: string; subtitle: string; links: { x: string; telegram: string; discord: string } }
+  community: { title: string; subtitle: string; links: { x: string; telegram: string; discord: string; tiktok?: string; instagram?: string; youtube?: string; website?: string } }
   footer: { text: string }
   theme: {
     primary: string

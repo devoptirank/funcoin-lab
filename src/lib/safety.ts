@@ -18,7 +18,13 @@ const REPLACEMENTS: [RegExp, string][] = [
   [/\b(?:lambo|wagmi|hodl)\b/gi, "vibes"],
 ]
 
+// Links and wallet/contract addresses are data, not copy: rewriting them ("pump.fun" -> "party.fun")
+// would break them or point somewhere else.
+const URL_ONLY = /^https?:\/\/\S+$/i
+const ADDRESS_ONLY = /^(?:[1-9A-HJ-NP-Za-km-z]{32,44}|0x[0-9a-fA-F]{40})$/
+
 export function sanitizeText(input: string): string {
+  if (URL_ONLY.test(input.trim()) || ADDRESS_ONLY.test(input.trim())) return input.trim()
   let out = input
   for (const [pattern, replacement] of REPLACEMENTS) out = out.replace(pattern, replacement)
   // House style: no emojis and no em/en dashes in generated copy.

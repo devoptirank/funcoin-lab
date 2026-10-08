@@ -1,5 +1,7 @@
 "use client"
-import type { CSSProperties } from "react"
+import { useState, type CSSProperties } from "react"
+import { siDiscord, siInstagram, siSolana, siTelegram, siTiktok, siX, siYoutube, type SimpleIcon } from "simple-icons"
+import { HOW_TO_BUY, isSolanaAddress, socialLinks, tokenLinks, type SocialKey } from "@/lib/site/token-links"
 import type { SiteConfig, SiteFont, SiteSectionId } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { TEMPLATE_CSS } from "@/lib/site/templates"
@@ -27,6 +29,8 @@ type Props = {
 export function MemeSite({ config, activeSection, onSelectSection, className, embedded }: Props) {
   const Headline = embedded ? "p" : "h1"
   const { theme: t, brand } = config
+  const token = tokenLinks(config.token, brand.ticker)
+  const socials = socialLinks(config.community.links)
   const vars = {
     "--s-primary": t.primary,
     "--s-secondary": t.secondary,
@@ -112,7 +116,12 @@ export function MemeSite({ config, activeSection, onSelectSection, className, em
               “{config.hero.quote}”
             </p>
             <div className="flex flex-wrap justify-center gap-3 @3xl:justify-start">
-              <SiteButton style={t.buttonStyle} href="#site-community" primary>
+              {token.buy && (
+                <SiteButton style={t.buttonStyle} href={token.buy.url} primary>
+                  {token.buy.label}
+                </SiteButton>
+              )}
+              <SiteButton style={t.buttonStyle} href="#site-community" primary={!token.buy}>
                 {config.hero.primaryCta}
               </SiteButton>
               <SiteButton style={t.buttonStyle} href="#site-memes">
@@ -183,7 +192,12 @@ export function MemeSite({ config, activeSection, onSelectSection, className, em
         <div className="ms-section mx-auto max-w-4xl px-5 py-14">
           <div className="flex flex-wrap items-center justify-center gap-3">
             <SiteHeading>{config.token.title}</SiteHeading>
-            <span className="rounded-full border border-current/30 px-2.5 py-0.5 text-xs font-bold uppercase">{config.token.contract ? "Live" : "Launching soon"}</span>
+            <span className="rounded-full border border-current/30 px-2.5 py-0.5 text-xs font-bold uppercase">{token.live ? "Live" : "Launching soon"}</span>
+            {(isSolanaAddress(config.token.contract) || /solana/i.test(config.token.network)) && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-current/30 px-2.5 py-0.5 text-xs font-bold">
+                <BrandMark icon={siSolana} className="size-3" /> Solana
+              </span>
+            )}
           </div>
           <dl className="mt-8 grid grid-cols-2 gap-3 @3xl:grid-cols-4">
             {[
@@ -198,10 +212,39 @@ export function MemeSite({ config, activeSection, onSelectSection, className, em
               </div>
             ))}
           </dl>
-          {config.token.contract && (
-            <div className="ms-card mx-auto mt-3 flex max-w-2xl flex-col items-center gap-1 border p-4 text-center" style={{ borderRadius: "var(--s-radius)", borderColor: "color-mix(in srgb, var(--s-text) 14%, transparent)" }}>
+          {token.live && (
+            <div className="ms-card mx-auto mt-3 flex max-w-2xl flex-col items-center gap-2 border p-4 text-center" style={{ borderRadius: "var(--s-radius)", borderColor: "color-mix(in srgb, var(--s-text) 14%, transparent)" }}>
               <span className="text-xs uppercase opacity-60">Contract address</span>
               <code className="font-mono text-sm break-all">{config.token.contract}</code>
+              <CopyCa ca={config.token.contract!} />
+            </div>
+          )}
+          {(token.buy || token.markets.length > 0) && (
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              {token.buy && (
+                <SiteButton style={t.buttonStyle} href={token.buy.url} primary>
+                  {token.buy.label}
+                </SiteButton>
+              )}
+              {token.markets.map((m) => (
+                <SiteButton key={m.id} style={t.buttonStyle} href={m.url}>
+                  {m.label}
+                </SiteButton>
+              ))}
+            </div>
+          )}
+          {token.live && config.token.howToBuy !== false && (
+            <div className="mt-10">
+              <h3 className="text-center text-xl font-extrabold">How to buy</h3>
+              <ol className="mt-5 grid gap-3 @xl:grid-cols-2 @4xl:grid-cols-4">
+                {HOW_TO_BUY.map((step, i) => (
+                  <li key={step.title} className="ms-card border p-4" style={{ borderRadius: "var(--s-radius)", borderColor: "color-mix(in srgb, var(--s-text) 14%, transparent)", background: "color-mix(in srgb, var(--s-text) 5%, transparent)" }}>
+                    <span className="grid size-8 place-items-center rounded-full text-sm font-black" style={{ background: "var(--s-primary)", color: "#fff" }}>{i + 1}</span>
+                    <p className="mt-3 font-bold">{step.title}</p>
+                    <p className="mt-1 text-sm opacity-75">{step.text}</p>
+                  </li>
+                ))}
+              </ol>
             </div>
           )}
           <p className="mx-auto mt-5 max-w-2xl text-center text-xs opacity-70">{config.token.note}</p>
@@ -235,18 +278,20 @@ export function MemeSite({ config, activeSection, onSelectSection, className, em
           <SiteHeading>{config.community.title}</SiteHeading>
           <p className="mt-3 opacity-80">{config.community.subtitle}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            {(
-              [
-                ["x", "X / Twitter"],
-                ["telegram", "Telegram"],
-                ["discord", "Discord"],
-              ] as const
-            ).map(([key, label]) => (
-              <SiteButton key={key} style={t.buttonStyle} href={config.community.links[key] || undefined} primary={key === "x"}>
-                {label}
-                {!config.community.links[key] && <span className="ml-1 text-[10px] opacity-60">(link soon)</span>}
-              </SiteButton>
-            ))}
+            {socials.length > 0
+              ? socials.map((l, i) => (
+                  <SiteButton key={l.key} style={t.buttonStyle} href={l.url} primary={i === 0}>
+                    {SOCIAL_ICONS[l.key] && <BrandMark icon={SOCIAL_ICONS[l.key]!} className="mr-2 size-4" />}
+                    {l.label}
+                  </SiteButton>
+                ))
+              : (["x", "telegram", "discord"] as const).map((key, i) => (
+                  <SiteButton key={key} style={t.buttonStyle} primary={i === 0}>
+                    {SOCIAL_ICONS[key] && <BrandMark icon={SOCIAL_ICONS[key]!} className="mr-2 size-4" />}
+                    {{ x: "X / Twitter", telegram: "Telegram", discord: "Discord" }[key]}
+                    <span className="ml-1 text-[10px] opacity-60">(link soon)</span>
+                  </SiteButton>
+                ))}
           </div>
         </div>,
       )}
@@ -319,5 +364,36 @@ function MascotImage({ refValue, size, animation, name }: { refValue: string; si
       {/* eslint-disable-next-line @next/next/no-img-element -- generated image (object, storage or data URL) */}
       {url && <img src={url} alt={`${name} mascot`} className="size-full object-cover" />}
     </span>
+  )
+}
+
+const SOCIAL_ICONS: Partial<Record<SocialKey, SimpleIcon>> = { x: siX, telegram: siTelegram, discord: siDiscord, tiktok: siTiktok, instagram: siInstagram, youtube: siYoutube }
+
+/** A brand logo (Simple Icons) in the current text color. */
+function BrandMark({ icon, className }: { icon: SimpleIcon; className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className={className} style={{ fill: "currentColor" }}>
+      <path d={icon.path} />
+    </svg>
+  )
+}
+
+/** Copy the contract address. */
+function CopyCa({ ca }: { ca: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        void navigator.clipboard?.writeText(ca).then(() => {
+          setCopied(true)
+          window.setTimeout(() => setCopied(false), 1600)
+        })
+      }}
+      className="rounded-full px-4 py-1.5 text-xs font-bold"
+      style={{ background: "var(--s-primary)", color: "#fff" }}
+    >
+      {copied ? "Copied" : "Copy address"}
+    </button>
   )
 }
