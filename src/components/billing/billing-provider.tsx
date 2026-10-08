@@ -30,6 +30,11 @@ type BillingContextValue = BillingState & {
    */
   ensureSignedIn: (opts?: { resumeBuy?: boolean; goToApp?: boolean }) => Promise<boolean>
   openBuy: (reason?: string) => void
+  /**
+   * Connect the wallet on this page without signing in again (the session cookie is shared across
+   * funcoinlab.com and app.funcoinlab.com, but a wallet connection is per site). Reopens checkout.
+   */
+  connectForPayment: () => void
   setSnapshot: (s: Partial<BillingState>) => void
 }
 
@@ -49,6 +54,7 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
   const wantSignIn = useRef(false)
   const resumeBuy = useRef(false)
   const goToApp = useRef(false)
+  const wantConnect = useRef(false)
 
   const setSnapshot = useCallback((s: Partial<BillingState>) => setState((prev) => ({ ...prev, ...s })), [])
 
@@ -108,6 +114,14 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
     }
   }, [wallet.connected, state.signedIn, signIn])
 
+  // Connected for a payment: go back to checkout.
+  useEffect(() => {
+    if (wallet.connected && wantConnect.current) {
+      wantConnect.current = false
+      setBuy({ open: true })
+    }
+  }, [wallet.connected])
+
   // If the user switches to a different wallet, drop the old session.
   useEffect(() => {
     const current = wallet.publicKey?.toBase58()
@@ -136,8 +150,17 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
 
   const openBuy = useCallback((reason?: string) => setBuy({ open: true, reason }), [])
 
+  const connectForPayment = useCallback(() => {
+    setBuy({ open: false })
+    if (wallet.connected) return setBuy({ open: true })
+    wantConnect.current = true
+    // An installed wallet that was used here before reconnects without the picker.
+    if (wallet.wallet) void wallet.connect().catch(() => setVisible(true))
+    else setVisible(true)
+  }, [wallet, setVisible])
+
   return (
-    <Ctx.Provider value={{ ...state, loading, signingIn, refresh, signIn, signOut, ensureSignedIn, openBuy, setSnapshot }}>
+    <Ctx.Provider value={{ ...state, loading, signingIn, refresh, signIn, signOut, ensureSignedIn, openBuy, connectForPayment, setSnapshot }}>
       {children}
       <BuyCreditsDialog open={buy.open} reason={buy.reason} onOpenChange={(open) => setBuy((b) => ({ ...b, open }))} />
     </Ctx.Provider>

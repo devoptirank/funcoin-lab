@@ -62,7 +62,10 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
 
   const payWithWallet = async (m: "sol" | "usdc") => {
     if (!billing.signedIn) return signInFirst()
-    if (!wallet.publicKey || !wallet.sendTransaction) return toast.error("Connect a wallet first")
+    if (!wallet.publicKey || !wallet.sendTransaction) return billing.connectForPayment()
+    if (billing.address && wallet.publicKey.toBase58() !== billing.address) {
+      return toast.error("Switch your wallet app to the account you signed in with, then try again.")
+    }
     setPhase("creating")
     setDetail(null)
     try {
@@ -257,7 +260,11 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
 
             <Button variant="glow" size="xl" onClick={pay} disabled={busy || !methodEnabled}>
               {busy ? <Loader2 className="animate-spin" /> : method === "nowpayments" ? <ExternalLink /> : <Wallet />}
-              {busy ? detail ?? "Preparing..." : billing.signedIn ? `Pay $${pack.usd} for ${pack.credits} credits` : "Connect wallet to continue"}
+              {busy
+                ? (detail ?? "Preparing...")
+                : !billing.signedIn || (method !== "nowpayments" && !wallet.connected)
+                  ? "Connect wallet to continue"
+                  : `Pay $${pack.usd} for ${pack.credits} credits`}
             </Button>
             <p className="text-xs text-muted-foreground">
               {method === "nowpayments"
