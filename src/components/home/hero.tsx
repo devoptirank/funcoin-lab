@@ -141,7 +141,7 @@ export function Hero() {
                 type="submit"
                 className="inline-flex h-13 shrink-0 items-center justify-center gap-2 rounded-[1.4rem] bg-[var(--lab)] px-6 text-base font-semibold text-[var(--lab-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] transition-colors hover:bg-[color-mix(in_oklab,var(--lab),white_12%)] focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none active:scale-[0.98]"
               >
-                Generate Idea 🚀
+                Generate Idea
               </button>
             </div>
           </form>

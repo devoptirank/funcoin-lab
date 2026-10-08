@@ -1,22 +1,28 @@
-# FunCoin Lab 🧪
+# FunCoin Lab
 
 **Turn ridiculous ideas into unforgettable meme brands.**
 
-FunCoin Lab is an AI-powered meme-coin *idea* and `.fun` *website concept* generator. It creates names, ticker concepts, `.fun` domain ideas, lore, logo concepts, palettes, memes, social bios and posts, plus an editable, exportable landing page.
+FunCoin Lab is an AI-powered meme brand studio: it turns an idea into a meme coin brand and a `.fun` website. It creates names, ticker concepts, `.fun` domain ideas, lore, logo concepts, palettes, memes, social bios and posts, plus an editable, exportable landing page.
 
-> FunCoin Lab is a creative branding and prototyping tool. It does **not** create, list, sell or trade tokens, hold wallets, show prices or give financial advice. Every concept is labeled as fictional.
+> FunCoin Lab is a branding and website tool. Wallets are used only to sign in and to pay for AI image credits. It does not list or trade tokens, hold user funds, show prices or give financial advice.
 
 ## Quick start
 
 ```bash
 npm install
-cp .env.example .env.local   # optional; the app works with no keys
+cp .env.example .env.local   # then fill in Supabase and SESSION_SECRET
 npm run dev                  # http://localhost:3000
 ```
 
-With no environment variables set, the app runs fully in **guest mode**:
-- Generation uses the built-in template engine (`src/lib/generator`), which is deterministic per seed and needs no network.
-- Projects, saved domains and bookmarks are stored in the browser (`localStorage`).
+**Accounts are Solana wallets.** There is no email sign-up and no guest mode. A visitor connects a wallet, signs a free message, and everything they make (projects, websites, saved domains, images, credits) is stored on the server under their wallet address. Supabase is required for that storage.
+
+Without an AI key, text generation uses the built-in template engine (`src/lib/generator`), which is deterministic per seed and needs no network.
+
+### Two hosts
+- `funcoinlab.com` (`NEXT_PUBLIC_SITE_URL`): the marketing site, SEO pages, pricing, legal and published sites (`/site/<slug>`).
+- `app.funcoinlab.com` (`NEXT_PUBLIC_APP_URL`): the dashboard, tools and editor. Every page asks for a wallet first.
+
+One deployment serves both. `src/proxy.ts` sends app paths requested on the marketing host to the app host, and the reverse. "Launch app" on the marketing site connects the wallet, signs in, then opens the app. The session cookie is set on the parent domain, so the sign-in carries over. On any other host (localhost, `*.vercel.app`) one host serves everything.
 
 ## Configuration
 
@@ -26,7 +32,9 @@ With no environment variables set, the app runs fully in **guest mode**:
 | `AI_API_KEY` | Server-only key for the AI provider. Never sent to the browser. |
 | `AI_MODEL` | Optional model override (Anthropic default: `claude-opus-5-5`). |
 | `IMAGE_PROVIDER`, `IMAGE_API_KEY` | Optional AI logo images (`openai`). Without these, logos are generated SVG badges. |
-| `SUPABASE_URL`, `SUPABASE_ANON_KEY` | Enables accounts, cloud sync and website publishing. |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Required. Stores everything per wallet; server-only. |
+| `SESSION_SECRET` | 32+ random characters. Signs the wallet session cookie. |
+| `NEXT_PUBLIC_APP_URL` | The app host (for example `https://app.funcoinlab.com`). |
 | `DOMAIN_PROVIDER` | `none` (default), `rdap` or `http`. See "Domain checks" below. |
 | `NEXT_PUBLIC_SITE_URL` | Canonical URLs, sitemap and Open Graph. |
 
@@ -37,20 +45,21 @@ See `.env.example` for the full list.
 ```
 src/
   app/
-    (site)/            marketing + tools: home, create, domains, logo, memes, social, content,
-                       discover, about, login, legal, and 9 SEO landing pages ([seoSlug])
-    dashboard/         overview, ideas, brands, websites, domains, tools, settings
-    editor/[id]        visual website editor
-    preview/[id]       private full-screen preview
-    site/[slug]        public published sites (Supabase)
-    api/               generate/{concept,domains,content,social,memes,logo}, domains/check, status
+    (site)/            marketing: home, discover, pricing, about, legal and 9 SEO pages ([seoSlug])
+    (app)/             wallet-gated app: create, domains, logo, memes, social, content, dashboard/*
+    editor/[id]        visual website editor (wallet-gated)
+    preview/[id]       private full-screen preview (wallet-gated)
+    site/[slug]        public published sites
+    api/               auth, billing, generate/*, me/* (per-wallet data), domains/check, status
   lib/
     ai/                provider abstraction (types, registry, prompts, schemas, tasks)
       providers/       anthropic.ts, openai.ts — add new providers here
     generator/         local template engine (concept, domains, social, memes, site)
-    domains/           registrar abstraction (none | rdap | http)
-    store/             Repo interface: localStorage (guest) and Supabase (signed in)
-    supabase/          browser/server clients
+    domains/           registrar abstraction (none | rdap | dynadot | http)
+    data/              server data layer, every query scoped to the wallet's account id
+    store/             client Repo that calls /api/me/*
+    hosts.ts           marketing/app host split
+    supabase/          service-role client (server-only)
     safety.ts          output guardrails (strips financial-promise language)
   content/             SEO page copy and legal templates
 supabase/migrations/   database schema with row-level security
@@ -67,9 +76,7 @@ Every task in `lib/ai/tasks.ts` follows the same pattern: try the configured pro
 - the topic blocklist and OpenAI moderation on any text the user can influence;
 - `sanitizeText()` on the final prompt.
 
-Prompts are built in `src/lib/ai/image-prompts.ts` and never ask for text in the image; meme captions are overlaid in HTML. Storage:
-- **Guests:** images live in the browser's IndexedDB, and sites reference them as `asset:<id>`. HTML export inlines them as data URLs.
-- **Signed in:** images are uploaded to the public Supabase bucket `generated` and recorded in `generated_assets` (migration `0002`).
+Prompts are built in `src/lib/ai/image-prompts.ts` and never ask for text in the image; meme captions are overlaid in HTML. The server uploads each image to the public Supabase bucket `generated` and records it in `generated_assets`. Sites reference the public URL, and HTML export inlines images as data URLs.
 
 `gpt-image-2` can't produce transparent backgrounds, so logos are generated on a solid brand-colored background.
 
@@ -85,6 +92,24 @@ Prompts are built in `src/lib/ai/image-prompts.ts` and never ask for text in the
   - `/api/billing/nowpayments/invoice` creates a hosted invoice.
   - `/api/billing/nowpayments/ipn` checks the `x-nowpayments-sig` signature (HMAC-SHA512) and grants credits only for a `finished` payment whose amount matches the order.
   - In your NOWPayments dashboard, set the IPN URL to `https://<your-domain>/api/billing/nowpayments/ipn`. It must be reachable from the internet, so localhost won't work.
+
+### Payment setup checklist
+Run `npm run check:payments` at any time. It tests each item below against the live services and says what's missing.
+1. **SOL and USDC (wallet payments):**
+   - Set `MERCHANT_SOLANA_ADDRESS` to the wallet that should receive payments.
+   - Send that wallet a little USDC once, so its USDC account exists.
+   - Set a dedicated RPC, for example a Helius URL, in `SOLANA_RPC_URL` and `NEXT_PUBLIC_SOLANA_RPC_URL`.
+2. **BTC, ETH, USDT and 100+ coins (NOWPayments):**
+   - Create an account at nowpayments.io.
+   - Add a payout wallet: where your money goes, in the coin you want to receive.
+   - Enable the coins you accept (Settings > Coins).
+   - Generate an API key and an IPN secret, and set `NOWPAYMENTS_API_KEY` and `NOWPAYMENTS_IPN_SECRET`.
+   - Set the IPN callback URL to `https://<your-domain>/api/billing/nowpayments/ipn`.
+3. **Production:**
+   - Set `NEXT_PUBLIC_SITE_URL` to your live https domain and `SESSION_SECRET` to 32+ random characters.
+   - Connect Supabase (`SUPABASE_SERVICE_ROLE_KEY`, migration 0004) for a durable credit ledger.
+
+For testing without real money, set `NEXT_PUBLIC_SOLANA_CLUSTER=devnet` and `NOWPAYMENTS_SANDBOX=true` with sandbox keys.
 
 ### Domain checks
 FunCoin Lab never claims a domain is available unless a real API says so.
@@ -102,13 +127,19 @@ Only `dynadot` and `http` can show "Available".
 - Links use `rel="sponsored nofollow"`, and `/affiliate-disclosure` explains the arrangement.
 
 ### Database
-Run `supabase/migrations/0001_init.sql` in your Supabase project. It creates `users`, `projects`, `meme_ideas`, `brand_profiles`, `domain_ideas`, `website_projects`, `meme_generations`, `social_generations` and `saved_projects`. Every table has owner-only RLS, and published `website_projects` rows are publicly readable. Then enable Email (magic link) auth and add `<site>/auth/callback` to the redirect URLs.
+Run the migrations in `supabase/migrations/` in order (or paste `supabase/setup-all.sql` into the SQL editor). After `0005_wallet_accounts.sql`, the tables are `billing_accounts`, `credit_ledger`, `payment_orders`, `payment_events`, `auth_nonces`, `projects`, `saved_domains`, `activity`, `bookmarks`, `generated_assets` and `domain_clicks`. RLS is on with no policies, so only the server (service role) can read or write. Supabase Auth is not used.
 
 ## Product guardrails
-- No prices, market caps, volume, holder counts, charts, buy/sell buttons or wallets anywhere.
+- No prices, market caps, volume, holder counts, charts or buy/sell buttons anywhere. Wallets are only for sign-in and buying credits.
 - The prompts forbid financial language, and `lib/safety.ts` rewrites anything that slips through (for example "to the moon", "100x", "guaranteed", "invest").
-- Every generated site carries a non-removable disclaimer, and the token block is always labeled "Example concept only".
+- Every generated site carries a non-removable disclaimer, and the token block tells visitors to trust only the contract address published there.
 - `src/content/legal.ts` contains **templates**. Have a lawyer review them before launch.
 
+### Hosting on Vercel
+1. Add `funcoinlab.com`, `www.funcoinlab.com` and `app.funcoinlab.com` to the project, and point DNS at Vercel.
+2. Run `bash scripts/push-env-vercel.sh`. It copies `.env.local` to Vercel, sets both URLs, creates a production `SESSION_SECRET` once, and deploys.
+
+Vercel servers don't keep local files. Without `SUPABASE_SERVICE_ROLE_KEY`, a Vercel deployment turns off sign-in, credits and checkout (503), and NOWPayments retries its callbacks later.
+
 ## Scripts
-`npm run dev` · `npm run build` · `npm start` · `npm run lint`
+`npm run dev` · `npm run build` · `npm start` · `npm run lint` · `npm run check:payments`

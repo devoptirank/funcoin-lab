@@ -1,7 +1,7 @@
 "use client"
 import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Check, Expand, LayoutTemplate, Loader2, PencilLine, RefreshCw, Save } from "lucide-react"
+import { AtSign, Check, Expand, Globe, Images, LayoutTemplate, Loader2, Megaphone, MonitorSmartphone, Palette, PencilLine, RefreshCw, Rocket, Save, type LucideIcon } from "lucide-react"
 import { toast } from "sonner"
 import type { MemeConcept } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -101,9 +101,7 @@ export function ConceptResults({
       const p = await repo.saveProject(newProject(concept, site))
       setSavedId(p.id)
       burst(button)
-      toast.success(repo.kind === "cloud" ? "Saved to your dashboard" : "Saved in this browser", {
-        description: repo.kind === "local" ? "Sign in to sync projects and publish websites." : undefined,
-      })
+      toast.success("Saved to your dashboard")
       return p.id
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Couldn't save")
@@ -258,22 +256,22 @@ export function ConceptResults({
         </div>
       </section>
 
-      <ResultSection id="logo" title="AI Logo Concept" emoji="🎨">
+      <ResultSection id="logo" title="AI Logo Concept" icon={Palette}>
         <LogoStudio concept={concept} />
       </ResultSection>
 
-      <ResultSection id="kit" title="AI Brand Kit" emoji="🖼️">
+      <ResultSection id="kit" title="AI Brand Kit" icon={Images}>
         <BrandKit concept={concept} />
       </ResultSection>
 
-      <ResultSection id="domains" title="Find Your .fun Name" emoji="🌐">
+      <ResultSection id="domains" title="Find Your .fun Name" icon={Globe}>
         <DomainFinder initialTopic={concept.name} autoRun compact />
       </ResultSection>
 
       <ResultSection
         id="website"
         title="Your .fun Website Preview"
-        emoji="🖥️"
+        icon={MonitorSmartphone}
         highlight={goal === "website"}
         action={
           <div className="flex gap-2">
@@ -296,19 +294,19 @@ export function ConceptResults({
         </BrowserFrame>
       </ResultSection>
 
-      <ResultSection id="memes" title="Meme Gallery" emoji="🖼️">
+      <ResultSection id="memes" title="Meme Gallery" icon={Images}>
         <MemeGallery concept={concept} />
       </ResultSection>
 
-      <ResultSection id="social" title="Social Bios" emoji="📝">
+      <ResultSection id="social" title="Social Bios" icon={AtSign}>
         <SocialBios concept={concept} />
       </ResultSection>
 
-      <ResultSection id="content" title="Meme Content Generator" emoji="📣">
+      <ResultSection id="content" title="Meme Content Generator" icon={Megaphone}>
         <ContentGenerator concept={concept} />
       </ResultSection>
 
-      <ResultSection id="launch" title="Meme & Launch-Content Ideas" emoji="🚀">
+      <ResultSection id="launch" title="Meme & Launch-Content Ideas" icon={Rocket}>
         <div className="grid gap-4 md:grid-cols-2">
           <IdeaList title="Meme ideas" items={concept.memeIdeas} />
           <IdeaList title="Launch-content ideas" items={concept.launchIdeas} />
@@ -322,14 +320,14 @@ export function ConceptResults({
 function ResultSection({
   id,
   title,
-  emoji,
+  icon: Icon,
   action,
   highlight,
   children,
 }: {
   id: string
   title: string
-  emoji: string
+  icon: LucideIcon
   action?: React.ReactNode
   highlight?: boolean
   children: React.ReactNode
@@ -338,7 +336,10 @@ function ResultSection({
     <section id={id} className={cn("scroll-mt-32", highlight && "rounded-[2rem] ring-2 ring-lab-fill/60 ring-offset-8 ring-offset-background")}>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <h2 className="flex items-center gap-3 font-heading text-2xl font-extrabold sm:text-3xl">
-          <span aria-hidden>{emoji}</span> {title}
+          <span className="grid size-10 place-items-center rounded-xl bg-lab-fill text-lab-ink" aria-hidden>
+            <Icon className="size-5" />
+          </span>
+          {title}
         </h2>
         {action}
       </div>

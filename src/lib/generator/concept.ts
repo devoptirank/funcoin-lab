@@ -10,11 +10,8 @@ import { sanitizeDeep } from "@/lib/safety"
 import {
   CATCHPHRASES,
   COMMUNITY_PHRASES,
-  FALLBACK_EMOJI,
   GOALS,
   HOBBIES,
-  KEYWORD_EMOJI,
-  MOOD_EMOJI,
   LAUNCH_IDEAS,
   LOGO_PROPS,
   LOGO_SCENES,
@@ -30,32 +27,24 @@ import {
 } from "./banks"
 import { createRng, randomSeed, uid, type Rng } from "./random"
 import { cap, fill, tickerize, titleCase, toDomain } from "./text"
+import { mascotForTopic, mascotUrl } from "@/lib/mascots"
 
 type ConcreteTheme = keyof typeof THEME_SUBJECTS
 type ConcretePersonality = keyof typeof PERSONALITY_BANK
 
-export type Subject = { text: string; words: string[]; main: string; compact: string; emoji: string }
-
-export function emojiForTopic(topic: string, rng?: Rng): string {
-  for (const [pattern, emoji] of [...KEYWORD_EMOJI, ...MOOD_EMOJI]) if (pattern.test(topic)) return emoji
-  return rng ? rng.pick(FALLBACK_EMOJI) : FALLBACK_EMOJI[0]
-}
+export type Subject = { text: string; words: string[]; main: string; compact: string; mascot: string }
 
 export function resolveSubject(topic: string, theme: ThemeId, rng: Rng): Subject {
   const cleaned = topic.replace(/[^\p{L}\p{N}\s'-]/gu, " ").replace(/\s+/g, " ").trim().slice(0, 40)
   let text: string
-  let emoji: string
   if (cleaned) {
     text = titleCase(cleaned)
-    emoji = emojiForTopic(cleaned, rng)
   } else {
     const concrete: ConcreteTheme =
       theme === "random" || theme === "custom"
         ? rng.pick(Object.keys(THEME_SUBJECTS) as ConcreteTheme[])
         : theme
-    const s = rng.pick(THEME_SUBJECTS[concrete])
-    text = s.word
-    emoji = s.emoji
+    text = rng.pick(THEME_SUBJECTS[concrete])
   }
   const words = text.split(" ").filter(Boolean)
   return {
@@ -63,7 +52,8 @@ export function resolveSubject(topic: string, theme: ThemeId, rng: Rng): Subject
     words,
     main: words[words.length - 1],
     compact: words.map((w) => cap(w.toLowerCase())).join(""),
-    emoji,
+    // Real artwork from the mascot library (public/mascots), picked by keyword.
+    mascot: mascotUrl(mascotForTopic(text)),
   }
 }
 
@@ -185,9 +175,10 @@ export function generateConceptLocal(input: ConceptInput): MemeConcept {
     catchphrase: vars.catchphrase,
     communityPhrases: rng.pickMany(COMMUNITY_PHRASES, 3).map((p) => fill(p, vars)),
     logoConcept,
-    mascot: subject.emoji,
+    mascot: subject.mascot,
+    subject: subjectLower,
     palette,
-    socialBio: `${subject.emoji} ${fill("The internet's most {trait} {subject}.", vars)}\n✨ Powered by ${rng.pick(["naps", "snacks", "chaos", "vibes", "drama", "memes"])} & ${rng.pick(["sarcasm", "sparkles", "bad decisions", "group chats"])}.\n🌐 ${domain}`,
+    socialBio: `${fill("The internet's most {trait} {subject}.", vars)}\nPowered by ${rng.pick(["naps", "snacks", "chaos", "vibes", "drama", "memes"])} and ${rng.pick(["sarcasm", "sparkles", "bad decisions", "group chats"])}.\n${domain}`,
     websiteHeadline: fill(rng.pick(["The internet's favorite {trait} {subject}.", "Meet {Name}.", "{Name} has entered the chat."]), vars),
     websiteDescription: fill(
       "{Name} is a meme character who is {vibe}. Come for the memes, stay for the lore, leave with a new favorite reaction image.",

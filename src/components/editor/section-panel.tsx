@@ -1,5 +1,5 @@
 "use client"
-import { ChevronRight, Eye, EyeOff, Plus, Trash2 } from "lucide-react"
+import { BookOpen, ChevronRight, Coins, Eye, EyeOff, Images, PanelBottom, Plus, ScrollText, Sparkles, Tag, Trash2, Users, type LucideIcon } from "lucide-react"
 import type { SiteConfig, SiteSectionId } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -7,15 +7,15 @@ import { TextField } from "./fields"
 
 export type EditorSection = "brand" | SiteSectionId
 
-export const EDITOR_SECTIONS: { id: EditorSection; label: string; emoji: string }[] = [
-  { id: "brand", label: "Brand", emoji: "🏷️" },
-  { id: "hero", label: "Hero", emoji: "🦸" },
-  { id: "about", label: "About", emoji: "📖" },
-  { id: "lore", label: "Lore", emoji: "📜" },
-  { id: "token", label: "Token concept", emoji: "🧪" },
-  { id: "memes", label: "Memes", emoji: "🖼️" },
-  { id: "community", label: "Community", emoji: "💬" },
-  { id: "footer", label: "Footer", emoji: "🦶" },
+export const EDITOR_SECTIONS: { id: EditorSection; label: string; icon: LucideIcon }[] = [
+  { id: "brand", label: "Brand", icon: Tag },
+  { id: "hero", label: "Hero", icon: Sparkles },
+  { id: "about", label: "About", icon: BookOpen },
+  { id: "lore", label: "Lore", icon: ScrollText },
+  { id: "token", label: "Token", icon: Coins },
+  { id: "memes", label: "Memes", icon: Images },
+  { id: "community", label: "Community", icon: Users },
+  { id: "footer", label: "Footer", icon: PanelBottom },
 ]
 
 type Props = {
@@ -45,7 +45,7 @@ export function SectionPanel({ site, active, onActive, update }: Props) {
                   !visible && "opacity-50",
                 )}
               >
-                <span aria-hidden>{sec.emoji}</span>
+                <sec.icon className="size-4 shrink-0" aria-hidden />
                 <span className="flex-1">{sec.label}</span>
                 <ChevronRight className={cn("size-4 text-muted-foreground transition-transform", active === sec.id && "rotate-90")} />
               </button>
@@ -70,7 +70,7 @@ export function SectionPanel({ site, active, onActive, update }: Props) {
             <TextField label="Name" value={site.brand.name} maxLength={60} onChange={(v) => set("brand", { name: v })} />
             <TextField label="Ticker concept" value={site.brand.ticker} maxLength={10} onChange={(v) => set("brand", { ticker: v.toUpperCase().replace(/[^A-Z0-9]/g, "") })} />
             <TextField label=".fun domain idea" value={site.brand.domain} maxLength={70} onChange={(v) => set("brand", { domain: v.toLowerCase().replace(/\s/g, "") })} />
-            <TextField label="Mascot emoji" value={site.brand.mascot} maxLength={8} onChange={(v) => set("brand", { mascot: v })} />
+            <p className="text-xs text-muted-foreground">Change the mascot artwork in Style, under Mascot.</p>
           </>
         )}
         {active === "hero" && (
@@ -132,20 +132,17 @@ export function SectionPanel({ site, active, onActive, update }: Props) {
           <>
             <TextField label="Title" value={site.memes.title} maxLength={60} onChange={(v) => set("memes", { title: v })} />
             {site.memes.items.map((m, i) => (
-              <div key={i} className="flex gap-2 rounded-xl border border-border p-2.5">
-                <div className="w-14 shrink-0">
-                  <TextField label="Emoji" value={m.emoji} maxLength={8} onChange={(v) => set("memes", { items: site.memes.items.map((x, j) => (j === i ? { ...x, emoji: v } : x)) })} />
-                </div>
+              <div key={i} className="flex items-end gap-2 rounded-xl border border-border p-2.5">
                 <div className="flex-1">
                   <TextField label={`Caption ${i + 1}`} value={m.caption} maxLength={160} onChange={(v) => set("memes", { items: site.memes.items.map((x, j) => (j === i ? { ...x, caption: v } : x)) })} />
                 </div>
-                <Button variant="ghost" size="icon-xs" className="self-end" aria-label={`Remove meme ${i + 1}`} onClick={() => set("memes", { items: site.memes.items.filter((_, j) => j !== i) })}>
+                <Button variant="ghost" size="icon-xs" aria-label={`Remove meme ${i + 1}`} onClick={() => set("memes", { items: site.memes.items.filter((_, j) => j !== i) })}>
                   <Trash2 />
                 </Button>
               </div>
             ))}
             {site.memes.items.length < 9 && (
-              <Button variant="glass" size="sm" onClick={() => set("memes", { items: [...site.memes.items, { emoji: site.brand.mascot, caption: "New meme caption" }] })}>
+              <Button variant="glass" size="sm" onClick={() => set("memes", { items: [...site.memes.items, { caption: "New meme caption" }] })}>
                 <Plus /> Add meme
               </Button>
             )}

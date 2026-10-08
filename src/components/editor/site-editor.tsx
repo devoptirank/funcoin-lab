@@ -16,6 +16,8 @@ import { downloadFile } from "@/lib/client-api"
 import { sanitizeDeep } from "@/lib/safety"
 import { burst } from "@/lib/burst"
 import { assetRefToDataUrl } from "@/lib/assets/store"
+import { resolveMascot } from "@/lib/mascots"
+import { MascotArt } from "@/components/shared/mascot-art"
 import { cn } from "@/lib/utils"
 import { SectionPanel, type EditorSection } from "./section-panel"
 import { StylePanel } from "./style-panel"
@@ -31,7 +33,7 @@ function finalize(site: SiteConfig, defaults: SiteConfig): SiteConfig {
 }
 
 export function SiteEditor({ projectId }: { projectId: string }) {
-  const { repo, ready, user, cloudAvailable } = useStore()
+  const { repo, ready } = useStore()
   const [project, setProject] = useState<SavedProject | null>(null)
   const [site, setSite] = useState<SiteConfig | null>(null)
   const [status, setStatus] = useState<"loading" | "ready" | "missing">("loading")
@@ -64,11 +66,8 @@ export function SiteEditor({ projectId }: { projectId: string }) {
     setBusy("save")
     try {
       let clean = finalize(site, conceptToSite(project.concept))
-      // Browser-only artwork ("asset:<id>") can't be shown on a cloud/published site.
-      if (repo.kind === "cloud" && clean.brand.mascotImage?.startsWith("asset:")) {
-        clean = { ...clean, brand: { ...clean.brand, mascotImage: undefined } }
-        toast.info("Mascot image removed", { description: "It was stored only in this browser. Generate it again while signed in to use it online." })
-      }
+      // Old browser-only artwork ("asset:<id>") can't be shown online.
+      if (clean.brand.mascotImage?.startsWith("asset:")) clean = { ...clean, brand: { ...clean.brand, mascotImage: undefined } }
       const saved = await repo.saveProject({ ...project, site: clean })
       setProject(saved)
       setSite(clean)
@@ -109,14 +108,6 @@ export function SiteEditor({ projectId }: { projectId: string }) {
 
   const publish = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const button = e.currentTarget
-    if (repo.kind === "local") {
-      toast.info(cloudAvailable ? "Sign in to publish" : "Publishing needs accounts", {
-        description: cloudAvailable
-          ? "Guest projects live only in this browser. Sign in, save, then publish to get a public link."
-          : "Connect Supabase (SUPABASE_URL / SUPABASE_ANON_KEY) to enable publishing. You can still Export HTML.",
-      })
-      return
-    }
     const saved = await save()
     if (!saved) return
     setBusy("publish")
@@ -138,10 +129,9 @@ export function SiteEditor({ projectId }: { projectId: string }) {
   const exportHtml = async () => {
     if (!project || !site) return
     const clean = finalize(site, conceptToSite(project.concept))
-    // Inline local AI artwork so the exported file is fully self-contained.
-    if (clean.brand.mascotImage?.startsWith("asset:")) {
-      clean.brand = { ...clean.brand, mascotImage: (await assetRefToDataUrl(clean.brand.mascotImage)) ?? undefined }
-    }
+    // Inline all artwork (library mascot, AI images) so the exported file is fully self-contained.
+    const inline = async (v?: string) => (v && !/^(data:|https:)/.test(v) ? ((await assetRefToDataUrl(resolveMascot(v))) ?? undefined) : v)
+    clean.brand = { ...clean.brand, mascot: (await inline(clean.brand.mascot)) ?? clean.brand.mascot, mascotImage: await inline(clean.brand.mascotImage) }
     downloadFile(`${project.slug}.html`, renderSiteHTML(clean), "text/html")
     toast.success("Exported a standalone HTML file")
   }
@@ -157,9 +147,9 @@ export function SiteEditor({ projectId }: { projectId: string }) {
     return (
       <div className="grid min-h-dvh place-items-center p-4">
         <EmptyState
-          emoji="🔍"
+          mascot="ghost"
           title="Project not found"
-          description={user ? "It may have been deleted." : "Guest projects are stored per browser. If you created it elsewhere, sign in there to sync."}
+          description="It may have been deleted, or it belongs to a different wallet."
           action={<ButtonLink href="/dashboard/websites" variant="glow" size="lg" className="px-4">Back to my websites</ButtonLink>}
         />
       </div>
@@ -175,7 +165,8 @@ export function SiteEditor({ projectId }: { projectId: string }) {
         </ButtonLink>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">
-            {site.brand.mascot} {site.brand.name}
+            <MascotArt value={site.brand.mascotImage || site.brand.mascot} className="mr-1.5 inline size-5 align-[-4px]" />
+            {site.brand.name}
             {dirty && <span className="ml-2 text-xs font-normal text-muted-foreground">• unsaved</span>}
           </p>
           <p className="truncate font-mono text-[11px] text-muted-foreground">{project.published ? `/site/${project.slug}` : site.brand.domain}</p>

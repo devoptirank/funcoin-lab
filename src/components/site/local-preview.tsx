@@ -18,7 +18,7 @@ export function LocalPreview({ id }: { id: string }) {
   }, [id, ready, repo])
 
   if (site === undefined) return <div className="grid min-h-dvh place-items-center"><Loader2 className="size-8 animate-spin text-lab" /></div>
-  if (site === null) return <div className="grid min-h-dvh place-items-center p-4"><EmptyState emoji="🔍" title="Preview not found" description="This project isn't saved in this browser or account." /></div>
+  if (site === null) return <div className="grid min-h-dvh place-items-center p-4"><EmptyState mascot="ghost" title="Preview not found" description="This project doesn't exist or belongs to a different wallet." /></div>
   return (
     <div className="relative min-h-dvh">
       <MemeSite config={site} className="min-h-dvh" />

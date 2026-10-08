@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { Loader2, Sparkles } from "lucide-react"
+import { AtSign, Camera, Loader2, MessagesSquare, Music2, Send, Sparkles, type LucideIcon } from "lucide-react"
 import { toast } from "sonner"
 import type { MemeConcept, SocialBios as Bios, SocialPlatform } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -10,12 +10,12 @@ import { generateSocialBiosLocal } from "@/lib/generator/social"
 import { brandRef, postJSON } from "@/lib/client-api"
 import { cn } from "@/lib/utils"
 
-const PLATFORMS: { id: SocialPlatform; label: string; icon: string; limit: number; kind: string }[] = [
-  { id: "x", label: "X bio", icon: "𝕏", limit: 160, kind: "Profile bio" },
-  { id: "instagram", label: "Instagram bio", icon: "📸", limit: 150, kind: "Profile bio" },
-  { id: "tiktok", label: "TikTok bio", icon: "🎵", limit: 80, kind: "Profile bio" },
-  { id: "telegram", label: "Telegram description", icon: "✈️", limit: 255, kind: "Group description" },
-  { id: "discord", label: "Discord description", icon: "🎮", limit: 300, kind: "Server description" },
+const PLATFORMS: { id: SocialPlatform; label: string; icon: LucideIcon; limit: number; kind: string }[] = [
+  { id: "x", label: "X bio", icon: AtSign, limit: 160, kind: "Profile bio" },
+  { id: "instagram", label: "Instagram bio", icon: Camera, limit: 150, kind: "Profile bio" },
+  { id: "tiktok", label: "TikTok bio", icon: Music2, limit: 80, kind: "Profile bio" },
+  { id: "telegram", label: "Telegram description", icon: Send, limit: 255, kind: "Group description" },
+  { id: "discord", label: "Discord description", icon: MessagesSquare, limit: 300, kind: "Server description" },
 ]
 
 export function SocialBios({ concept }: { concept: MemeConcept }) {
@@ -57,7 +57,7 @@ function SocialBiosInner({ concept }: { concept: MemeConcept }) {
               <header className="flex items-center justify-between gap-2">
                 <h3 className="flex items-center gap-2 font-semibold">
                   <span className="grid size-8 place-items-center rounded-full bg-foreground/5" aria-hidden>
-                    {p.icon}
+                    <p.icon className="size-4" />
                   </span>
                   {p.label}
                 </h3>

@@ -2,13 +2,14 @@ import { NextResponse } from "next/server"
 import { buildRegistrarLink } from "@/lib/domains/affiliate"
 import { isValidFunDomain } from "@/lib/generator/domains"
 import { clientKey, rateLimit } from "@/lib/rate-limit"
-import { getSupabaseServer } from "@/lib/supabase/server"
+import { getSession } from "@/lib/auth/session"
+import { logDomainClick } from "@/lib/data/server"
 
 const SOURCES = new Set(["finder", "results", "dashboard", "other"])
 
 /**
  * Tracked outbound link to the registrar: /go/domain?d=sleepycat.fun&src=finder
- * Logs the click (domain + source + signed-in user id, nothing else), then redirects. The target is
+ * Logs the click (domain + source + signed-in wallet account, nothing else), then redirects. The target is
  * always built from our own template, so this can't be used as an open redirect.
  */
 export async function GET(req: Request) {
@@ -19,13 +20,7 @@ export async function GET(req: Request) {
 
   if (rateLimit(clientKey(req, "domain-click"), 60, 60_000).ok) {
     try {
-      const sb = await getSupabaseServer()
-      if (sb) {
-        const { data } = await sb.auth.getUser()
-        await sb.from("domain_clicks").insert({ domain, source, user_id: data.user?.id ?? null })
-      } else {
-        console.info(`[domain-click] ${domain} (${source})`)
-      }
+      await logDomainClick(domain, source, (await getSession())?.accountId ?? null)
     } catch (error) {
       console.error("[domain-click] log failed:", error instanceof Error ? error.message : error)
     }

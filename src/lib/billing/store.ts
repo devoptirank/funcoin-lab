@@ -289,6 +289,14 @@ function supabaseStore(): BillingStore {
 }
 
 let store: BillingStore | null = null
+/**
+ * False on serverless hosts (Vercel) without Supabase: the file ledger would be lost between requests,
+ * so accounts, credits and checkout stay off rather than take payments that can't be recorded.
+ */
+export function billingAvailable(): boolean {
+  return Boolean(getSupabaseAdmin()) || !process.env.VERCEL
+}
+
 export function getBillingStore(): BillingStore {
   if (store) return store
   store = getSupabaseAdmin() ? supabaseStore() : fileStore

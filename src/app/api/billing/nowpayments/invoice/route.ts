@@ -2,18 +2,26 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { packById } from "@/lib/billing/plans"
 import { getBillingStore, type Order } from "@/lib/billing/store"
-import { requireSession, siteOrigin } from "@/lib/billing/server"
-import { createInvoice, nowPaymentsEnabled } from "@/lib/billing/nowpayments"
+import { appOrigin, billingUnavailable, requireSession, siteOrigin } from "@/lib/billing/server"
+import { createInvoice, enabledCoins, nowPaymentsEnabled } from "@/lib/billing/nowpayments"
 import { clientKey, rateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
+  const offline = billingUnavailable()
+  if (offline) return offline
   const session = await requireSession()
   if (session instanceof NextResponse) return session
   if (!nowPaymentsEnabled()) return NextResponse.json({ error: "Crypto checkout (NOWPayments) isn't configured yet." }, { status: 503 })
   if (!rateLimit(clientKey(req, "np-invoice"), 6, 60_000).ok) return NextResponse.json({ error: "Too many checkouts. Wait a minute." }, { status: 429 })
-  const parsed = z.object({ packId: z.string() }).safeParse(await req.json().catch(() => null))
+  const parsed = z
+    .object({ packId: z.string(), payCurrency: z.string().regex(/^[a-z0-9]{2,20}$/).optional() })
+    .safeParse(await req.json().catch(() => null))
   const pack = parsed.success ? packById(parsed.data.packId) : undefined
-  if (!pack) return NextResponse.json({ error: "Unknown credit pack" }, { status: 400 })
+  if (!parsed.success || !pack) return NextResponse.json({ error: "Unknown credit pack" }, { status: 400 })
+  const payCurrency = parsed.data.payCurrency
+  if (payCurrency && !(await enabledCoins()).includes(payCurrency)) {
+    return NextResponse.json({ error: "That coin isn't available right now. Pick another one." }, { status: 400 })
+  }
 
   const order: Order = {
     id: `ord_${crypto.randomUUID().replace(/-/g, "").slice(0, 20)}`,
@@ -36,12 +44,18 @@ export async function POST(req: Request) {
   const store = getBillingStore()
   await store.createOrder(order)
   try {
-    const invoice = await createInvoice(order, siteOrigin(req))
+    const invoice = await createInvoice(order, { site: siteOrigin(req), app: appOrigin(req) }, payCurrency)
     await store.setOrderStatus(order.id, "pending", { providerId: invoice.id })
     return NextResponse.json({ orderId: order.id, invoiceUrl: invoice.url })
   } catch (error) {
-    console.error("[billing] NOWPayments invoice failed:", error instanceof Error ? error.message : error)
+    const message = error instanceof Error ? error.message : String(error)
+    console.error("[billing] NOWPayments invoice failed:", message)
     await store.setOrderStatus(order.id, "failed")
-    return NextResponse.json({ error: "Couldn't start the crypto checkout. Please try again." }, { status: 502 })
+    // NOWPayments enforces per-coin minimums; small packs can be below them for some coins.
+    const tooSmall = /minimal|minimum|less than/i.test(message)
+    return NextResponse.json(
+      { error: tooSmall ? "This pack is below the minimum for that coin. Choose a bigger pack or another coin." : "Couldn't start the crypto checkout. Please try again." },
+      { status: tooSmall ? 400 : 502 },
+    )
   }
 }

@@ -30,7 +30,7 @@ export function conceptToSite(c: MemeConcept): SiteConfig {
     },
     memes: {
       title: "Meme Gallery",
-      items: c.memeIdeas.slice(0, 6).map((caption) => ({ emoji: c.mascot, caption })),
+      items: c.memeIdeas.slice(0, 6).map((caption) => ({ caption })),
     },
     community: {
       title: "Join The Meme Community",

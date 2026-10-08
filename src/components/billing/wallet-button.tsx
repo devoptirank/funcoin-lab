@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link"
 import { useWallet } from "@solana/wallet-adapter-react"
-import { Copy, LogOut, Receipt, Wallet, Zap } from "lucide-react"
+import { ArrowRight, Copy, LogOut, Receipt, Wallet, Zap } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,14 +13,37 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { copyText } from "@/lib/client-api"
+import { appHref } from "@/lib/hosts"
+import { cn } from "@/lib/utils"
 import { useBilling } from "./billing-provider"
 
 export const shortAddress = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`
 
-/** Navbar wallet control: connect, sign in, credits balance and account menu. */
-export function WalletButton() {
+export const openApp = () => window.location.assign(appHref("/dashboard", window.location.host))
+
+/**
+ * Navbar wallet control.
+ * - `site` (marketing): "Launch app" connects the wallet, signs in, then opens the app dashboard.
+ * - `app`: connect, credits balance and the account menu.
+ */
+export function WalletButton({ variant = "app", block = false }: { variant?: "site" | "app"; block?: boolean }) {
   const billing = useBilling()
   const wallet = useWallet()
+
+  if (variant === "site") {
+    if (billing.signedIn) {
+      return (
+        <Button variant="glow" size="lg" onClick={openApp} className={cn("px-4", block && "w-full")}>
+          <span className="font-mono text-xs opacity-80">{shortAddress(billing.address!)}</span> Open app <ArrowRight />
+        </Button>
+      )
+    }
+    return (
+      <Button variant="glow" size="lg" onClick={() => void billing.ensureSignedIn({ goToApp: true })} disabled={billing.signingIn} className={cn("px-4", block && "w-full")}>
+        <Wallet /> {billing.signingIn ? "Check your wallet" : "Launch app"}
+      </Button>
+    )
+  }
 
   if (!billing.signedIn) {
     const needsSign = wallet.connected

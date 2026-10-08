@@ -7,8 +7,9 @@ import { ImagePlus, Loader2, Smile } from "lucide-react"
 import { toast } from "sonner"
 import { imageBrand, useAssets, useGenerateAsset } from "@/lib/assets/store"
 import { useImagesEnabled } from "@/lib/assets/status"
+import { DEFAULT_MASCOT, MASCOTS, mascotUrl } from "@/lib/mascots"
 import { SITE_FONTS } from "@/components/site/meme-site"
-import { ColorField, PanelGroup, RangeField, Segmented, TextField } from "./fields"
+import { ColorField, PanelGroup, RangeField, Segmented } from "./fields"
 
 type Theme = SiteConfig["theme"]
 
@@ -119,7 +120,20 @@ export function StylePanel({
       </PanelGroup>
       <PanelGroup title="Mascot">
         <MascotPicker concept={concept} value={mascotImage} onChange={onMascotImage} />
-        <TextField label="Mascot emoji" value={mascot} maxLength={8} onChange={onMascot} />
+        <label className="flex flex-col gap-1.5 text-sm">
+          Character
+          <select
+            value={MASCOTS.find((m) => mascotUrl(m.key) === mascot)?.key ?? DEFAULT_MASCOT}
+            onChange={(e) => onMascot(mascotUrl(e.target.value))}
+            className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm dark:bg-input/30"
+          >
+            {MASCOTS.map((m) => (
+              <option key={m.key} value={m.key}>
+                {m.label}
+              </option>
+            ))}
+          </select>
+        </label>
         <RangeField label="Size" value={theme.mascotSize} min={80} max={260} unit="px" onChange={(v) => onChange({ mascotSize: v })} />
       </PanelGroup>
       <PanelGroup title="Buttons">
@@ -145,9 +159,9 @@ function MascotPicker({ concept, value, onChange }: { concept: MemeConcept; valu
           aria-checked={!value}
           onClick={() => onChange(undefined)}
           className={cn("grid size-12 place-items-center rounded-lg border text-xl", !value ? "border-lab-fill" : "border-border")}
-          title="Use the emoji"
+          title="Use the library character"
         >
-          <Smile className="size-5" aria-label="Emoji" />
+          <Smile className="size-5" aria-label="Library character" />
         </button>
         {images.slice(0, 7).map((a) => (
           <button

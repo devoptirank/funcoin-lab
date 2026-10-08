@@ -48,7 +48,7 @@ export function ContentGenerator({ concept }: { concept: MemeConcept }) {
     try {
       const res = await postJSON<{ variations: string[] }>("/api/generate/content", { brand: brandRef(concept), platform, contentType: type })
       setVariations(res.variations)
-      repo.recordGeneration("content", brandRef(concept), res.variations, { platform, contentType: type }).catch(() => {})
+      repo.recordGeneration("content", { brand: brandRef(concept), platform, contentType: type }, res.variations).catch(() => {})
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Couldn't generate content")
     } finally {
@@ -84,7 +84,7 @@ export function ContentGenerator({ concept }: { concept: MemeConcept }) {
           ))}
         </ul>
       ) : (
-        <EmptyState emoji="📣" title="Pick a platform and a vibe" description={`Generate posts for ${concept.name}: captions, teasers, lore drops and more.`} />
+        <EmptyState mascot="cloud" title="Pick a platform and a vibe" description={`Generate posts for ${concept.name}: captions, teasers, lore drops and more.`} />
       )}
     </div>
   )

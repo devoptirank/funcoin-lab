@@ -2,13 +2,15 @@ import "server-only"
 import { NextResponse } from "next/server"
 import type { z } from "zod"
 import { clientKey, rateLimit } from "./rate-limit"
+import { getSession } from "./auth/session"
 
-/** Shared plumbing for JSON route handlers: rate limit → parse → validate → run. */
+/** Shared plumbing for JSON route handlers: wallet session → rate limit → parse → validate → run. */
 export async function handleJson<S extends z.ZodType, R>(
   req: Request,
   opts: { scope: string; schema: S; limit?: number },
   run: (input: z.infer<S>) => Promise<R>,
 ) {
+  if (!(await getSession())) return NextResponse.json({ error: "Connect your wallet to use the lab.", code: "auth" }, { status: 401 })
   const rl = rateLimit(clientKey(req, opts.scope), opts.limit ?? 20)
   if (!rl.ok) {
     return NextResponse.json(

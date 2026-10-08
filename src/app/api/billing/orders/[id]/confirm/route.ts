@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { getBillingStore } from "@/lib/billing/store"
-import { accountSnapshot, requireSession } from "@/lib/billing/server"
+import { accountSnapshot, billingUnavailable, requireSession } from "@/lib/billing/server"
 import { verifyWalletPayment } from "@/lib/billing/solana"
 
 const schema = z.object({ signature: z.string().min(40).max(120).optional() })
 
 /** Check the chain for this order's payment and grant credits once. Safe to call repeatedly. */
 export async function POST(req: Request, ctx: RouteContext<"/api/billing/orders/[id]/confirm">) {
+  const offline = billingUnavailable()
+  if (offline) return offline
   const session = await requireSession()
   if (session instanceof NextResponse) return session
   const { id } = await ctx.params

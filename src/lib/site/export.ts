@@ -12,6 +12,8 @@ const FONT_STACK: Record<SiteConfig["theme"]["font"], { css: string; google?: st
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!)
 
+/** Only inlined data URLs or https images are allowed in the standalone file. */
+const imgSrc = (u: string | undefined) => (u && /^(data:image\/|https:\/\/)/.test(u) ? esc(u) : "")
 const safeUrl = (u: string) => (/^https:\/\//i.test(u) ? esc(u) : "#")
 const safeColor = (c: string, fallback: string) => (/^#[0-9a-f]{3,8}$/i.test(c) ? c : fallback)
 
@@ -31,6 +33,7 @@ export function renderSiteHTML(config: SiteConfig): string {
   const mascotAnim = t.animation === "bouncy" ? "wobble 2.2s ease-in-out infinite" : t.animation === "subtle" ? "bob 4s ease-in-out infinite" : "none"
   const s = config.sections
   const b = config.brand
+  const art = imgSrc(b.mascotImage) || imgSrc(b.mascot)
 
   const links = (["x", "telegram", "discord"] as const)
     .map((k) => {
@@ -92,7 +95,7 @@ ${TEMPLATE_CSS}
 </style>
 </head>
 <body class="ms-root" data-template="${esc(config.template ?? "classic")}">
-<header><span>${esc(b.mascot)} $${esc(b.ticker)}</span><small>${esc(b.domain)}</small></header>
+<header><span style="display:flex;align-items:center;gap:8px">${art ? `<img src="${art}" alt="" width="32" height="32" style="object-fit:contain" />` : ""}$${esc(b.ticker)}</span><small>${esc(b.domain)}</small></header>
 ${
   s.hero
     ? `<div class="wrap hero ms-hero"><div class="ms-hero-copy" style="display:flex;flex-direction:column;align-items:flex-start"><span class="tag ms-tag">$${esc(b.ticker)}</span><h1 class="ms-h1">${esc(config.hero.headline)}</h1><p class="sub">${esc(
@@ -100,9 +103,9 @@ ${
       )}</p><p class="quote ms-quote">“${esc(config.hero.quote)}”</p><div class="btns"><a class="btn primary ms-btn ms-btn-primary" href="#community">${esc(
         config.hero.primaryCta,
       )}</a><a class="btn ms-btn" href="#memes">${esc(config.hero.secondaryCta)}</a></div></div><div class="ms-mascot-wrap">${
-        b.mascotImage && /^(data:image\/|https:\/\/)/.test(b.mascotImage)
-          ? `<img class="mascot ms-mascot" src="${esc(b.mascotImage)}" alt="${esc(b.name)} mascot" style="width:${Math.round(t.mascotSize * 1.6)}px;height:${Math.round(t.mascotSize * 1.6)}px;object-fit:cover;border-radius:2rem;font-size:0" />`
-          : `<div class="mascot ms-mascot" aria-hidden="true">${esc(b.mascot)}</div>`
+        art
+          ? `<img class="mascot ms-mascot" src="${art}" alt="${esc(b.name)} mascot" style="width:${Math.round(t.mascotSize * 1.6)}px;height:auto;object-fit:contain;font-size:0${b.mascotImage ? ";border-radius:2rem" : ""}" />`
+          : ""
       }</div></div>`
     : ""
 }
@@ -143,9 +146,7 @@ ${
     ? `<section id="memes"><div class="wrap ms-section"><h2 class="ms-h2">${esc(config.memes.title)}</h2><div class="grid">${config.memes.items
         .map(
           (m, i) =>
-            `<figure class="card meme ms-card"><div style="background:linear-gradient(135deg,${[c.primary, c.secondary, c.accent][i % 3]},var(--bg))">${esc(
-              m.emoji,
-            )}</div><p>${esc(m.caption)}</p></figure>`,
+            `<figure class="card meme ms-card"><div style="background:linear-gradient(135deg,${[c.primary, c.secondary, c.accent][i % 3]},var(--bg))">${imgSrc(m.image) || art ? `<img src="${imgSrc(m.image) || art}" alt="" style="height:72%;width:auto;object-fit:contain" />` : ""}</div><p>${esc(m.caption)}</p></figure>`,
         )
         .join("")}</div></div></section>`
     : ""

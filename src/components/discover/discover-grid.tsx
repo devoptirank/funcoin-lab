@@ -3,12 +3,13 @@ import { useMemo, useState } from "react"
 import { Bookmark, BookmarkCheck, Shuffle, Wand2 } from "lucide-react"
 import { toast } from "sonner"
 import { DISCOVER_FILTERS, DISCOVER_PROJECTS, remixHref, type DiscoverFilter, type DiscoverProject } from "@/lib/discover"
-import { MascotLogo } from "@/components/shared/mascot-logo"
 import { FictionalBadge } from "@/components/shared/fictional-badge"
 import { ButtonLink } from "@/components/shared/button-link"
 import { Button } from "@/components/ui/button"
 import { useRepoData, useStore } from "@/components/providers/store-provider"
+import { useBilling } from "@/components/billing/billing-provider"
 import { cn } from "@/lib/utils"
+import { MascotArt } from "@/components/shared/mascot-art"
 
 function shuffle<T>(items: T[]): T[] {
   const a = [...items]
@@ -23,6 +24,7 @@ export function DiscoverGrid() {
   const [filter, setFilter] = useState<DiscoverFilter>("trending")
   const [randomOrder, setRandomOrder] = useState<DiscoverProject[] | null>(null)
   const { repo, bump } = useStore()
+  const billing = useBilling()
   const { data: bookmarks } = useRepoData((r) => r.listBookmarks(), [])
 
   const items = useMemo(() => {
@@ -39,6 +41,11 @@ export function DiscoverGrid() {
   }, [filter, randomOrder])
 
   const toggle = async (p: DiscoverProject) => {
+    if (!billing.signedIn) {
+      toast.info("Connect your wallet to save ideas")
+      void billing.ensureSignedIn()
+      return
+    }
     try {
       const on = await repo.toggleBookmark(p.slug, { name: p.name, domain: p.domain })
       toast.success(on ? `Saved ${p.name}` : `Removed ${p.name}`)
@@ -75,7 +82,7 @@ export function DiscoverGrid() {
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((p) => (
-          <article key={p.slug} className="glass card-hover flex flex-col overflow-hidden rounded-3xl">
+          <article key={p.slug} className="group glass card-hover flex flex-col overflow-hidden rounded-3xl">
             {/* Mini website preview */}
             <div
               className="relative flex h-40 items-center gap-4 overflow-hidden px-5"
@@ -88,15 +95,12 @@ export function DiscoverGrid() {
                   Join The Fun
                 </span>
               </div>
-              <span className="text-6xl drop-shadow-lg" style={{ animation: "fc-bob 4s ease-in-out infinite" }} aria-hidden>
-                {p.mascot}
-              </span>
+              <MascotArt value={p.mascot} className="size-24 shrink-0 drop-shadow-lg" style={{ animation: "fc-bob 4s ease-in-out infinite" }} />
             </div>
             <div className="flex flex-1 flex-col gap-3 p-5">
               <div className="flex items-center gap-3">
-                <div className="w-14 shrink-0">
-                  <MascotLogo name={p.name} ticker={p.ticker} mascot={p.mascot} colors={p.colors} showRing={false} variant={p.editorsPick} />
-                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element -- generated coin artwork */}
+                <img src={p.coin} alt={`${p.name} coin`} width={56} height={56} className="size-14 shrink-0 transition-transform duration-500 group-hover:rotate-12" />
                 <div className="min-w-0 flex-1">
                   <h2 className="truncate font-heading text-xl font-extrabold">${p.ticker}</h2>
                   <p className="truncate text-sm text-muted-foreground">

@@ -4,7 +4,6 @@ import { MEME_TEMPLATES } from "./banks"
 import { createRng, randomSeed, uid } from "./random"
 import { fill } from "./text"
 
-const PROPS = ["🕶️", "👑", "✨", "💤", "🔥", "🍿", "💀", "🫠", "📱", "☕", "🎉", "🌀", "💫", "🧢"]
 const LAYOUTS: MemeLayout[] = ["top-bottom", "caption-above", "tweet", "split"]
 
 const TOP_BOTTOM: [string, string][] = [
@@ -38,8 +37,7 @@ export function generateMemesLocal(src: MemeSource, count = 6, seed = randomSeed
         caption: fill(t, vars),
         topText: layout === "top-bottom" ? fill(top, vars) : undefined,
         bottomText: layout === "top-bottom" ? fill(bottom, vars) : undefined,
-        emoji: src.mascot,
-        props: rng.pickMany(PROPS, 2),
+        mascot: src.mascot,
         layout,
         hue: rng.int(0, 359),
       }

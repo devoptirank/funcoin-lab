@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { CONTENT_TYPES, NAMING_STYLES, PERSONALITIES, THEMES } from "@/lib/types"
+import { MASCOTS } from "@/lib/mascots"
 
 const ids = <T extends readonly { id: string }[]>(list: T) =>
   list.map((x) => x.id) as unknown as [T[number]["id"], ...T[number]["id"][]]
@@ -18,7 +19,8 @@ export const brandRefSchema = z.object({
   name: z.string().trim().min(1).max(60),
   ticker: z.string().trim().max(12).default(""),
   domain: z.string().trim().max(80).default(""),
-  mascot: z.string().max(16).default("✨"),
+  mascot: z.string().max(300).default(""),
+  subject: z.string().max(80).optional(),
   tagline: z.string().max(200).default(""),
   catchphrase: z.string().max(140).default(""),
   slogan: z.string().max(140).default(""),
@@ -48,7 +50,7 @@ export const conceptOutputSchema = z.object({
   catchphrase: z.string(),
   communityPhrases: z.array(z.string()).describe("3 short community phrases"),
   logoConcept: z.string().describe("Visual logo description for an illustrator, 25-45 words"),
-  mascotEmoji: z.string().describe("A single emoji representing the mascot"),
+  mascotKey: z.enum(MASCOTS.map((m) => m.key) as [string, ...string[]]).describe("The library mascot that best fits the meme subject"),
   palette: z
     .array(z.object({ name: z.string(), hex: z.string().describe("#RRGGBB") }))
     .describe("5 colors; the last one very dark for backgrounds"),

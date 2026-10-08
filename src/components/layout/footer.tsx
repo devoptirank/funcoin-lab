@@ -59,7 +59,7 @@ export function Footer() {
         ))}
       </div>
       <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} FunCoin Lab · Made with memes 🧪
+        © {new Date().getFullYear()} FunCoin Lab · Made with memes
       </div>
     </footer>
   )

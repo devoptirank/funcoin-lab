@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:payments": "tsx scripts/check-payments.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
@@ -19,7 +20,6 @@
     "@solana/wallet-adapter-react": "^0.15.40",
     "@solana/wallet-adapter-react-ui": "^0.9.40",
     "@solana/web3.js": "^1.99.0",
-    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.1",
@@ -50,6 +50,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

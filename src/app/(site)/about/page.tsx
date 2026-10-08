@@ -1,6 +1,7 @@
 import { BackgroundFX } from "@/components/shared/background-fx"
 import { ButtonLink } from "@/components/shared/button-link"
 import { pageMetadata } from "@/lib/seo"
+import { mascotUrl } from "@/lib/mascots"
 
 export const metadata = pageMetadata({
   title: "About FunCoin Lab",
@@ -9,10 +10,10 @@ export const metadata = pageMetadata({
 })
 
 const VALUES = [
-  { emoji: "🎨", title: "Creative first", text: "We help you invent characters, stories and websites. That's the whole job." },
-  { emoji: "🧪", title: "Honest by default", text: "No fake prices, charts or holder counts, ever. Every site carries a clear risk notice." },
-  { emoji: "🛡️", title: "No financial promises", text: "We don't create, list or sell tokens, and we never imply anything will gain value." },
-  { emoji: "🔌", title: "Open architecture", text: "Swap AI providers, connect a domain registrar and own your data in Supabase." },
+  { art: "wizard", title: "Creative first", text: "We help you invent characters, stories and websites. That's the whole job." },
+  { art: "lab", title: "Honest by default", text: "No fake prices, charts or holder counts, ever. Every site carries a clear risk notice." },
+  { art: "king", title: "No financial promises", text: "We don't create, list or sell tokens, and we never imply anything will gain value." },
+  { art: "robot", title: "Open architecture", text: "Swap AI providers, connect a domain registrar and own your data in Supabase." },
 ]
 
 export default function AboutPage() {
@@ -31,7 +32,8 @@ export default function AboutPage() {
       <div className="mx-auto mt-14 grid max-w-5xl gap-4 sm:grid-cols-2">
         {VALUES.map((v) => (
           <div key={v.title} className="glass rounded-3xl p-6">
-            <span className="text-3xl" aria-hidden>{v.emoji}</span>
+            {/* eslint-disable-next-line @next/next/no-img-element -- mascot artwork */}
+            <img src={mascotUrl(v.art)} alt="" className="size-16 object-contain" />
             <h2 className="mt-3 font-heading text-xl font-bold">{v.title}</h2>
             <p className="mt-1 text-muted-foreground">{v.text}</p>
           </div>

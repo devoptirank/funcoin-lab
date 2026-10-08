@@ -9,7 +9,8 @@ export default function NotFound() {
       <main className="relative isolate grid min-h-[80vh] place-items-center px-4 text-center">
         <BackgroundFX />
         <div className="flex flex-col items-center gap-4">
-          <span className="text-7xl" aria-hidden>🫠</span>
+          {/* eslint-disable-next-line @next/next/no-img-element -- mascot artwork */}
+          <img src="/mascots/ghost.webp" alt="" className="size-32 object-contain" />
           <h1 className="font-heading text-5xl font-extrabold">404: meme not found</h1>
           <p className="max-w-md text-muted-foreground">This page wandered off to make a meme of its own. Let&apos;s get you back to the lab.</p>
           <div className="flex gap-3">

@@ -97,7 +97,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Do I need an account to try it?",
-        a: "No. Guest mode lets you generate ideas right away and keeps your work in your browser. Creating an account lets you save projects so you can come back to them later from another device, compare different directions and pick up exactly where you left off.",
+        a: "No account and no email. Connect a Solana wallet such as Phantom and you're in. Your projects are saved to your wallet address, so you can connect the same wallet on another device and pick up exactly where you left off.",
       },
     ],
     related: ["meme-coin-name-generator", "meme-brand-generator", "ai-meme-coin-generator", "meme-website-builder"],
@@ -183,7 +183,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Can I save the names I like?",
-        a: "Yes. In guest mode your work is kept in your browser, and with a free account you can save projects to come back to later. Saved names keep their personality notes so you can expand them whenever you like.",
+        a: "Yes. Save any concept to your dashboard and it stays with your wallet, so you can come back to it later from any device. Saved names keep their personality notes so you can expand them whenever you like.",
       },
     ],
     related: ["meme-coin-name-generator", "meme-brand-generator", "meme-logo-generator", "meme-coin-ideas"],
@@ -445,7 +445,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "How many brands can I create?",
-        a: "You can generate as many concepts as you like within the app's fair-use limits. Saving projects to an account makes it easy to compare different directions side by side. Guest mode keeps your work in your browser instead, so clearing browser data will remove it.",
+        a: "You can generate as many concepts as you like within the app's fair-use limits. Saving projects to your dashboard makes it easy to compare different directions side by side.",
       },
     ],
     related: ["meme-coin-ideas", "meme-logo-generator", "meme-name-generator", "meme-website-builder"],
@@ -793,7 +793,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Is it free to use?",
-        a: "You can try the generator in guest mode without an account. Creating an account lets you save projects. Any usage limits or paid features will be clearly shown in the app before they apply, so there are no surprises while you experiment.",
+        a: "Connect a Solana wallet to start; there is no sign-up form. Text generation is free within fair-use limits, and new wallets get free credits for AI images. Paid credits and their prices are always shown before you buy.",
       },
     ],
     related: ["meme-coin-ideas", "meme-brand-generator", "meme-website-builder", "fun-domain-generator"],

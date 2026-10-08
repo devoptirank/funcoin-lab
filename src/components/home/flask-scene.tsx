@@ -6,7 +6,10 @@ import * as THREE from "three"
 import { labState } from "./lab-store"
 import { createRng } from "@/lib/generator/random"
 
-const EMOJI = ["😴", "🐸", "🍌", "👽", "🤖", "🐶", "☕", "🦆", "🍕", "🐱"]
+// The coins that bubble out of the flask: FunCoin Lab's own coin plus the example coins.
+const COINS = ["funcoinlab", "sleepy", "banana", "alien", "chad", "moondog", "sleepyai", "frogking", "gooseglitch", "samosasquad", "capybro", "pizzalord", "npcgpt"].map(
+  (slug) => `/coins/${slug}.webp`,
+)
 
 /** Erlenmeyer flask profile (radius, height), revolved by LatheGeometry. */
 const FLASK_PROFILE: [number, number][] = [
@@ -17,17 +20,10 @@ const LIQUID_TOP = -0.25
 /** Inner radius of the flask body at height y (the conical part). */
 const bodyRadius = (y: number) => 1.2 - ((y + 0.84) / (0.8 + 0.84)) * (1.2 - 0.46)
 
-function emojiTexture(char: string) {
-  const size = 128
-  const canvas = document.createElement("canvas")
-  canvas.width = canvas.height = size
-  const ctx = canvas.getContext("2d")!
-  ctx.font = `${size * 0.78}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`
-  ctx.textAlign = "center"
-  ctx.textBaseline = "middle"
-  ctx.fillText(char, size / 2, size / 2 + size * 0.05)
-  const tex = new THREE.CanvasTexture(canvas)
+function coinTexture(url: string) {
+  const tex = new THREE.TextureLoader().load(url)
   tex.colorSpace = THREE.SRGBColorSpace
+  tex.anisotropy = 4
   return tex
 }
 
@@ -63,11 +59,11 @@ function spawn(b: Bubble, initial = false, rand: () => number = Math.random) {
   b.y = initial ? LIQUID_TOP - rand() * 2.5 : LIQUID_TOP - 0.1 - rand() * 0.8
   b.speed = 0.35 + rand() * 0.35
   b.phase = rand() * Math.PI * 2
-  b.scale = 0.26 + rand() * 0.14
+  b.scale = 0.36 + rand() * 0.16
 }
 
-function EmojiBubbles({ count }: { count: number }) {
-  const textures = useMemo(() => EMOJI.map(emojiTexture), [])
+function CoinBubbles({ count }: { count: number }) {
+  const textures = useMemo(() => COINS.map(coinTexture), [])
   const sprites = useRef<(THREE.Sprite | null)[]>([])
   const bubbles = useMemo(() => {
     const list: Bubble[] = Array.from({ length: count }, () => ({ x: 0, z: 0, y: 0, speed: 0, phase: 0, scale: 0 }))
@@ -227,7 +223,7 @@ function Flask({ quality, theme }: { quality: "high" | "low"; theme: "dark" | "l
         <meshStandardMaterial ref={liquidMat} color={labState.color} roughness={0.25} metalness={0} transparent opacity={0.92} />
       </mesh>
       <FizzBubbles count={quality === "high" ? 46 : 24} />
-      <EmojiBubbles count={quality === "high" ? 9 : 6} />
+      <CoinBubbles count={quality === "high" ? 9 : 6} />
     </group>
   )
 }

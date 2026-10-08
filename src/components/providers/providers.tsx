@@ -9,16 +9,16 @@ import { BillingProvider } from "@/components/billing/billing-provider"
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-      <StoreProvider>
-        <SolanaProvider>
-          <BillingProvider>
+      <SolanaProvider>
+        <BillingProvider>
+          <StoreProvider>
             <TooltipProvider>
               {children}
               <Toaster position="bottom-center" richColors closeButton />
             </TooltipProvider>
-          </BillingProvider>
-        </SolanaProvider>
-      </StoreProvider>
+          </StoreProvider>
+        </BillingProvider>
+      </SolanaProvider>
     </ThemeProvider>
   )
 }

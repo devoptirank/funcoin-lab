@@ -52,8 +52,8 @@ const terms: LegalDoc = {
     {
       heading: "4. Accounts",
       paragraphs: [
-        "You can use some features in guest mode without an account. To save projects across devices you may create an account using an email address. Accounts are provided through our authentication provider.",
-        "You are responsible for keeping your login secure and for activity under your account. Tell us promptly at {{CONTACT_EMAIL}} if you believe your account has been accessed without permission.",
+        "Your account is your Solana wallet. You sign in by signing a message with your wallet, which does not send a transaction or cost anything. We never ask for, and you must never share, your seed phrase or private key.",
+        "You are responsible for keeping your wallet secure and for activity under your account. Anyone who controls your wallet can sign in as you. Tell us promptly at {{CONTACT_EMAIL}} if you believe your wallet has been compromised.",
       ],
     },
     {
@@ -105,7 +105,7 @@ const terms: LegalDoc = {
     {
       heading: "10. Third-party services",
       paragraphs: [
-        "The Service relies on third-party providers, which may include Supabase for authentication and data storage, AI model providers for content generation and, where connected, domain registrars or registrar APIs. Your use of these services may also be subject to their own terms and privacy policies.",
+        "The Service relies on third-party providers, which may include Supabase for data storage, AI model providers for content generation and, where connected, domain registrars or registrar APIs. Your use of these services may also be subject to their own terms and privacy policies.",
         "Domain suggestions are ideas only. Unless a registrar integration is connected and clearly indicated, we do not check availability, and even then availability and pricing must be confirmed with the registrar before purchase. We are not responsible for third-party services, websites or content.",
       ],
     },
@@ -133,7 +133,7 @@ const terms: LegalDoc = {
     {
       heading: "14. Changes to these terms",
       paragraphs: [
-        "We may update these Terms from time to time. When we make material changes we will update the date at the top of this page and, where appropriate, notify you in the app or by email. Continuing to use the Service after changes take effect means you accept the updated Terms.",
+        "We may update these Terms from time to time. When we make material changes we will update the date at the top of this page and, where appropriate, notify you in the app. Continuing to use the Service after changes take effect means you accept the updated Terms.",
       ],
     },
     {
@@ -149,10 +149,10 @@ const privacy: LegalDoc = {
   slug: "privacy",
   title: "Privacy Policy",
   description:
-    "How FunCoin Lab collects, uses and protects your information, including account data, saved projects, AI prompts and guest mode storage.",
+    "How FunCoin Lab collects, uses and protects your information, including wallet addresses, saved projects, AI prompts and payments.",
   updated: UPDATED,
   summary:
-    "We collect only what we need to run FunCoin Lab, such as your email, your saved projects and the prompts you send for generation, we never sell your data, and you can ask us to export or delete it at any time.",
+    "We collect only what we need to run FunCoin Lab, such as your wallet address, your saved projects and the prompts you send for generation, we never sell your data, and you can ask us to export or delete it at any time.",
   sections: [
     {
       heading: "1. Who we are",
@@ -164,7 +164,7 @@ const privacy: LegalDoc = {
       heading: "2. Information we collect",
       paragraphs: ["Depending on how you use the Service, we may collect:"],
       bullets: [
-        "Account information: your email address and authentication details when you sign up or sign in. Authentication is handled by our provider, Supabase.",
+        "Wallet information: your public Solana wallet address and the signed sign-in message. Data is stored with our database provider, Supabase.",
         "Saved projects and generations: the concepts, names, lore, captions, logos, website previews and settings you choose to save to your account.",
         "Prompts and inputs: the text you enter to generate content, which is sent to AI providers to produce results.",
         "Technical and log data: basic information such as IP address, browser type, device type, pages visited, timestamps and error logs, used to keep the Service secure and working.",
@@ -172,9 +172,9 @@ const privacy: LegalDoc = {
       ],
     },
     {
-      heading: "3. Guest mode and local storage",
+      heading: "3. Wallet accounts",
       paragraphs: [
-        "If you use FunCoin Lab without an account, your projects and preferences are stored in your browser's localStorage on your own device. This data is not sent to our database. It stays until you clear your browser data or remove it in the app, and it is not available on other devices. Prompts you submit for generation in guest mode are still sent to our servers and AI providers so that results can be produced.",
+        "You sign in with a Solana wallet. We store your public wallet address and link your projects, saved domains, generated images and credits to it. A wallet address is public on the blockchain. We never receive your seed phrase or private keys.",
       ],
     },
     {
@@ -206,7 +206,7 @@ const privacy: LegalDoc = {
     {
       heading: "7. Sharing and no selling of data",
       paragraphs: [
-        "We do not sell your personal information, and we do not share it for third-party advertising. We share information only with service providers who help us run the Service (such as Supabase for authentication and storage, hosting providers and AI providers), when required by law, to protect rights and safety, or as part of a business transfer such as a merger, in which case this policy will continue to apply to your information.",
+        "We do not sell your personal information, and we do not share it for third-party advertising. We share information only with service providers who help us run the Service (such as Supabase for storage, hosting providers and AI providers), when required by law, to protect rights and safety, or as part of a business transfer such as a merger, in which case this policy will continue to apply to your information.",
       ],
     },
     {
@@ -231,9 +231,8 @@ const privacy: LegalDoc = {
       heading: "11. Cookies and similar technologies",
       paragraphs: ["We keep cookies and similar storage to a minimum:"],
       bullets: [
-        "Authentication cookies: used to keep you signed in and secure your session. These are necessary for accounts to work.",
+        "Session cookie: an HttpOnly cookie that keeps your wallet signed in, shared between funcoinlab.com and app.funcoinlab.com. It is necessary for the app to work.",
         "Preferences: your theme choice (light or dark) and similar settings may be stored in a cookie or localStorage.",
-        "Guest projects: stored in localStorage as described above.",
       ],
     },
     {
@@ -245,7 +244,7 @@ const privacy: LegalDoc = {
     {
       heading: "13. Changes and contact",
       paragraphs: [
-        "We may update this Privacy Policy from time to time. We will update the date at the top of this page and, for material changes, notify you in the app or by email. For any privacy question or request, contact FunCoin Lab at {{CONTACT_EMAIL}}.",
+        "We may update this Privacy Policy from time to time. We will update the date at the top of this page and, for material changes, notify you in the app. For any privacy question or request, contact FunCoin Lab at {{CONTACT_EMAIL}}.",
       ],
     },
   ],

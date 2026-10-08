@@ -3,7 +3,7 @@ import { z } from "zod"
 import { Keypair } from "@solana/web3.js"
 import { packById } from "@/lib/billing/plans"
 import { getBillingStore, type Order } from "@/lib/billing/store"
-import { requireSession } from "@/lib/billing/server"
+import { billingUnavailable, requireSession } from "@/lib/billing/server"
 import { solUsdPrice, solanaConfig, walletPaymentsEnabled } from "@/lib/billing/solana"
 import { clientKey, rateLimit } from "@/lib/rate-limit"
 
@@ -11,6 +11,8 @@ const schema = z.object({ packId: z.string(), method: z.enum(["sol", "usdc"]) })
 
 /** Create a wallet-payment order with a unique reference key and a locked price (15 minutes). */
 export async function POST(req: Request) {
+  const offline = billingUnavailable()
+  if (offline) return offline
   const session = await requireSession()
   if (session instanceof NextResponse) return session
   if (!walletPaymentsEnabled()) return NextResponse.json({ error: "Wallet payments aren't configured yet." }, { status: 503 })

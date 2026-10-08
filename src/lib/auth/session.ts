@@ -1,6 +1,7 @@
 import "server-only"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { SignJWT, jwtVerify } from "jose"
+import { sharedCookieDomain } from "@/lib/hosts"
 
 /**
  * Wallet sessions. After a wallet signs our sign-in message we set an HttpOnly cookie holding a
@@ -29,7 +30,9 @@ export async function createSession(address: string) {
     .setExpirationTime(`${MAX_AGE}s`)
     .sign(sessionKey())
   const jar = await cookies()
-  jar.set(COOKIE, token, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: MAX_AGE })
+  // Shared with app.<domain> so connecting on the marketing site signs you in to the app too.
+  const domain = sharedCookieDomain((await headers()).get("host"))
+  jar.set(COOKIE, token, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: MAX_AGE, domain })
 }
 
 export async function getSession(): Promise<Session | null> {
@@ -45,5 +48,7 @@ export async function getSession(): Promise<Session | null> {
 }
 
 export async function clearSession() {
-  ;(await cookies()).delete(COOKIE)
+  const jar = await cookies()
+  const domain = sharedCookieDomain((await headers()).get("host"))
+  jar.set(COOKIE, "", { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 0, domain })
 }

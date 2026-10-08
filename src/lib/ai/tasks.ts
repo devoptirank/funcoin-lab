@@ -18,6 +18,7 @@ import { generateContentLocal, generateSocialBiosLocal } from "@/lib/generator/s
 import { generateMemesLocal } from "@/lib/generator/memes"
 import { generateDomainIdeas } from "@/lib/generator/domains"
 import { slugify, tickerize, toDomain } from "@/lib/generator/text"
+import { DEFAULT_MASCOT, mascotForTopic, mascotUrl } from "@/lib/mascots"
 
 type BrandRef = z.infer<typeof brandRefSchema>
 export type Sourced<T> = { data: T; source: "ai" | "local" }
@@ -70,7 +71,8 @@ export async function generateConcept(input: ConceptInput): Promise<Sourced<Meme
           catchphrase: out.catchphrase || base.catchphrase,
           communityPhrases: out.communityPhrases.length ? out.communityPhrases.slice(0, 4) : base.communityPhrases,
           logoConcept: out.logoConcept || base.logoConcept,
-          mascot: [...(out.mascotEmoji || "")].length <= 8 && out.mascotEmoji ? out.mascotEmoji : base.mascot,
+          // A topic keyword match beats the model's pick; fall back to the model, then the brand mascot.
+          mascot: input.topic && mascotForTopic(input.topic) !== DEFAULT_MASCOT ? base.mascot : mascotUrl(out.mascotKey || DEFAULT_MASCOT),
           palette: palette.length >= 4 ? palette : base.palette,
           socialBio: out.socialBio || base.socialBio,
           websiteHeadline: out.websiteHeadline || base.websiteHeadline,

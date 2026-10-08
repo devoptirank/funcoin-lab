@@ -10,7 +10,7 @@ export function BrowserFrame({ url, children, className }: { url: string; childr
         <span className="size-3 rounded-full bg-[#ff5f57]" />
         <span className="size-3 rounded-full bg-[#febc2e]" />
         <span className="size-3 rounded-full bg-[#28c840]" />
-        <span className="mx-auto max-w-xs flex-1 truncate rounded-full bg-foreground/5 px-3 py-1 text-center text-xs text-muted-foreground">🔒 {url}</span>
+        <span className="mx-auto max-w-xs flex-1 truncate rounded-full bg-foreground/5 px-3 py-1 text-center text-xs text-muted-foreground">{url}</span>
       </div>
       {children}
     </div>

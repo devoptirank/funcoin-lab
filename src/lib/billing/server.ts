@@ -1,7 +1,7 @@
 import "server-only"
 import { NextResponse } from "next/server"
 import { getSession, type Session } from "@/lib/auth/session"
-import { getBillingStore } from "./store"
+import { billingAvailable, getBillingStore } from "./store"
 import { walletPaymentsEnabled, solanaConfig } from "./solana"
 import { nowPaymentsEnabled } from "./nowpayments"
 
@@ -12,7 +12,14 @@ export async function requireSession(): Promise<Session | NextResponse> {
 }
 
 export function billingMethods() {
-  return { wallet: walletPaymentsEnabled(), nowpayments: nowPaymentsEnabled(), cluster: solanaConfig().cluster }
+  const ready = billingAvailable()
+  return { ready, wallet: ready && walletPaymentsEnabled(), nowpayments: ready && nowPaymentsEnabled(), cluster: solanaConfig().cluster }
+}
+
+/** 503 response when the credit ledger can't run on this host, otherwise null. */
+export function billingUnavailable(): NextResponse | null {
+  if (billingAvailable()) return null
+  return NextResponse.json({ error: "Accounts and credits are switching on soon. Everything else works without signing in." }, { status: 503 })
 }
 
 export async function accountSnapshot(session: Session) {
@@ -23,4 +30,9 @@ export async function accountSnapshot(session: Session) {
 
 export function siteOrigin(req: Request) {
   return (process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin).replace(/\/$/, "")
+}
+
+/** Where buyers return after checkout: the app host when it's configured. */
+export function appOrigin(req: Request) {
+  return (process.env.NEXT_PUBLIC_APP_URL || siteOrigin(req)).replace(/\/$/, "")
 }

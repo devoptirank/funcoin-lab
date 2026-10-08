@@ -1,3 +1,4 @@
+import { requestHost } from "@/lib/hosts"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { buildSignInMessage, issueNonce } from "@/lib/auth/siws"
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: "Invalid wallet address" }, { status: 400 })
   try {
     const { nonce, issuedAt, token } = await issueNonce(parsed.data.address)
-    const domain = new URL(req.url).host
+    const domain = requestHost(req)
     return NextResponse.json({ message: buildSignInMessage(domain, parsed.data.address, nonce, issuedAt), token })
   } catch {
     return NextResponse.json({ error: "Invalid wallet address" }, { status: 400 })

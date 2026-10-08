@@ -14,22 +14,12 @@ export const siteConfig = {
   },
 }
 
+// Marketing site navigation. App tools live on the app host (see lib/hosts.ts).
 export const mainNav = [
-  { href: "/create", label: "Create" },
-  { href: "/domains", label: ".fun Domains" },
-  { href: "/memes", label: "Memes" },
-  { href: "/content", label: "Content" },
   { href: "/discover", label: "Discover" },
   { href: "/pricing", label: "Pricing" },
-]
-
-export const toolNav = [
-  { href: "/create", label: "Idea Generator", emoji: "🧪" },
-  { href: "/domains", label: ".fun Domain Finder", emoji: "🌐" },
-  { href: "/logo", label: "Logo Generator", emoji: "🎨" },
-  { href: "/memes", label: "Meme Gallery", emoji: "🖼️" },
-  { href: "/social", label: "Social Bios", emoji: "📝" },
-  { href: "/content", label: "Content Generator", emoji: "📣" },
+  { href: "/meme-coin-ideas", label: "Ideas" },
+  { href: "/about", label: "About" },
 ]
 
 export function absoluteUrl(path = "/") {

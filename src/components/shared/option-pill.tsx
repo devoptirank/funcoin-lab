@@ -1,19 +1,23 @@
 "use client"
-import { Check } from "lucide-react"
+import { Check, type LucideIcon } from "lucide-react"
+import { mascotUrl } from "@/lib/mascots"
 import { cn } from "@/lib/utils"
 
 /** Large selectable card used by the generator steps and tool pickers. Selected = solid lab-lime. */
 export function OptionPill({
   selected,
   onClick,
-  emoji,
+  art,
+  icon: Icon,
   label,
   hint,
   className,
 }: {
   selected: boolean
   onClick: () => void
-  emoji?: string
+  /** Mascot library key shown as artwork. */
+  art?: string
+  icon?: LucideIcon
   label: string
   hint?: string
   className?: string
@@ -32,9 +36,13 @@ export function OptionPill({
         className,
       )}
     >
-      {emoji && (
-        <span className="text-2xl transition-transform group-hover:scale-110" aria-hidden>
-          {emoji}
+      {art && (
+        // eslint-disable-next-line @next/next/no-img-element -- static mascot artwork
+        <img src={mascotUrl(art)} alt="" className="size-10 shrink-0 object-contain transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-6" />
+      )}
+      {Icon && (
+        <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", selected ? "bg-lab-ink/10" : "bg-foreground/5")} aria-hidden>
+          <Icon className="size-5" />
         </span>
       )}
       <span className="flex min-w-0 flex-1 flex-col">

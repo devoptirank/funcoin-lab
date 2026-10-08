@@ -1,6 +1,8 @@
 "use client"
 import { forwardRef, useId } from "react"
 import { downloadFile } from "@/lib/client-api"
+import { useAssetUrl } from "@/lib/assets/store"
+import { resolveMascot } from "@/lib/mascots"
 import { cn } from "@/lib/utils"
 
 export const LOGO_VARIANTS = 5
@@ -23,6 +25,7 @@ export const MascotLogo = forwardRef<SVGSVGElement, Props>(function MascotLogo(
   ref,
 ) {
   const id = useId().replace(/:/g, "")
+  const art = useAssetUrl(resolveMascot(mascot))
   const [c1 = "#A855F7", c2 = "#FF3D9A", c3 = "#22D3EE"] = colors
   const v = ((variant % LOGO_VARIANTS) + LOGO_VARIANTS) % LOGO_VARIANTS
   const ringText = `$${ticker} • ${name.toUpperCase()} • `.repeat(3)
@@ -83,16 +86,17 @@ export const MascotLogo = forwardRef<SVGSVGElement, Props>(function MascotLogo(
         </text>
       )}
       <circle cx="256" cy="262" r="118" fill="#0B0912" opacity="0.12" />
-      <text
-        x="256"
-        y="262"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize="170"
-        style={animated ? { transformOrigin: "256px 262px", animation: "fc-wobble 3s ease-in-out infinite" } : undefined}
-      >
-        {mascot}
-      </text>
+      {art && (
+        <image
+          href={art}
+          x="146"
+          y="152"
+          width="220"
+          height="220"
+          preserveAspectRatio="xMidYMid meet"
+          style={animated ? { transformOrigin: "256px 262px", animation: "fc-wobble 3s ease-in-out infinite" } : undefined}
+        />
+      )}
       <g fill="#fff">
         <path d="M410 96 l8 20 20 8 -20 8 -8 20 -8 -20 -20 -8 20 -8z" opacity="0.9" />
         <path d="M110 380 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5z" opacity="0.8" />
@@ -109,15 +113,37 @@ export const MascotLogo = forwardRef<SVGSVGElement, Props>(function MascotLogo(
   )
 })
 
-export function downloadSvg(svg: SVGSVGElement | null, filename: string) {
+async function toDataUrl(url: string): Promise<string> {
+  const blob = await (await fetch(url)).blob()
+  return new Promise((resolve, reject) => {
+    const r = new FileReader()
+    r.onload = () => resolve(String(r.result))
+    r.onerror = reject
+    r.readAsDataURL(blob)
+  })
+}
+
+/** Serialize the SVG with every <image> embedded, so it renders outside the page. */
+async function standaloneMarkup(svg: SVGSVGElement) {
+  const clone = svg.cloneNode(true) as SVGSVGElement
+  await Promise.all(
+    [...clone.querySelectorAll("image")].map(async (img) => {
+      const href = img.getAttribute("href")
+      if (href && !href.startsWith("data:")) img.setAttribute("href", await toDataUrl(href))
+    }),
+  )
+  return new XMLSerializer().serializeToString(clone)
+}
+
+export async function downloadSvg(svg: SVGSVGElement | null, filename: string) {
   if (!svg) return
-  const markup = new XMLSerializer().serializeToString(svg)
+  const markup = await standaloneMarkup(svg)
   downloadFile(filename, `<?xml version="1.0" encoding="UTF-8"?>\n${markup}`, "image/svg+xml")
 }
 
 export async function downloadPng(svg: SVGSVGElement | null, filename: string, size = 1024) {
   if (!svg) return
-  const markup = new XMLSerializer().serializeToString(svg)
+  const markup = await standaloneMarkup(svg)
   const img = new Image()
   img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`
   await img.decode()

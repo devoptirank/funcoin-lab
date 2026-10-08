@@ -7,7 +7,10 @@ import { checkTopic, sanitizeText } from "@/lib/safety"
 import { clientKey, rateLimit } from "@/lib/rate-limit"
 import { getSession } from "@/lib/auth/session"
 import { getBillingStore } from "@/lib/billing/store"
+import { billingUnavailable } from "@/lib/billing/server"
 import { IMAGE_COSTS } from "@/lib/billing/plans"
+import { saveAsset } from "@/lib/data/server"
+import { getSupabaseAdmin } from "@/lib/supabase/admin"
 
 export const maxDuration = 150
 
@@ -16,6 +19,7 @@ const GLOBAL_DAILY = Number(process.env.IMAGE_GLOBAL_DAILY_LIMIT ?? 300)
 const QUALITY = (["low", "medium", "high", "auto"] as const).find((q) => q === process.env.IMAGE_QUALITY) ?? "medium"
 
 const schema = z.object({
+  conceptId: z.string().regex(/^[A-Za-z0-9_-]{4,64}$/),
   type: z.enum(IMAGE_ASSET_TYPES),
   brand: brandRefSchema.extend({ palette: z.array(z.string().regex(/^#[0-9a-fA-F]{6}$/)).max(6).optional() }),
   pose: z.enum(MASCOT_POSES).optional(),
@@ -24,7 +28,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   const provider = getImageProvider()
-  if (!provider?.generateImage) {
+  if (!provider?.generateImage || !getSupabaseAdmin()) {
     return NextResponse.json({ error: "AI image generation isn't configured on this deployment." }, { status: 503 })
   }
 
@@ -38,6 +42,8 @@ export async function POST(req: Request) {
   }
 
   // AI images are paid with credits, so they need a signed-in wallet.
+  const offline = billingUnavailable()
+  if (offline) return offline
   const session = await getSession()
   if (!session) return NextResponse.json({ error: "Connect your wallet to generate AI images.", code: "auth" }, { status: 401 })
 
@@ -78,16 +84,16 @@ export async function POST(req: Request) {
   try {
     const image = await provider.generateImage(prompt, { size: IMAGE_SIZE[input.type], quality: QUALITY })
     if (!image?.b64) throw new Error("No image returned")
-    return NextResponse.json({
+    const asset = await saveAsset(session.accountId, {
+      conceptId: input.conceptId,
       type: input.type,
       pose: input.pose ?? null,
-      mimeType: image.mimeType ?? "image/webp",
-      b64: image.b64,
-      model: process.env.IMAGE_MODEL || "gpt-image-2",
+      bytes: Buffer.from(image.b64, "base64"),
+      mime: image.mimeType ?? "image/webp",
       prompt,
-      cost,
-      balance: charge.balance,
+      model: process.env.IMAGE_MODEL || "gpt-image-2",
     })
+    return NextResponse.json({ asset, cost, balance: charge.balance })
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     console.error("[image] generation failed:", message)

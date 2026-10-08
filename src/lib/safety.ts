@@ -21,7 +21,8 @@ const REPLACEMENTS: [RegExp, string][] = [
 export function sanitizeText(input: string): string {
   let out = input
   for (const [pattern, replacement] of REPLACEMENTS) out = out.replace(pattern, replacement)
-  // House style: no em/en dashes in generated copy.
+  // House style: no emojis and no em/en dashes in generated copy.
+  out = out.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}\u{2B55}\u{FE0F}\u{200D}\u{1F1E6}-\u{1F1FF}]/gu, "").replace(/ {2,}/g, " ")
   out = out.replace(/\s*[\u2014\u2013]\s*/g, " - ")
   return out.replace(/\s{3,}/g, "  ").trim()
 }

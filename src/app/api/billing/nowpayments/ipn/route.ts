@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server"
-import { getBillingStore } from "@/lib/billing/store"
+import { billingAvailable, getBillingStore } from "@/lib/billing/store"
 import { verifyIpn } from "@/lib/billing/nowpayments"
 import { getSupabaseAdmin } from "@/lib/supabase/admin"
 
 // NOWPayments IPN webhook. Credits are granted only for a correctly signed "finished" payment whose
 // amount and currency match the order. Every event is logged (Supabase payment_events when available).
 export async function POST(req: Request) {
+  // 503 makes NOWPayments retry later instead of us dropping the payment.
+  if (!billingAvailable()) return NextResponse.json({ error: "Ledger unavailable" }, { status: 503 })
   const body = (await req.json().catch(() => null)) as Record<string, unknown> | null
   if (!body || !verifyIpn(body, req.headers.get("x-nowpayments-sig"))) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 })

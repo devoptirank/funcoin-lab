@@ -1,25 +1,28 @@
 "use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Globe, Receipt, Image as ImageIcon, LayoutDashboard, LayoutTemplate, Lightbulb, Megaphone, Palette, Settings, Sparkles } from "lucide-react"
+import { AtSign, Bookmark, FlaskConical, Receipt, Image as ImageIcon, LayoutDashboard, LayoutTemplate, Lightbulb, Megaphone, Palette, Search, Settings, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export const DASHBOARD_NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { href: "/create", label: "Create", icon: FlaskConical },
   { href: "/dashboard/ideas", label: "My Ideas", icon: Lightbulb },
   { href: "/dashboard/brands", label: "My Brands", icon: Sparkles },
   { href: "/dashboard/websites", label: "My Websites", icon: LayoutTemplate },
-  { href: "/dashboard/domains", label: "Saved Domains", icon: Globe },
-  { href: "/dashboard/memes", label: "Meme Generator", icon: ImageIcon },
-  { href: "/dashboard/logo", label: "Logo Generator", icon: Palette },
-  { href: "/dashboard/social", label: "Social Content", icon: Megaphone },
-  { href: "/dashboard/billing", label: "Billing", icon: Receipt },
+  { href: "/domains", label: "Domain Finder", icon: Search },
+  { href: "/dashboard/domains", label: "Saved Domains", icon: Bookmark },
+  { href: "/logo", label: "Logo Generator", icon: Palette },
+  { href: "/memes", label: "Meme Generator", icon: ImageIcon },
+  { href: "/social", label: "Social Bios", icon: AtSign },
+  { href: "/content", label: "Content", icon: Megaphone },
+  { href: "/dashboard/billing", label: "Credits & Billing", icon: Receipt },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ]
 
 export function DashboardSidebar() {
   const pathname = usePathname()
-  const isActive = (href: string) => (href === "/dashboard" ? pathname === href : pathname.startsWith(href))
+  const isActive = (href: string) => (href === "/dashboard" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`))
   return (
     <>
       {/* Mobile: horizontal tabs */}

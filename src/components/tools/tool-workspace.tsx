@@ -19,7 +19,7 @@ export function ToolWorkspace({ tool }: { tool: ToolKind }) {
       <BrandPicker value={concept} onChange={setConcept} />
       {!concept ? (
         <EmptyState
-          emoji="🧪"
+          mascot="lab"
           title="No meme brand selected"
           description="Type a quick idea above, or generate a full brand first."
           action={

@@ -58,7 +58,7 @@ function MemeGalleryInner({ concept, count }: { concept: MemeConcept; count: num
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Meme concepts starring {concept.mascot} {concept.name}. Keep it funny, never financial.</p>
+        <p className="text-sm text-muted-foreground">Meme concepts starring {concept.name}. Keep it funny, never financial.</p>
         <Button variant="glow" size="lg" className="px-4" onClick={generate} disabled={loading}>
           {loading ? <Loader2 className="animate-spin" /> : <Sparkles />} Generate new batch
         </Button>

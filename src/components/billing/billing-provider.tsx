@@ -6,8 +6,9 @@ import bs58 from "bs58"
 import { toast } from "sonner"
 import type { LedgerEntry, Order } from "@/lib/billing/store"
 import { BuyCreditsDialog } from "./buy-credits-dialog"
+import { appHref, isAppPath } from "@/lib/hosts"
 
-export type BillingMethods = { wallet: boolean; nowpayments: boolean; cluster: string }
+export type BillingMethods = { ready?: boolean; wallet: boolean; nowpayments: boolean; cluster: string }
 export type BillingState = {
   signedIn: boolean
   address: string | null
@@ -23,13 +24,16 @@ type BillingContextValue = BillingState & {
   refresh: () => Promise<void>
   signIn: () => Promise<boolean>
   signOut: () => Promise<void>
-  /** Connect + sign in if needed. Resolves true when the user is signed in. `resumeBuy` reopens checkout after. */
-  ensureSignedIn: (opts?: { resumeBuy?: boolean }) => Promise<boolean>
+  /**
+   * Connect + sign in if needed. Resolves true when the user is signed in. `resumeBuy` reopens
+   * checkout after; `goToApp` opens the app dashboard after (used on the marketing site).
+   */
+  ensureSignedIn: (opts?: { resumeBuy?: boolean; goToApp?: boolean }) => Promise<boolean>
   openBuy: (reason?: string) => void
   setSnapshot: (s: Partial<BillingState>) => void
 }
 
-const EMPTY: BillingState = { signedIn: false, address: null, balance: 0, ledger: [], orders: [], methods: { wallet: false, nowpayments: false, cluster: "mainnet-beta" } }
+const EMPTY: BillingState = { signedIn: false, address: null, balance: 0, ledger: [], orders: [], methods: { ready: true, wallet: false, nowpayments: false, cluster: "mainnet-beta" } }
 const Ctx = createContext<BillingContextValue | null>(null)
 
 const fetchMe = () =>
@@ -44,6 +48,7 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
   const [buy, setBuy] = useState<{ open: boolean; reason?: string }>({ open: false })
   const wantSignIn = useRef(false)
   const resumeBuy = useRef(false)
+  const goToApp = useRef(false)
 
   const setSnapshot = useCallback((s: Partial<BillingState>) => setState((prev) => ({ ...prev, ...s })), [])
 
@@ -77,6 +82,10 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
       if (!res.ok) throw new Error(json.error || "Sign-in failed")
       setState({ ...EMPTY, ...json, address: json.address ?? address })
       toast.success("Wallet connected", { description: `${json.balance ?? 0} credits available` })
+      if (goToApp.current) {
+        goToApp.current = false
+        if (!isAppPath(window.location.pathname)) window.location.assign(appHref("/dashboard", window.location.host))
+      }
       if (resumeBuy.current) {
         resumeBuy.current = false
         setBuy({ open: true })
@@ -107,9 +116,10 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
     }
   }, [wallet.publicKey, state.signedIn, state.address, refresh])
 
-  const ensureSignedIn = useCallback(async (opts?: { resumeBuy?: boolean }) => {
+  const ensureSignedIn = useCallback(async (opts?: { resumeBuy?: boolean; goToApp?: boolean }) => {
     if (state.signedIn) return true
     if (opts?.resumeBuy) resumeBuy.current = true
+    if (opts?.goToApp) goToApp.current = true
     if (!wallet.connected) {
       wantSignIn.current = true
       setVisible(true)

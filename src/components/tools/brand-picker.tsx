@@ -10,6 +10,7 @@ import { generateConceptLocal } from "@/lib/generator/concept"
 import { checkTopic } from "@/lib/safety"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { MascotArt } from "@/components/shared/mascot-art"
 
 /**
  * Lets standalone tools work on any brand: the latest generated concept, a saved project,
@@ -57,7 +58,7 @@ export function BrandPicker({ value, onChange }: { value: MemeConcept | null; on
                 value?.id === c.id ? "border-transparent bg-lab-fill font-semibold text-lab-ink" : "border-border hover:border-lab-fill/60",
               )}
             >
-              <span aria-hidden>{c.mascot}</span> {c.name}
+              <MascotArt value={c.mascot} className="size-6" /> {c.name}
             </button>
           ))}
         </div>

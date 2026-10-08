@@ -8,9 +8,8 @@ export function ExamplesMarquee() {
       <ul className="animate-marquee flex w-max gap-4 hover:[animation-play-state:paused]">
         {items.map((ex, i) => (
           <li key={i} aria-hidden={i >= HERO_EXAMPLES.length} className="glass card-hover flex w-72 shrink-0 items-center gap-3 rounded-2xl p-4">
-            <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-foreground/[0.06] text-2xl" aria-hidden>
-              {ex.mascot}
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element -- generated coin artwork */}
+            <img src={ex.coin} alt="" width={56} height={56} className="size-14 shrink-0" />
             <div className="min-w-0">
               <p className="truncate font-heading text-lg font-extrabold">
                 <span className="text-lab">${ex.ticker}</span>

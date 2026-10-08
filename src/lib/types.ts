@@ -2,30 +2,30 @@
 // Brand concepts, websites and assets for meme brands. Generated copy never makes financial promises.
 
 export const THEMES = [
-  { id: "animals", label: "Animals", emoji: "🐾" },
-  { id: "food", label: "Food", emoji: "🍕" },
-  { id: "ai", label: "AI", emoji: "🤖" },
-  { id: "internet", label: "Internet memes", emoji: "🌐" },
-  { id: "gaming", label: "Gaming", emoji: "🎮" },
-  { id: "space", label: "Space", emoji: "🚀" },
-  { id: "culture", label: "Politics-free culture", emoji: "🎭" },
-  { id: "indian", label: "Indian memes", emoji: "🇮🇳" },
-  { id: "desi", label: "Desi culture", emoji: "🪔" },
-  { id: "random", label: "Random", emoji: "🎲" },
-  { id: "custom", label: "Custom", emoji: "✏️" },
+  { id: "animals", label: "Animals", art: "cat" },
+  { id: "food", label: "Food", art: "pizza" },
+  { id: "ai", label: "AI", art: "robot" },
+  { id: "internet", label: "Internet memes", art: "npc" },
+  { id: "gaming", label: "Gaming", art: "controller" },
+  { id: "space", label: "Space", art: "alien" },
+  { id: "culture", label: "Politics-free culture", art: "office" },
+  { id: "indian", label: "Indian memes", art: "chai" },
+  { id: "desi", label: "Desi culture", art: "samosa" },
+  { id: "random", label: "Random", art: "lab" },
+  { id: "custom", label: "Custom" },
 ] as const
 
 export const PERSONALITIES = [
-  { id: "cute", label: "Cute", emoji: "🥺" },
-  { id: "chaotic", label: "Chaotic", emoji: "🌀" },
-  { id: "absurd", label: "Absurd", emoji: "🫠" },
-  { id: "funny", label: "Funny", emoji: "😂" },
-  { id: "luxury", label: "Luxury", emoji: "💎" },
-  { id: "genz", label: "Gen-Z", emoji: "💅" },
-  { id: "weird", label: "Weird", emoji: "👁️" },
-  { id: "aggressive", label: "Aggressive", emoji: "😤" },
-  { id: "wholesome", label: "Wholesome", emoji: "🫶" },
-  { id: "random", label: "Completely Random", emoji: "🎰" },
+  { id: "cute", label: "Cute" },
+  { id: "chaotic", label: "Chaotic" },
+  { id: "absurd", label: "Absurd" },
+  { id: "funny", label: "Funny" },
+  { id: "luxury", label: "Luxury" },
+  { id: "genz", label: "Gen-Z" },
+  { id: "weird", label: "Weird" },
+  { id: "aggressive", label: "Aggressive" },
+  { id: "wholesome", label: "Wholesome" },
+  { id: "random", label: "Completely Random" },
 ] as const
 
 export const NAMING_STYLES = [
@@ -77,7 +77,10 @@ export type MemeConcept = {
   communityPhrases: string[]
   /** 9. Logo concept */
   logoConcept: string
+  /** Mascot artwork URL (library image under /mascots, or an AI asset). Never an emoji. */
   mascot: string
+  /** Plain-language subject, e.g. "sleepy cat" (used for AI image prompts). */
+  subject?: string
   /** 10. Color palette */
   palette: PaletteColor[]
   /** 11. Social bio */
@@ -120,8 +123,11 @@ export type MemeCardData = {
   caption: string
   topText?: string
   bottomText?: string
-  emoji: string
-  props: string[]
+  /** Mascot artwork URL shown on the meme. */
+  mascot: string
+  /** Legacy fields from older saves; not rendered. */
+  emoji?: string
+  props?: string[]
   layout: MemeLayout
   hue: number
   /** Optional AI-generated scene ("asset:<id>" or URL); the caption is overlaid in HTML. */
@@ -171,7 +177,7 @@ export type SiteConfig = {
   about: { title: string; body: string }
   lore: { title: string; steps: LoreStep[] }
   token: { title: string; network: string; supply: string; note: string; contract?: string }
-  memes: { title: string; items: { emoji: string; caption: string }[] }
+  memes: { title: string; items: { caption: string; image?: string; emoji?: string }[] }
   community: { title: string; subtitle: string; links: { x: string; telegram: string; discord: string } }
   footer: { text: string }
   theme: {

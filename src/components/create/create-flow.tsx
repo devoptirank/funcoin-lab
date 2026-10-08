@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowLeft, ArrowRight, Rocket } from "lucide-react"
+import { ArrowLeft, ArrowRight, Dices, Eye, Flame, Gem, HandHeart, Heart, Laugh, PenLine, Rocket, Shapes, Sparkles, Zap, type LucideIcon } from "lucide-react"
 import { toast } from "sonner"
 import {
   NAMING_STYLES,
@@ -26,6 +26,19 @@ import { ConceptResults } from "./concept-results"
 import { GeneratingState } from "./generating-state"
 
 const STEPS = ["Theme", "Personality", "Naming", "Generate"] as const
+
+const PERSONALITY_ICONS: Record<PersonalityId, LucideIcon> = {
+  cute: Heart,
+  chaotic: Zap,
+  absurd: Shapes,
+  funny: Laugh,
+  luxury: Gem,
+  genz: Sparkles,
+  weird: Eye,
+  aggressive: Flame,
+  wholesome: HandHeart,
+  random: Dices,
+}
 
 const pickParam = <T extends string>(value: string | null, list: readonly { id: T }[], fallback: T): T =>
   list.some((x) => x.id === value) ? (value as T) : fallback
@@ -167,7 +180,7 @@ export function CreateFlow() {
               </div>
               <div role="radiogroup" aria-label="Theme" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 {THEMES.map((t) => (
-                  <OptionPill key={t.id} selected={theme === t.id} onClick={() => setTheme(t.id)} emoji={t.emoji} label={t.label} />
+                  <OptionPill key={t.id} selected={theme === t.id} onClick={() => setTheme(t.id)} art={"art" in t ? t.art : undefined} icon={"art" in t ? undefined : PenLine} label={t.label} />
                 ))}
               </div>
             </StepShell>
@@ -176,7 +189,7 @@ export function CreateFlow() {
             <StepShell title="Choose a personality" subtitle="How does your mascot behave in the group chat?">
               <div role="radiogroup" aria-label="Personality" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 {PERSONALITIES.map((p) => (
-                  <OptionPill key={p.id} selected={personality === p.id} onClick={() => setPersonality(p.id)} emoji={p.emoji} label={p.label} />
+                  <OptionPill key={p.id} selected={personality === p.id} onClick={() => setPersonality(p.id)} icon={PERSONALITY_ICONS[p.id]} label={p.label} />
                 ))}
               </div>
             </StepShell>

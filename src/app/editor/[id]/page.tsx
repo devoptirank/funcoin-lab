@@ -1,9 +1,15 @@
 import type { Metadata } from "next"
 import { SiteEditor } from "@/components/editor/site-editor"
+import { WalletGate } from "@/components/app/wallet-gate"
+import { getSession } from "@/lib/auth/session"
 
 export const metadata: Metadata = { title: "Website Editor", robots: { index: false, follow: false } }
 
 export default async function EditorPage({ params }: PageProps<"/editor/[id]">) {
-  const { id } = await params
-  return <SiteEditor projectId={id} />
+  const [{ id }, session] = await Promise.all([params, getSession()])
+  return (
+    <WalletGate initialSignedIn={Boolean(session)}>
+      <SiteEditor projectId={id} />
+    </WalletGate>
+  )
 }

@@ -11,7 +11,6 @@ function varsFor(c: BioSource): Record<string, string> {
     Name: c.name,
     Ticker: `$${c.ticker || tickerize(c.name)}`,
     domain: c.domain || toDomain(c.name),
-    e: c.mascot || "✨",
     tagline: c.tagline || `The internet's favorite ${c.name}.`,
     catchphrase: c.catchphrase || "No thoughts. Just vibes.",
     slogan: c.slogan || "Do less. Meme more.",
@@ -23,57 +22,57 @@ function varsFor(c: BioSource): Record<string, string> {
 export function generateSocialBiosLocal(c: BioSource): SocialBios {
   const v = varsFor(c)
   return sanitizeDeep({
-    x: fill("{e} {tagline}\n✨ {catchphrase}\n🌐 {domain}", v),
+    x: fill("{tagline}\n{catchphrase}\n{domain}", v),
     telegram: fill(
-      "Welcome to the official {Name} meme hangout {e}\n\nShare memes, remix the mascot, invent the lore. Be kind, be weird, no spam.\n\n🌐 {domain}\n⚠️ Not financial advice. Always verify links and contract addresses here.",
+      "Welcome to the official {Name} community.\n\nShare memes, remix the mascot, invent the lore. Be kind, be weird, no spam.\n\nWebsite: {domain}\nNot financial advice. Always verify links and contract addresses here.",
       v,
     ),
     discord: fill(
-      "{e} {Name}: {tagline}\n\n#memes for your best edits, #lore for canon debates, #fan-art for the masterpieces. {slogan}",
+      "{Name}: {tagline}\n\n#memes for your best edits, #lore for canon debates, #fan-art for the masterpieces. {slogan}",
       v,
     ),
-    instagram: fill("{e} {Name}\n{tagline}\n📸 Daily memes & mascot chaos\n👇 {domain}", v),
-    tiktok: fill("{e} {Name} | {trait} memes daily\n{catchphrase}\n{domain}", v),
+    instagram: fill("{Name}\n{tagline}\nDaily memes and mascot chaos\n{domain}", v),
+    tiktok: fill("{Name} | {trait} memes daily\n{catchphrase}\n{domain}", v),
   })
 }
 
 const CONTENT_TEMPLATES: Record<ContentTypeId, string[]> = {
   caption: [
-    "{e} me pretending I have my life together",
-    "{Name} after one (1) productive minute: 😮‍💨",
+    "me pretending I have my life together",
+    "{Name} after one (1) productive minute:",
     "nobody:\n{Name}: {catchphrase}",
-    "this is a {trait} household {e}",
+    "this is a {trait} household",
     "POV: the {Name} lore just got weirder",
-    "{Name} reacting to the group chat at 3 AM {e}",
+    "{Name} reacting to the group chat at 3 AM",
   ],
   announcement: [
-    "📣 {Name} has officially entered the chat. Website: {domain}. Bring memes.",
-    "BIG NEWS {e} The {Name} meme gallery is live. Submit your best remix.",
-    "The {Name} sticker pack is here. 10 moods. 0 chill. {e}",
+    "{Name} has officially entered the chat. Website: {domain}. Bring memes.",
+    "BIG NEWS The {Name} meme gallery is live. Submit your best remix.",
+    "The {Name} sticker pack is here. 10 moods. 0 chill.",
     "New lore chapter unlocked. {Name} did something {trait}. Read it on {domain}.",
   ],
   community: [
-    "Drop your best {Name} meme below 👇 Top 3 get featured on the site this week.",
-    "Roll call {e} What's your {Name} mood today? Reply with an emoji.",
+    "Drop your best {Name} meme below Top 3 get featured on the site this week.",
+    "Roll call What's your {Name} mood today? Reply with an emoji.",
     "Reminder: {slogan} Be kind, post memes, keep it weird.",
-    "Fan Art Friday is ON. Show us your {Name} masterpieces {e}",
+    "Fan Art Friday is ON. Show us your {Name} masterpieces",
   ],
   quote: [
     "\"{catchphrase}\" - {Name}, probably",
     "\"I'm not {trait}, I'm just ahead of the meme.\" - {Name}",
-    "{e}: \"Today I choose violence. Tomorrow I choose naps.\"",
+    "\"Today I choose violence. Tomorrow I choose naps.\"",
     "\"Every great meme starts with a bad idea.\" - {Name}",
   ],
   teaser: [
-    "something {trait} is loading… {e}",
-    "👀 {domain}",
-    "3… 2… {e}",
+    "something {trait} is loading…",
+    "Coming soon: {domain}",
+    "3… 2…",
     "You're not ready for {Name}. Honestly, neither are we.",
   ],
   lore: [
-    "📜 {Name} lore, chapter 1: it all started with one weird screenshot… 🧵",
+    "{Name} lore, chapter 1: it all started with one weird screenshot…",
     "Lore fact: {Name} has never once explained itself. {catchphrase}",
-    "Historians agree: the {Name} meme timeline is 90% vibes and 10% chaos {e}",
+    "Historians agree: the {Name} meme timeline is 90% vibes and 10% chaos",
     "The legend of {Name}: {tagline}",
   ],
 }

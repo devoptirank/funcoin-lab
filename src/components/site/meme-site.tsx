@@ -4,6 +4,7 @@ import type { SiteConfig, SiteFont, SiteSectionId } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { TEMPLATE_CSS } from "@/lib/site/templates"
 import { useAssetUrl } from "@/lib/assets/store"
+import { MascotArt } from "@/components/shared/mascot-art"
 
 export const SITE_FONTS: Record<SiteFont, { label: string; stack: string }> = {
   bricolage: { label: "Bricolage (bold display)", stack: "var(--font-display), system-ui, sans-serif" },
@@ -83,7 +84,7 @@ export function MemeSite({ config, activeSection, onSelectSection, className }: 
       {/* Top bar */}
       <header className="flex items-center justify-between px-5 py-4 @3xl:px-10">
         <div className="flex items-center gap-2 font-extrabold">
-          <span className="text-2xl" aria-hidden>{brand.mascot}</span>
+          <MascotArt value={brand.mascotImage || brand.mascot} className="size-8" />
           <span>${brand.ticker}</span>
         </div>
         <nav className="hidden gap-5 text-sm opacity-80 @2xl:flex">
@@ -125,17 +126,15 @@ export function MemeSite({ config, activeSection, onSelectSection, className }: 
 {brand.mascotImage ? (
               <MascotImage refValue={brand.mascotImage} size={t.mascotSize} animation={anim} name={brand.name} />
             ) : (
-            <span
-              className="ms-mascot relative select-none leading-none"
-              style={{
-                fontSize: t.mascotSize,
-                animation:
-                  anim === "bouncy" ? "fc-wobble 2.2s ease-in-out infinite" : anim === "subtle" ? "fc-bob 4s ease-in-out infinite" : undefined,
-              }}
-              aria-hidden
-            >
-              {brand.mascot}
-            </span>
+              <MascotArt
+                value={brand.mascot}
+                alt={`${brand.name} mascot`}
+                className="ms-mascot relative h-auto drop-shadow-[0_18px_30px_rgba(0,0,0,0.35)]"
+                style={{
+                  width: Math.round(t.mascotSize * 1.6),
+                  animation: anim === "bouncy" ? "fc-wobble 2.2s ease-in-out infinite" : anim === "subtle" ? "fc-bob 4s ease-in-out infinite" : undefined,
+                }}
+              />
             )}
           </div>
         </div>,
@@ -214,11 +213,11 @@ export function MemeSite({ config, activeSection, onSelectSection, className }: 
             {config.memes.items.map((m, i) => (
               <figure key={i} className="ms-card overflow-hidden border" style={{ borderRadius: "var(--s-radius)", borderColor: "color-mix(in srgb, var(--s-text) 14%, transparent)" }}>
                 <div
-                  className="grid aspect-[4/3] place-items-center text-7xl"
+                  className="grid aspect-[4/3] place-items-center overflow-hidden"
                   style={{ background: `linear-gradient(135deg, ${[t.primary, t.secondary, t.accent][i % 3]}, ${t.background})` }}
                   aria-hidden
                 >
-                  {m.emoji}
+                  <MascotArt value={m.image || brand.mascotImage || brand.mascot} className="h-[72%] w-auto drop-shadow-[0_10px_16px_rgba(0,0,0,0.3)]" style={{ transform: `rotate(${[-6, 4, -2][i % 3]}deg)` }} />
                 </div>
                 <figcaption className="p-4 text-sm font-medium">{m.caption}</figcaption>
               </figure>

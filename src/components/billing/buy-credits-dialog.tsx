@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { PublicKey, SystemProgram, Transaction, type TransactionInstruction } from "@solana/web3.js"
@@ -36,6 +36,17 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
   const [method, setMethod] = useState<Method>("usdc")
   const [phase, setPhase] = useState<Phase>("idle")
   const [detail, setDetail] = useState<string | null>(null)
+  const [coins, setCoins] = useState<{ code: string; name: string }[]>([])
+  const [payCurrency, setPayCurrency] = useState<string>("")
+
+  // Coins enabled on the NOWPayments account, loaded when the dialog first opens.
+  useEffect(() => {
+    if (!open || coins.length || !billing.methods.nowpayments) return
+    fetch("/api/billing/nowpayments/coins")
+      .then((r) => r.json() as Promise<{ coins: { code: string; name: string }[] }>)
+      .then((j) => setCoins(j.coins ?? []))
+      .catch(() => undefined)
+  }, [open, coins.length, billing.methods.nowpayments])
   const pack = CREDIT_PACKS.find((p) => p.id === packId)!
   const busy = phase !== "idle" && phase !== "paid"
 
@@ -105,7 +116,7 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
     if (!billing.signedIn) return signInFirst()
     setPhase("creating")
     try {
-      const res = await fetch("/api/billing/nowpayments/invoice", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ packId }) })
+      const res = await fetch("/api/billing/nowpayments/invoice", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ packId, ...(payCurrency ? { payCurrency } : {}) }) })
       const json = (await res.json()) as { invoiceUrl?: string; error?: string }
       if (!res.ok || !json.invoiceUrl) throw new Error(json.error || "Couldn't start checkout")
       window.location.href = json.invoiceUrl
@@ -204,13 +215,53 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
               </div>
             </div>
 
+            {method === "nowpayments" && npAvailable && coins.length > 0 && (
+              <div>
+                <p className="mb-2 text-sm font-semibold">Coin</p>
+                <div role="radiogroup" aria-label="Coin" className="flex flex-wrap gap-1.5">
+                  {[{ code: "", name: "Any coin" }, ...coins.slice(0, 9)].map((c) => (
+                    <button
+                      key={c.code || "any"}
+                      type="button"
+                      role="radio"
+                      aria-checked={payCurrency === c.code}
+                      disabled={busy}
+                      onClick={() => setPayCurrency(c.code)}
+                      className={cn(
+                        "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                        payCurrency === c.code ? "border-transparent bg-lab-fill font-semibold text-lab-ink" : "border-border hover:border-lab-fill/60",
+                      )}
+                    >
+                      {c.name}
+                    </button>
+                  ))}
+                  {coins.length > 9 && (
+                    <select
+                      aria-label="More coins"
+                      value={coins.slice(9).some((c) => c.code === payCurrency) ? payCurrency : ""}
+                      onChange={(e) => setPayCurrency(e.target.value)}
+                      disabled={busy}
+                      className="h-8 rounded-full border border-border bg-transparent px-3 text-xs dark:bg-input/30"
+                    >
+                      <option value="">More coins</option>
+                      {coins.slice(9).map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              </div>
+            )}
+
             <Button variant="glow" size="xl" onClick={pay} disabled={busy || !methodEnabled}>
               {busy ? <Loader2 className="animate-spin" /> : method === "nowpayments" ? <ExternalLink /> : <Wallet />}
               {busy ? detail ?? "Preparing..." : billing.signedIn ? `Pay $${pack.usd} for ${pack.credits} credits` : "Connect wallet to continue"}
             </Button>
             <p className="text-xs text-muted-foreground">
               {method === "nowpayments"
-                ? "You'll be sent to NOWPayments to pay in the coin of your choice. Credits arrive once the payment is confirmed."
+                ? `You'll be sent to NOWPayments to pay${payCurrency ? ` in ${coins.find((c) => c.code === payCurrency)?.name ?? payCurrency.toUpperCase()}` : " in the coin of your choice"}. Credits arrive once the payment is confirmed on its network.`
                 : `Paid on Solana ${billing.methods.cluster === "devnet" ? "devnet (test network)" : "mainnet"}, verified on-chain by our server. SOL prices are locked for 15 minutes.`}{" "}
               Credits are for FunCoin Lab tools only and have no cash value. <Link href="/terms" className="underline underline-offset-4">Terms</Link>
             </p>

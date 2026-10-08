@@ -5,7 +5,7 @@ export type ImageAssetType = (typeof IMAGE_ASSET_TYPES)[number]
 export const MASCOT_POSES = ["happy", "sleepy", "angry", "celebrating"] as const
 export type MascotPose = (typeof MASCOT_POSES)[number]
 
-type Brand = { name: string; mascot: string; tagline: string; traits: string[]; logoConcept?: string; palette?: string[] }
+type Brand = { name: string; mascot: string; subject?: string; tagline: string; traits: string[]; logoConcept?: string; palette?: string[] }
 
 /** Size per asset type. gpt-image-2 accepts any WxH divisible by 16 with aspect between 1:3 and 3:1. */
 export const IMAGE_SIZE: Record<ImageAssetType, string> = {
@@ -23,7 +23,8 @@ const RULES =
 function describe(b: Brand) {
   const traits = b.traits.slice(0, 3).join(", ").toLowerCase() || "playful"
   const colors = b.palette?.length ? `Color palette: ${b.palette.slice(0, 4).join(", ")}.` : ""
-  return { subject: `an original cartoon mascot character inspired by the emoji ${b.mascot}, named ${b.name}, personality: ${traits}`, colors }
+  const what = b.subject?.trim() || b.name
+  return { subject: `an original cartoon mascot character based on ${what}, named ${b.name}, personality: ${traits}`, colors }
 }
 
 export function buildImagePrompt(type: ImageAssetType, b: Brand, extra: { pose?: string; scene?: string } = {}): string {
