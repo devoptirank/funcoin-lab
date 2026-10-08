@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input"
 import { OptionPill } from "@/components/shared/option-pill"
 import { useStore } from "@/components/providers/store-provider"
 import { setCurrentConcept } from "@/lib/store/current"
+import { newProject } from "@/lib/store/repo"
 import { postJSON } from "@/lib/client-api"
 import { namingLabel, personalityLabel, themeLabel } from "@/lib/generator/concept"
 import { cn } from "@/lib/utils"
@@ -66,6 +67,10 @@ export function CreateFlow() {
         setConcept(res.concept)
         setCurrentConcept(res.concept)
         repo.recordIdea(res.concept).catch(() => {})
+        // Every idea lands in the dashboard right away; "Save" / "Build website" later adds the site.
+        repo.saveProject(newProject(res.concept, null)).catch((e: unknown) => {
+          toast.error("Couldn't save this idea to your dashboard", { description: e instanceof Error ? e.message : undefined })
+        })
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Generation failed")
       } finally {

@@ -16,11 +16,11 @@ export default function IdeasPage() {
   const remove = useDeleteProject()
   return (
     <>
-      <PageHeader title="My Ideas" description="Every concept you've saved, with the recipe that made it." />
+      <PageHeader title="My Ideas" description="Every idea you generate, with the recipe that made it." />
       {loading ? (
         <Skeleton className="h-40 rounded-3xl" />
       ) : data.length === 0 ? (
-        <EmptyState mascot="brain" title="No saved ideas" description="Save a generated concept to keep it here." action={<ButtonLink href="/create" variant="glow" size="lg" className="px-4">Generate an idea</ButtonLink>} />
+        <EmptyState mascot="brain" title="No ideas yet" description="Generate an idea and it shows up here automatically." action={<ButtonLink href="/create" variant="glow" size="lg" className="px-4">Generate an idea</ButtonLink>} />
       ) : (
         <ul className="glass divide-y divide-border overflow-hidden rounded-3xl">
           {data.map((p) => {
