@@ -206,7 +206,7 @@ const privacy: LegalDoc = {
     {
       heading: "7. Sharing and no selling of data",
       paragraphs: [
-        "We do not sell your personal information, and we do not share it for third-party advertising. We share information only with service providers who help us run the Service (such as Supabase for storage, hosting providers and AI providers), when required by law, to protect rights and safety, or as part of a business transfer such as a merger, in which case this policy will continue to apply to your information.",
+        "We do not sell your personal information, and we do not share it for third-party advertising. We share information only with service providers who help us run the Service (such as Supabase for storage, hosting providers, AI providers and Google Analytics), when required by law, to protect rights and safety, or as part of a business transfer such as a merger, in which case this policy will continue to apply to your information.",
       ],
     },
     {
@@ -233,6 +233,7 @@ const privacy: LegalDoc = {
       bullets: [
         "Session cookie: an HttpOnly cookie that keeps your wallet signed in, shared between funcoinlab.com and app.funcoinlab.com. It is necessary for the app to work.",
         "Preferences: your theme choice (light or dark) and similar settings may be stored in a cookie or localStorage.",
+        "Analytics: we use Google Analytics to understand how visitors use the site (pages viewed, approximate location, device type). Google sets its own cookies for this. You can opt out with Google's browser add-on or by blocking these cookies.",
       ],
     },
     {
