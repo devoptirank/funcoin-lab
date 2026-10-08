@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import Script from "next/script"
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Providers } from "@/components/providers/providers"
 import { siteConfig } from "@/lib/site-config"
 import { OG_IMAGE } from "@/lib/seo"
@@ -63,6 +64,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-dvh antialiased">
         <Providers>{children}</Providers>
         <div aria-hidden className="grain" />
+        <SpeedInsights />
         {loadAnalytics && (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
