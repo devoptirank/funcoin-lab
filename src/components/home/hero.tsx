@@ -44,8 +44,8 @@ export function Hero() {
   return (
     <section ref={root} className="relative isolate overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute top-[-20%] right-[-10%] size-[46rem] rounded-full bg-[var(--violet)] blur-[160px] [opacity:var(--glow-opacity)]" />
-        <div className="absolute bottom-[-30%] left-[-15%] size-[30rem] rounded-full bg-[var(--lab)] blur-[170px] [opacity:calc(var(--glow-opacity)*0.3)]" />
+        <div className="absolute top-[-20%] right-[-10%] size-[46rem] rounded-full bg-[radial-gradient(closest-side,var(--violet),transparent)] [opacity:var(--glow-opacity)]" />
+        <div className="absolute bottom-[-30%] left-[-15%] size-[30rem] rounded-full bg-[radial-gradient(closest-side,var(--lab),transparent)] [opacity:calc(var(--glow-opacity)*0.3)]" />
       </div>
 
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 pt-10 pb-14 sm:px-6 lg:min-h-[calc(100dvh-4rem)] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-6 lg:pt-6 lg:pb-12">

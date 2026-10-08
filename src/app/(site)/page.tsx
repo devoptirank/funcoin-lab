@@ -104,7 +104,7 @@ export default function HomePage() {
 
       {/* Final call to action. */}
       <section className="relative isolate overflow-hidden px-4 py-16 sm:px-6 sm:py-28">
-        <div aria-hidden className="absolute bottom-[-40%] left-1/2 -z-10 size-[44rem] -translate-x-1/2 rounded-full bg-[var(--violet)] blur-[170px] [opacity:var(--glow-opacity)]" />
+        <div aria-hidden className="absolute bottom-[-40%] left-1/2 -z-10 size-[44rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,var(--violet),transparent)] [opacity:var(--glow-opacity)]" />
         <div className="mx-auto flex max-w-7xl flex-col gap-8">
           <h2 className="max-w-4xl font-heading text-[clamp(2.75rem,7vw,6rem)] leading-[0.95] font-extrabold tracking-[-0.045em]">
             Your next internet meme <span className="text-lab">starts here.</span>

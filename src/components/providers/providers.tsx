@@ -1,4 +1,5 @@
 "use client"
+import { useEffect } from "react"
 import { ThemeProvider } from "next-themes"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
@@ -7,6 +8,11 @@ import { SolanaProvider } from "./solana-provider"
 import { BillingProvider } from "@/components/billing/billing-provider"
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem("fcl:reloaded")
+    } catch {}
+  }, [])
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
       <SolanaProvider>

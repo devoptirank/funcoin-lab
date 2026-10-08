@@ -6,6 +6,8 @@ import bs58 from "bs58"
 import { toast } from "sonner"
 import type { LedgerEntry, Order } from "@/lib/billing/store"
 import { BuyCreditsDialog } from "./buy-credits-dialog"
+import { MobileWalletDialog } from "./mobile-wallet-dialog"
+import { WalletReadyState } from "@solana/wallet-adapter-base"
 import { appHref, isAppPath } from "@/lib/hosts"
 
 export type BillingMethods = { ready?: boolean; wallet: boolean; nowpayments: boolean; cluster: string }
@@ -55,6 +57,16 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
   const resumeBuy = useRef(false)
   const goToApp = useRef(false)
   const wantConnect = useRef(false)
+  const [mobileWallets, setMobileWallets] = useState(false)
+
+  // On a phone browser with no wallet available, the standard picker is empty; offer the wallet apps'
+  // in-app browsers instead.
+  const showPicker = useCallback(() => {
+    const hasWallet = wallet.wallets.some((w) => w.readyState === WalletReadyState.Installed || w.readyState === WalletReadyState.Loadable)
+    const phone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    if (!hasWallet && phone) setMobileWallets(true)
+    else setVisible(true)
+  }, [wallet.wallets, setVisible])
 
   const setSnapshot = useCallback((s: Partial<BillingState>) => setState((prev) => ({ ...prev, ...s })), [])
 
@@ -136,11 +148,11 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
     if (opts?.goToApp) goToApp.current = true
     if (!wallet.connected) {
       wantSignIn.current = true
-      setVisible(true)
+      showPicker()
       return false
     }
     return signIn()
-  }, [state.signedIn, wallet.connected, setVisible, signIn])
+  }, [state.signedIn, wallet.connected, showPicker, signIn])
 
   const signOut = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" })
@@ -155,14 +167,15 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
     if (wallet.connected) return setBuy({ open: true })
     wantConnect.current = true
     // An installed wallet that was used here before reconnects without the picker.
-    if (wallet.wallet) void wallet.connect().catch(() => setVisible(true))
-    else setVisible(true)
-  }, [wallet, setVisible])
+    if (wallet.wallet) void wallet.connect().catch(() => showPicker())
+    else showPicker()
+  }, [wallet, showPicker])
 
   return (
     <Ctx.Provider value={{ ...state, loading, signingIn, refresh, signIn, signOut, ensureSignedIn, openBuy, connectForPayment, setSnapshot }}>
       {children}
       <BuyCreditsDialog open={buy.open} reason={buy.reason} onOpenChange={(open) => setBuy((b) => ({ ...b, open }))} />
+      <MobileWalletDialog open={mobileWallets} onOpenChange={setMobileWallets} />
     </Ctx.Provider>
   )
 }

@@ -91,7 +91,7 @@ export function PricingTeaser() {
 export function TokenTeaser() {
   return (
     <section aria-labelledby="token-title" className="relative isolate overflow-hidden px-4 py-14 sm:px-6 sm:py-24">
-      <div aria-hidden className="absolute top-1/2 left-1/2 -z-10 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--lab)] opacity-10 blur-[140px]" />
+      <div aria-hidden className="absolute top-1/2 left-1/2 -z-10 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,var(--lab),transparent)] opacity-10" />
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">
         <span className="grid size-14 place-items-center rounded-2xl bg-foreground/[0.06]">
           <Wallet className="size-6 text-lab" aria-hidden />

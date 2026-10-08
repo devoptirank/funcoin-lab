@@ -19,14 +19,22 @@ function Row({ items, speed, onPick }: { items: DiscoverProject[]; speed: number
 
   useEffect(() => {
     const el = ref.current
-    if (!el || reduce) return
+    // Touch screens: no drift. Tapping a moving scroller only stops it (the tap never becomes a click),
+    // so on phones the rows are plain swipeable lists.
+    if (!el || reduce || window.matchMedia("(hover: none)").matches) return
     if (speed < 0) el.scrollLeft = el.scrollWidth / 2
     let raf = 0
     let last = performance.now()
+    // Only animate while the row is on screen.
+    let visible = false
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+    })
+    io.observe(el)
     const tick = (now: number) => {
       const dt = Math.min(now - last, 64)
       last = now
-      if (!paused.current) {
+      if (visible && !paused.current) {
         el.scrollLeft += (speed * dt) / 16
         const half = el.scrollWidth / 2
         if (el.scrollLeft >= half) el.scrollLeft -= half
@@ -35,7 +43,10 @@ function Row({ items, speed, onPick }: { items: DiscoverProject[]; speed: number
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+    return () => {
+      cancelAnimationFrame(raf)
+      io.disconnect()
+    }
   }, [speed, reduce])
 
   // Rendered twice so the loop is seamless; the copy is hidden from assistive tech.
@@ -54,11 +65,11 @@ function Row({ items, speed, onPick }: { items: DiscoverProject[]; speed: number
       onTouchEnd={() => {
         paused.current = false
       }}
-      className="no-scrollbar overflow-x-auto"
+      className="no-scrollbar overflow-x-auto [@media(hover:none)]:snap-x [@media(hover:none)]:snap-mandatory overscroll-x-contain [touch-action:pan-x_pan-y]"
     >
       <ul className="flex w-max gap-3 px-2 py-2 sm:gap-4">
         {[...items, ...items].map((p, i) => (
-          <li key={`${p.slug}-${i}`} aria-hidden={i >= items.length || undefined}>
+          <li key={`${p.slug}-${i}`} aria-hidden={i >= items.length || undefined} className="snap-start">
             <button
               type="button"
               tabIndex={i >= items.length ? -1 : 0}

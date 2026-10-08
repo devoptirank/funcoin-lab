@@ -54,7 +54,7 @@ export function CoinForge({ topic }: { topic: string }) {
         py.set(0)
       }}
     >
-      <div aria-hidden className="absolute inset-[12%] rounded-full bg-[var(--lab)] opacity-20 blur-[90px]" />
+      <div aria-hidden className="absolute inset-[12%] rounded-full bg-[radial-gradient(closest-side,var(--lab),transparent)] opacity-20" />
       <div aria-hidden className="absolute bottom-[6%] h-[8%] w-[56%] rounded-[50%] bg-black/50 blur-xl" />
       <motion.div style={{ rotateX: rotX, rotateY: rotY }} className="relative size-full [transform-style:preserve-3d]">
         <motion.div
