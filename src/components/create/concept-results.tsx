@@ -24,6 +24,9 @@ import { useStore } from "@/components/providers/store-provider"
 import { newProject } from "@/lib/store/repo"
 import { conceptToSite } from "@/lib/generator/site"
 import { cn } from "@/lib/utils"
+import { imageBrand, useAssets, useGenerateAsset, NeedsActionError } from "@/lib/assets/store"
+import { useImagesEnabled } from "@/lib/assets/status"
+import { IMAGE_COSTS } from "@/lib/billing/plans"
 
 const NAV = [
   { id: "brand", label: "Brand" },
@@ -178,9 +181,7 @@ export function ConceptResults({
 
           <div className="grid gap-10 p-6 sm:p-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
             <div className="flex flex-col gap-8">
-              <SpecimenJar>
-                <MascotLogo name={concept.name} ticker={concept.ticker} mascot={concept.mascot} colors={concept.palette.map((p) => p.hex)} animated />
-              </SpecimenJar>
+              <JarLogo concept={concept} />
               <div>
                 <TestTubes palette={concept.palette} size="sm" />
                 <div className="mt-4 flex flex-wrap justify-center gap-1.5">
@@ -193,7 +194,12 @@ export function ConceptResults({
 
             <div className="flex min-w-0 flex-col gap-6">
               <div>
-                <h2 id="report-title" className="font-heading text-[clamp(3.25rem,8vw,6.5rem)] leading-[0.9] font-black tracking-[-0.05em] break-words text-lab">
+                <h2
+                  id="report-title"
+                  className="font-heading leading-[0.9] font-black tracking-[-0.05em] whitespace-nowrap text-lab"
+                  // Scale with ticker length so it never breaks mid-word ("$MOONDO / G").
+                  style={{ fontSize: `clamp(2.25rem, ${(80 / (concept.ticker.length + 1)).toFixed(2)}vw, ${Math.min(6.5, 44 / (concept.ticker.length + 1)).toFixed(2)}rem)` }}
+                >
                   ${concept.ticker}
                 </h2>
                 <p className="mt-3 text-lg text-muted-foreground">
@@ -360,6 +366,60 @@ function IdeaList({ title, items }: { title: string; items: string[] }) {
           </li>
         ))}
       </ul>
+    </div>
+  )
+}
+
+/**
+ * The jar shows the quick SVG badge until the user makes a real AI coin logo for this idea; then the
+ * newest AI logo takes its place. A short call to action under the jar starts it.
+ */
+function JarLogo({ concept }: { concept: MemeConcept }) {
+  const logos = useAssets(concept.id).filter((a) => a.type === "logo")
+  const imagesEnabled = useImagesEnabled()
+  const generate = useGenerateAsset()
+  const [busy, setBusy] = useState(false)
+  const latest = logos[0]
+
+  const make = async () => {
+    setBusy(true)
+    try {
+      await generate(concept.id, "logo", imageBrand(concept))
+      toast.success("Your AI coin logo is ready")
+    } catch (e) {
+      if (!(e instanceof NeedsActionError)) toast.error(e instanceof Error ? e.message : "Couldn't generate the logo")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <SpecimenJar>
+        {latest ? (
+          // eslint-disable-next-line @next/next/no-img-element -- generated image from storage
+          <img src={latest.url} alt={`${concept.name} AI coin logo`} className="aspect-square w-full rounded-[1.75rem] object-cover" />
+        ) : (
+          <MascotLogo name={concept.name} ticker={concept.ticker} mascot={concept.mascot} colors={concept.palette.map((p) => p.hex)} animated />
+        )}
+      </SpecimenJar>
+      {imagesEnabled && (
+        <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl border border-dashed border-lab-fill/40 px-4 py-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            {latest ? (
+              <>Want another take? Mint a new version of the ${concept.ticker} coin.</>
+            ) : (
+              <>
+                This is a quick sketch. <span className="font-semibold text-foreground">Turn it into a real 3D coin logo</span> for ${concept.ticker} with AI.
+              </>
+            )}
+          </p>
+          <Button variant="glow" size="lg" className="w-full px-4" onClick={make} disabled={busy}>
+            {busy ? <Loader2 className="animate-spin" /> : <Palette />}
+            {latest ? "New version" : "Generate real logo"} <span className="opacity-70">{IMAGE_COSTS.logo} credits</span>
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
