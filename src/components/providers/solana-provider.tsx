@@ -12,7 +12,12 @@ export const SOLANA_CLUSTER = (process.env.NEXT_PUBLIC_SOLANA_CLUSTER || "mainne
  * register themselves through the Wallet Standard and appear automatically.
  */
 export function SolanaProvider({ children }: { children: React.ReactNode }) {
-  const endpoint = useMemo(() => process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl(SOLANA_CLUSTER), [])
+  // The browser talks to our own relay (/api/solana/rpc), which forwards to the server's private RPC
+  // URL. Public RPC endpoints reject browser traffic, and an RPC API key must never ship to clients.
+  const endpoint = useMemo(
+    () => (typeof window === "undefined" ? clusterApiUrl(SOLANA_CLUSTER) : `${window.location.origin}/api/solana/rpc`),
+    [],
+  )
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={[]} autoConnect>
