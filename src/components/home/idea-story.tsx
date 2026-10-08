@@ -129,7 +129,9 @@ export function IdeaStory({ concept, site, topic }: { concept: MemeConcept; site
 
           {/* 6. The website, live */}
           <article className={`${panelBase} justify-start overflow-hidden p-3 sm:p-3`}>
-            <div className="h-full min-h-[16rem] overflow-hidden rounded-[1.5rem] lg:min-h-[22rem] border border-border">
+            {/* The site renders at 2x and is scaled to 50%. A transform doesn't shrink the layout box, so the
+                window needs a real height at every size or phones show the full-size height as blank space. */}
+            <div className="h-[26rem] overflow-hidden rounded-[1.5rem] border border-border sm:h-[32rem] lg:h-full lg:min-h-[22rem]">
               <div className="pointer-events-none h-[200%] w-[200%] origin-top-left scale-50">
                 <MemeSite config={site} embedded />
               </div>
