@@ -58,8 +58,8 @@ export default function DashboardOverview() {
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">
           {projects.data.slice(0, 6).map((p) => (
-            <li key={p.id}>
-              <Link href={`/create?project=${p.id}`} className="glass card-hover flex items-center gap-4 rounded-3xl p-4">
+            <li key={p.id} className="min-w-0">
+              <Link href={`/create?project=${p.id}`} className="glass card-hover flex min-w-0 items-center gap-4 rounded-3xl p-4">
                 <span
                   className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-2xl"
                   style={{ background: `linear-gradient(135deg, ${p.concept.palette[0]?.hex}, ${p.concept.palette[1]?.hex})` }}

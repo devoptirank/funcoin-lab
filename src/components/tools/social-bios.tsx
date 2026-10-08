@@ -55,11 +55,11 @@ function SocialBiosInner({ concept }: { concept: MemeConcept }) {
           return (
             <article key={p.id} className={cn("glass flex flex-col gap-3 rounded-3xl p-5", loading && "animate-pulse")}>
               <header className="flex items-center justify-between gap-2">
-                <h3 className="flex items-center gap-2 font-semibold">
+                <h3 className="flex min-w-0 items-center gap-2 font-semibold">
                   <span className="grid size-8 place-items-center rounded-full bg-foreground/5" aria-hidden>
                     <p.icon className="size-4" />
                   </span>
-                  {p.label}
+                  <span className="truncate">{p.label}</span>
                 </h3>
                 <CopyButton text={text} label="Copy" />
               </header>

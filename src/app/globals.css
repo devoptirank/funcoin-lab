@@ -156,10 +156,14 @@
   html {
     @apply font-sans;
     scroll-behavior: smooth;
+    overflow-x: clip;
   }
   body {
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
+    /* Decorative glows sit partly off-screen; never let them make the page scroll sideways.
+       clip (not hidden) keeps position: sticky working. */
+    overflow-x: clip;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display), var(--font-geist-sans), system-ui, sans-serif;

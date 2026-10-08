@@ -193,12 +193,12 @@ export function ConceptResults({
             </div>
 
             <div className="flex min-w-0 flex-col gap-6">
-              <div>
+              <div className="@container">
                 <h2
                   id="report-title"
                   className="font-heading leading-[0.9] font-black tracking-[-0.05em] whitespace-nowrap text-lab"
                   // Scale with ticker length so it never breaks mid-word ("$MOONDO / G").
-                  style={{ fontSize: `clamp(2.25rem, ${(80 / (concept.ticker.length + 1)).toFixed(2)}vw, ${Math.min(6.5, 44 / (concept.ticker.length + 1)).toFixed(2)}rem)` }}
+                  style={{ fontSize: `clamp(2rem, ${(150 / (concept.ticker.length + 1)).toFixed(1)}cqi, ${Math.min(6.5, 44 / (concept.ticker.length + 1)).toFixed(2)}rem)` }}
                 >
                   ${concept.ticker}
                 </h2>
@@ -361,8 +361,8 @@ function IdeaList({ title, items }: { title: string; items: string[] }) {
       <ul className="flex flex-col gap-2">
         {items.map((item) => (
           <li key={item} className="flex items-start justify-between gap-3 rounded-2xl bg-foreground/[0.03] p-3 text-sm">
-            <span>{item}</span>
-            <CopyButton text={item} size="icon-sm" variant="ghost" />
+            <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{item}</span>
+            <CopyButton text={item} size="icon-sm" variant="ghost" className="shrink-0" />
           </li>
         ))}
       </ul>

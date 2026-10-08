@@ -37,8 +37,11 @@ export function Navbar({ variant = "site" }: { variant?: "site" | "app" }) {
             ))}
           </nav>
         )}
-        <div className="ml-auto flex items-center gap-1.5">
-          <ThemeToggle />
+        <div className="ml-auto flex min-w-0 items-center gap-1.5">
+          {/* On small phones the marketing header keeps the toggle in the menu so everything fits. */}
+          <div className={variant === "site" ? "hidden sm:block" : undefined}>
+            <ThemeToggle />
+          </div>
           <WalletButton variant={variant} />
           {variant === "app" && (
             <ButtonLink href="/create" variant="glow" size="lg" className="hidden px-4 sm:inline-flex">
@@ -62,6 +65,10 @@ export function Navbar({ variant = "site" }: { variant?: "site" | "app" }) {
                       {item.label}
                     </Link>
                   ))}
+                  <div className="mt-4 flex items-center justify-between rounded-xl px-3 py-2 sm:hidden">
+                    <span className="text-base font-semibold">Theme</span>
+                    <ThemeToggle />
+                  </div>
                   <div className="mt-6" onClick={() => setOpen(false)}>
                     <WalletButton variant="site" block />
                   </div>

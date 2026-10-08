@@ -6,9 +6,10 @@ import type { MemeCardData } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { CopyButton } from "./copy-button"
 import { cn } from "@/lib/utils"
+import { IMAGE_COSTS } from "@/lib/billing/plans"
 import { MascotArt } from "./mascot-art"
 
-const impact = "font-heading font-black uppercase tracking-tight text-white [text-shadow:0_2px_0_#000,0_-2px_0_#000,2px_0_0_#000,-2px_0_0_#000,0_4px_14px_rgba(0,0,0,.5)]"
+const impact = "min-w-0 [overflow-wrap:anywhere] font-heading font-black uppercase tracking-tight text-white [text-shadow:0_2px_0_#000,0_-2px_0_#000,2px_0_0_#000,-2px_0_0_#000,0_4px_14px_rgba(0,0,0,.5)]"
 
 export function MemeImage(props: { meme: MemeCardData; name: string; className?: string }) {
   return props.meme.imageRef ? <AiMemeImage {...props} /> : <MascotMemeImage {...props} />
@@ -26,8 +27,8 @@ function AiMemeImage({ meme, className }: { meme: MemeCardData; name: string; cl
         {url && <img src={url} alt="" className="absolute inset-0 size-full object-cover" />}
         {topBottom && (
           <div className="absolute inset-0 flex flex-col items-center justify-between px-4 pt-4 pb-8 text-center">
-            <p className={cn(impact, "text-xl leading-tight sm:text-2xl")}>{meme.topText}</p>
-            <p className={cn(impact, "text-xl leading-tight sm:text-2xl")}>{meme.bottomText}</p>
+            <p className={cn(impact, "leading-tight", (meme.topText ?? "").length > 14 ? "text-base sm:text-lg" : "text-xl sm:text-2xl")}>{meme.topText}</p>
+            <p className={cn(impact, "leading-tight", (meme.bottomText ?? "").length > 14 ? "text-base sm:text-lg" : "text-xl sm:text-2xl")}>{meme.bottomText}</p>
           </div>
         )}
       </div>
@@ -70,18 +71,21 @@ function MascotMemeImage({ meme, name, className }: { meme: MemeCardData; name: 
         <div className="grid h-full grid-rows-2" style={{ background: bg }}>
           <div className="flex items-center gap-3 border-b-4 border-black/70 bg-black/25 px-4">
             <MascotArt value={mascotSrc} className="h-[70%] w-auto opacity-80 grayscale" />
-            <p className={cn(impact, "text-lg leading-tight")}>Everyone else</p>
+            <p className={cn(impact, "flex-1 text-lg leading-tight")}>Everyone else</p>
           </div>
-          <div className="flex items-center gap-3 px-4">
+          <div className="flex items-center gap-3 px-4 @container">
             <MascotArt value={mascotSrc} className="h-[80%] w-auto -rotate-6" />
-            <p className={cn(impact, "text-lg leading-tight")}>{name}</p>
+            {/* Sized to the card so long one-word names stay on one line instead of breaking mid-word. */}
+            <p className={cn(impact, "flex-1 leading-tight whitespace-nowrap")} style={{ fontSize: `min(1.125rem, ${(72 / Math.max(name.length, 6)).toFixed(1)}cqi)` }}>
+              {name}
+            </p>
           </div>
         </div>
       ) : (
         <div className="flex h-full flex-col items-center justify-between px-4 pt-4 pb-8 text-center" style={{ background: bg }}>
-          <p className={cn(impact, "text-xl leading-tight sm:text-2xl")}>{meme.topText}</p>
-          <MascotArt value={mascotSrc} className="h-[48%] w-auto drop-shadow-[0_12px_18px_rgba(0,0,0,.35)]" />
-          <p className={cn(impact, "text-xl leading-tight sm:text-2xl")}>{meme.bottomText}</p>
+          <p className={cn(impact, "leading-tight", (meme.topText ?? "").length > 14 ? "text-base sm:text-lg" : "text-xl sm:text-2xl")}>{meme.topText}</p>
+          <MascotArt value={mascotSrc} className="h-[40%] w-auto drop-shadow-[0_12px_18px_rgba(0,0,0,.35)]" />
+          <p className={cn(impact, "leading-tight", (meme.bottomText ?? "").length > 14 ? "text-base sm:text-lg" : "text-xl sm:text-2xl")}>{meme.bottomText}</p>
         </div>
       )}
       <span className="absolute right-2 bottom-2 rounded-full bg-black/40 px-2 py-0.5 text-[10px] text-white/80 backdrop-blur">FunCoin Lab</span>
@@ -113,20 +117,22 @@ export function MemeCard({
     >
       <MemeImage meme={meme} name={name} />
       <p className="px-1 text-sm leading-snug">{meme.caption}</p>
-      <div className="mt-auto flex gap-2 px-1 pb-1">
-        <CopyButton text={meme.caption} label="Copy caption" />
+      <div className="mt-auto flex flex-col gap-1.5 px-1 pb-1">
         {onAiImage && (
-          <Button size="sm" variant="ghost" onClick={onAiImage} disabled={aiLoading}>
+          <Button size="sm" variant="glass" className="w-full" onClick={onAiImage} disabled={aiLoading}>
             {aiLoading ? <Loader2 className="animate-spin" /> : <ImagePlus />}
-            AI image <span className="text-xs opacity-60">· 4</span>
+            {meme.imageRef ? "New AI image" : "Real AI image"} <span className="text-xs opacity-60">{IMAGE_COSTS.meme} credits</span>
           </Button>
         )}
-        {onVary && (
-          <Button size="sm" variant="ghost" onClick={onVary} disabled={varying}>
-            <RefreshCw className={cn(varying && "animate-spin")} />
-            Variation
-          </Button>
-        )}
+        <div className="flex flex-wrap gap-1.5">
+          <CopyButton text={meme.caption} label="Copy" />
+          {onVary && (
+            <Button size="sm" variant="ghost" onClick={onVary} disabled={varying}>
+              <RefreshCw className={cn(varying && "animate-spin")} />
+              Variation
+            </Button>
+          )}
+        </div>
       </div>
     </motion.article>
   )

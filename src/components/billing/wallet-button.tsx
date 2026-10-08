@@ -34,7 +34,7 @@ export function WalletButton({ variant = "app", block = false }: { variant?: "si
     if (billing.signedIn) {
       return (
         <Button variant="glow" size="lg" onClick={openApp} className={cn("px-4", block && "w-full")}>
-          <span className="font-mono text-xs opacity-80">{shortAddress(billing.address!)}</span> Open app <ArrowRight />
+          <span className="hidden font-mono text-xs opacity-80 sm:inline">{shortAddress(billing.address!)}</span> Open app <ArrowRight />
         </Button>
       )
     }

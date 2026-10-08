@@ -37,7 +37,7 @@ export function buildImagePrompt(type: ImageAssetType, b: Brand, extra: { pose?:
     case "mascot":
       return `Full-body character illustration of ${subject}, pose and expression: ${extra.pose ?? "happy"}. Expressive 2D cartoon style with thick outlines and soft shading, character centered with breathing room, plain light background with a subtle soft shadow under the feet. ${colors} ${RULES}`
     case "meme":
-      return `Funny meme-style scene starring ${subject}. Situation: ${extra.scene ?? b.tagline}. Exaggerated reaction-image expression, bold cartoon style, simple readable composition with empty space at the top and bottom for captions. ${colors} ${RULES}`
+      return `High-end 3D animated film still starring ${subject}, as a funny reaction meme. Situation: ${extra.scene ?? b.tagline}. Exaggerated, readable facial expression and body language, the character acting out the moment in a detailed, believable environment that fits the joke. Cinematic lighting with a warm key light and colored rim light, soft depth of field, rich textured materials, vivid but harmonious colors, polished high-end animation render. An original character design that does not resemble any famous brand mascot (no white cartoon gloves). Character clearly in frame, with calm areas at the top and bottom where caption text can sit. ${colors} ${RULES}`
     case "banner":
       return `Wide social media header banner featuring ${subject} on the right third, with playful abstract shapes and sparkles across a smooth gradient background. Leave the left side calm and uncluttered. ${colors} ${RULES}`
     case "site-hero":

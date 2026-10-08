@@ -38,7 +38,7 @@ export default function BrandsPage() {
               <div className="flex h-3 overflow-hidden rounded-full" aria-hidden>
                 {c.palette.map((p) => <span key={p.hex} className="flex-1" style={{ background: p.hex }} />)}
               </div>
-              <div className="mt-auto flex gap-2">
+              <div className="mt-auto flex flex-wrap gap-2">
                 <ButtonLink href={`/create?project=${id}`} variant="glass" size="sm">View brand</ButtonLink>
                 <ButtonLink href={`/editor/${id}`} variant="glass" size="sm"><LayoutTemplate /> Website</ButtonLink>
                 <Button variant="ghost" size="icon-sm" className="ml-auto" aria-label={`Delete ${c.name}`} onClick={() => remove(id, c.name)}>

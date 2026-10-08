@@ -16,7 +16,8 @@ export const maxDuration = 150
 
 const DAY = 24 * 60 * 60 * 1000
 const GLOBAL_DAILY = Number(process.env.IMAGE_GLOBAL_DAILY_LIMIT ?? 300)
-const QUALITY = (["low", "medium", "high", "auto"] as const).find((q) => q === process.env.IMAGE_QUALITY) ?? "medium"
+// High by default: credit prices cover it, and these are the images people post. IMAGE_QUALITY overrides.
+const QUALITY = (["low", "medium", "high", "auto"] as const).find((q) => q === process.env.IMAGE_QUALITY) ?? "high"
 
 const schema = z.object({
   conceptId: z.string().regex(/^[A-Za-z0-9_-]{4,64}$/),
