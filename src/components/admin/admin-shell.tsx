@@ -13,16 +13,16 @@ import { adminHref } from "./admin-href"
 /** Sidebar entries. `ready: false` sections arrive in later milestones and render as disabled. */
 const NAV = [
   { path: "/", label: "Overview", icon: LayoutDashboard, ready: true },
-  { path: "/users", label: "Users", icon: Users, ready: false },
-  { path: "/billing", label: "Billing", icon: Coins, ready: false },
-  { path: "/content", label: "Content", icon: ImageIcon, ready: false },
-  { path: "/safety", label: "Safety", icon: ShieldAlert, ready: false },
-  { path: "/settings", label: "Settings", icon: Settings, ready: false },
-  { path: "/domains", label: "Domains", icon: Globe, ready: false },
-  { path: "/waitlist", label: "Waitlist", icon: ListChecks, ready: false },
-  { path: "/team", label: "Admins", icon: UsersRound, ready: false },
-  { path: "/system", label: "System", icon: Activity, ready: false },
-  { path: "/audit", label: "Audit log", icon: FileClock, ready: false },
+  { path: "/users", label: "Users", icon: Users, ready: true },
+  { path: "/billing", label: "Billing", icon: Coins, ready: true },
+  { path: "/content", label: "Content", icon: ImageIcon, ready: true },
+  { path: "/safety", label: "Safety", icon: ShieldAlert, ready: true },
+  { path: "/settings", label: "Settings", icon: Settings, ready: true },
+  { path: "/domains", label: "Domains", icon: Globe, ready: true },
+  { path: "/waitlist", label: "Waitlist", icon: ListChecks, ready: true },
+  { path: "/team", label: "Admins", icon: UsersRound, ready: true },
+  { path: "/system", label: "System", icon: Activity, ready: true },
+  { path: "/audit", label: "Audit log", icon: FileClock, ready: true },
 ]
 
 export function AdminShell({ base, address, role, env, cluster, children }: { base: string; address: string; role: string; env: string; cluster: string; children: React.ReactNode }) {

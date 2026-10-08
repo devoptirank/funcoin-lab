@@ -4,11 +4,14 @@ import { z } from "zod"
 import { getSession, type Session } from "@/lib/auth/session"
 import { clientKey, rateLimit } from "@/lib/rate-limit"
 import { DataUnavailableError } from "./server"
+import { blockedAccountResponse } from "@/lib/admin/account-status"
 
 /** Runs a /api/me handler for the signed-in wallet: auth, rate limit and error mapping. */
 export async function withAccount(req: Request, run: (session: Session) => Promise<unknown>) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: "Connect your wallet first.", code: "auth" }, { status: 401 })
+  const blocked = await blockedAccountResponse(session.accountId)
+  if (blocked) return blocked
   if (!rateLimit(clientKey(req, `me:${session.accountId}`), 120, 60_000).ok) {
     return NextResponse.json({ error: "Too many requests. Wait a moment." }, { status: 429 })
   }

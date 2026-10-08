@@ -6,6 +6,7 @@ import { IMAGE_ASSET_TYPES, IMAGE_SIZE, MASCOT_POSES, buildImagePrompt } from "@
 import { checkTopic, sanitizeText } from "@/lib/safety"
 import { clientKey, rateLimit } from "@/lib/rate-limit"
 import { getSession } from "@/lib/auth/session"
+import { blockedAccountResponse } from "@/lib/admin/account-status"
 import { getBillingStore } from "@/lib/billing/store"
 import { billingUnavailable } from "@/lib/billing/server"
 import { IMAGE_COSTS } from "@/lib/billing/plans"
@@ -47,6 +48,8 @@ export async function POST(req: Request) {
   if (offline) return offline
   const session = await getSession()
   if (!session) return NextResponse.json({ error: "Connect your wallet to generate AI images.", code: "auth" }, { status: 401 })
+  const blocked = await blockedAccountResponse(session.accountId)
+  if (blocked) return blocked
 
   // Abuse guards on top of credits: a short burst limit and a site-wide daily cap.
   const burst = rateLimit(clientKey(req, "image-burst"), 4, 60_000)

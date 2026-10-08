@@ -1,6 +1,7 @@
 import "server-only"
 import { NextResponse } from "next/server"
 import { getSession, type Session } from "@/lib/auth/session"
+import { blockedAccountResponse } from "@/lib/admin/account-status"
 import { billingAvailable, getBillingStore } from "./store"
 import { walletPaymentsEnabled, solanaConfig } from "./solana"
 import { nowPaymentsEnabled } from "./nowpayments"
@@ -8,7 +9,7 @@ import { nowPaymentsEnabled } from "./nowpayments"
 export async function requireSession(): Promise<Session | NextResponse> {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: "Connect and sign in with your wallet first." }, { status: 401 })
-  return session
+  return (await blockedAccountResponse(session.accountId)) ?? session
 }
 
 export function billingMethods() {

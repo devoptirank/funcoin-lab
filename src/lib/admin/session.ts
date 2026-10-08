@@ -20,7 +20,7 @@ export const ADMIN_SESSION_SECONDS = 8 * 60 * 60
 const NONCE_SECONDS = 5 * 60
 
 let devKey: Uint8Array | null = null
-function adminKey(): Uint8Array {
+export function adminKey(): Uint8Array {
   const secret = process.env.ADMIN_SESSION_SECRET?.trim()
   if (secret && secret.length >= 32) return new TextEncoder().encode(secret)
   if (process.env.NODE_ENV === "production") throw new Error("ADMIN_SESSION_SECRET (32+ chars) is required in production")
