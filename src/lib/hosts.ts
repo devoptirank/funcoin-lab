@@ -53,3 +53,14 @@ export function sharedCookieDomain(requestHost: string | null | undefined): stri
 export function requestHost(req: Request): string {
   return (req.headers.get("x-forwarded-host") || req.headers.get("host") || new URL(req.url).host).split(",")[0].trim().toLowerCase()
 }
+
+/**
+ * Absolute app URL for app paths when the hosts are split, otherwise unchanged. Next.js treats it as
+ * an external link on the marketing host (full page load, no cross-origin prefetch) and as a normal
+ * client-side link on the app host itself.
+ */
+export function toAppUrl(href: string): string {
+  if (!SPLIT_HOSTS || !href.startsWith("/")) return href
+  const path = href.split(/[?#]/)[0]
+  return isAppPath(path) ? `${APP_URL}${href}` : href
+}

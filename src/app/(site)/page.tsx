@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { ButtonLink } from "@/components/shared/button-link"
 import { Hero } from "@/components/home/hero"
@@ -6,6 +7,49 @@ import { IdeaStory } from "@/components/home/idea-story"
 import { KitBento } from "@/components/home/kit-bento"
 import { generateConceptLocal } from "@/lib/generator/concept"
 import { conceptToSite } from "@/lib/generator/site"
+import { siteConfig } from "@/lib/site-config"
+import { seoPages } from "@/content/seo-pages"
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: { url: "/", title: `${siteConfig.name}: ${siteConfig.tagline}`, description: siteConfig.description },
+}
+
+// Organization + WebSite + the app itself, so search engines understand the brand and the product.
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${siteConfig.url}/#organization`,
+    name: siteConfig.name,
+    url: siteConfig.url,
+    logo: `${siteConfig.url}/icon.png`,
+    email: siteConfig.contactEmail,
+    sameAs: Object.values(siteConfig.social).filter(Boolean),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${siteConfig.url}/#website`,
+    name: siteConfig.name,
+    url: siteConfig.url,
+    description: siteConfig.description,
+    publisher: { "@id": `${siteConfig.url}/#organization` },
+    inLanguage: "en",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: siteConfig.name,
+    url: siteConfig.appUrl,
+    applicationCategory: "DesignApplication",
+    operatingSystem: "Web",
+    description: siteConfig.description,
+    publisher: { "@id": `${siteConfig.url}/#organization` },
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free to start. AI image credits are optional." },
+    featureList: ["Meme coin name and ticker ideas", ".fun domain ideas", "Mascot logo generator", "Meme generator", "Social bios and posts", "Landing page builder"],
+  },
+]
 
 const STORY_TOPIC = "sleepy cat"
 
@@ -15,6 +59,7 @@ export default function HomePage() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <Hero />
 
       <section aria-label="Example concepts" className="border-y border-border py-6">
@@ -25,6 +70,24 @@ export default function HomePage() {
       <IdeaStory concept={concept} site={site} topic={STORY_TOPIC} />
 
       <KitBento concept={concept} />
+
+      {/* Guides: every landing page, linked from the home page. */}
+      <section aria-labelledby="guides-title" className="mx-auto max-w-7xl px-4 pt-24 sm:px-6">
+        <h2 id="guides-title" className="font-heading text-3xl font-extrabold sm:text-4xl">
+          Guides and generators
+        </h2>
+        <ul className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+          {seoPages.map((p) => (
+            <li key={p.slug} className="border-t border-border pt-4">
+              <Link href={`/${p.slug}`} className="group block">
+                <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{p.eyebrow}</span>
+                <span className="mt-1 block font-semibold group-hover:text-lab">{p.h1}</span>
+                <span className="mt-1 line-clamp-2 block text-sm text-muted-foreground">{p.description}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* Principles: a plain statement, no card. */}
       <section aria-labelledby="principles-title" className="mx-auto max-w-7xl px-4 py-24 sm:px-6">

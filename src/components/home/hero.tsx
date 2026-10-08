@@ -1,4 +1,5 @@
 "use client"
+import { toAppUrl } from "@/lib/hosts"
 import { useEffect, useRef, useState } from "react"
 import dynamic from "next/dynamic"
 import Image from "next/image"
@@ -88,7 +89,7 @@ export function Hero() {
   const go = (value: string) => {
     const q = new URLSearchParams({ auto: "1" })
     if (value.trim()) q.set("topic", value.trim().slice(0, 80))
-    const href = `/create?${q.toString()}`
+    const href = toAppUrl(`/create?${q.toString()}`)
     if (!sceneReady) return router.push(href)
     setLabTopic(value)
     boilOver()

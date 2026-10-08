@@ -131,7 +131,7 @@ export function IdeaStory({ concept, site, topic }: { concept: MemeConcept; site
           <article className={`${panelBase} justify-start overflow-hidden p-3 sm:p-3`}>
             <div className="h-full min-h-[22rem] overflow-hidden rounded-[1.5rem] border border-border">
               <div className="pointer-events-none h-[200%] w-[200%] origin-top-left scale-50">
-                <MemeSite config={site} />
+                <MemeSite config={site} embedded />
               </div>
             </div>
           </article>

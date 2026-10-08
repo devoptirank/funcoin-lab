@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { toAppUrl } from "@/lib/hosts"
 import { ArrowUpRight } from "lucide-react"
 import type { MemeConcept } from "@/lib/types"
 import { MemeImage } from "@/components/shared/meme-card"
@@ -10,7 +11,7 @@ import { cn } from "@/lib/utils"
 function Cell({ href, title, text, className, children }: { href: string; title: string; text: string; className?: string; children?: React.ReactNode }) {
   return (
     <Link
-      href={href}
+      href={toAppUrl(href)}
       className={cn(
         "group relative flex flex-col justify-between gap-6 overflow-hidden rounded-[2rem] border border-border p-6 transition-transform duration-300 hover:-translate-y-1 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none sm:p-7",
         className,

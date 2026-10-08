@@ -289,7 +289,7 @@ export function ConceptResults({
       >
         <BrowserFrame url={concept.domain}>
           <div className="h-[620px] overflow-y-auto overscroll-contain">
-            <MemeSite config={site} />
+            <MemeSite config={site} embedded />
           </div>
         </BrowserFrame>
       </ResultSection>

@@ -222,6 +222,7 @@ export function SiteEditor({ projectId }: { projectId: string }) {
           <div className="flex h-full justify-center overflow-y-auto p-3 sm:p-6">
             <div className={cn("h-fit w-full overflow-hidden rounded-2xl border border-border shadow-2xl transition-[max-width] duration-300", device === "mobile" ? "max-w-[390px]" : "max-w-6xl")}>
               <MemeSite
+                embedded
                 config={site}
                 activeSection={active === "brand" ? null : (active as SiteSectionId)}
                 onSelectSection={(id) => {

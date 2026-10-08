@@ -21,7 +21,7 @@ export function SiteShowcase({ site }: { site: SiteConfig }) {
   return (
     <BrowserFrame url={site.brand.domain}>
       <div className="h-[560px] overflow-y-auto overscroll-contain">
-        <MemeSite config={site} />
+        <MemeSite config={site} embedded />
       </div>
     </BrowserFrame>
   )

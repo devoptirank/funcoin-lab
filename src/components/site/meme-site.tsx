@@ -20,9 +20,12 @@ type Props = {
   activeSection?: SiteSectionId | null
   onSelectSection?: (id: SiteSectionId) => void
   className?: string
+  /** Shown inside another page (previews): the headline isn't that page's h1. */
+  embedded?: boolean
 }
 
-export function MemeSite({ config, activeSection, onSelectSection, className }: Props) {
+export function MemeSite({ config, activeSection, onSelectSection, className, embedded }: Props) {
+  const Headline = embedded ? "p" : "h1"
   const { theme: t, brand } = config
   const vars = {
     "--s-primary": t.primary,
@@ -103,7 +106,7 @@ export function MemeSite({ config, activeSection, onSelectSection, className }: 
             <span className="ms-tag rounded-full px-3 py-1 text-xs font-bold tracking-widest uppercase" style={{ background: "color-mix(in srgb, var(--s-accent) 35%, transparent)", border: "1px solid color-mix(in srgb, var(--s-accent) 60%, transparent)", color: t.text }}>
               ${brand.ticker}
             </span>
-            <h1 className="ms-h1 text-4xl leading-[1.02] font-black tracking-tight @3xl:text-6xl">{config.hero.headline}</h1>
+            <Headline className="ms-h1 text-4xl leading-[1.02] font-black tracking-tight @3xl:text-6xl">{config.hero.headline}</Headline>
             <p className="max-w-xl text-lg opacity-85">{config.hero.subheadline}</p>
             <p className="ms-quote text-base font-semibold italic" style={{ color: t.secondary }}>
               “{config.hero.quote}”
