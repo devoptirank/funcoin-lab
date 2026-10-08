@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { StoreProvider } from "./store-provider"
 import { SolanaProvider } from "./solana-provider"
 import { BillingProvider } from "@/components/billing/billing-provider"
+import { ImageQueuePanel } from "@/components/shared/image-queue-panel"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -20,6 +21,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           <StoreProvider>
             <TooltipProvider>
               {children}
+              <ImageQueuePanel />
               <Toaster position="bottom-center" richColors closeButton />
             </TooltipProvider>
           </StoreProvider>

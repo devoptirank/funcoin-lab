@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react"
 import { useStore } from "@/components/providers/store-provider"
 import { useBilling } from "@/components/billing/billing-provider"
 import type { AssetRecord, AssetType } from "@/lib/data/server"
+import { enqueueImage } from "./queue"
 
 export type { AssetRecord, AssetType }
 
@@ -109,29 +110,36 @@ export function useGenerateAsset() {
         void billing.ensureSignedIn()
         throw new NeedsActionError("Connect your wallet to generate AI images. New wallets get free credits.")
       }
-      const res = await fetch("/api/generate/image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ conceptId, type, brand, ...extra }),
-      })
-      const json = (await res.json().catch(() => ({}))) as { error?: string; asset?: AssetRecord; balance?: number }
-      if (typeof json.balance === "number") billing.setSnapshot({ balance: json.balance })
-      if (res.status === 401) {
-        await billing.refresh()
-        void billing.ensureSignedIn()
-        throw new NeedsActionError(json.error || "Connect your wallet first.")
+      // Runs when the queue reaches this job (see ./queue.ts).
+      const run = async () => {
+        const res = await fetch("/api/generate/image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conceptId, type, brand, ...extra }),
+        })
+        const json = (await res.json().catch(() => ({}))) as { error?: string; asset?: AssetRecord; balance?: number }
+        if (typeof json.balance === "number") billing.setSnapshot({ balance: json.balance })
+        if (res.status === 401) {
+          await billing.refresh()
+          void billing.ensureSignedIn()
+          throw new NeedsActionError(json.error || "Connect your wallet first.")
+        }
+        if (res.status === 402) {
+          billing.openBuy(json.error)
+          throw new NeedsActionError(json.error || "Not enough credits.")
+        }
+        if (!res.ok || !json.asset) throw new Error(json.error || `Image generation failed (${res.status})`)
+        notify()
+        return json.asset
       }
-      if (res.status === 402) {
-        billing.openBuy(json.error)
-        throw new NeedsActionError(json.error || "Not enough credits.")
-      }
-      if (!res.ok || !json.asset) throw new Error(json.error || `Image generation failed (${res.status})`)
-      notify()
-      return json.asset
+      const label = `${TYPE_LABEL[type]}${extra.pose ? ` (${extra.pose})` : ""} for ${brand.name}`
+      return enqueueImage({ label, type }, run)
     },
     [billing],
   )
 }
+
+const TYPE_LABEL: Record<AssetType, string> = { logo: "Coin logo", mascot: "Mascot", meme: "Meme image", banner: "Banner", "site-hero": "Website hero" }
 
 export function useRemoveAsset() {
   return useCallback(async (id: string) => {
