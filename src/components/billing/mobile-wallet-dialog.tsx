@@ -9,6 +9,9 @@ function browseLinks() {
   return [
     { name: "Phantom", href: `https://phantom.app/ul/browse/${url}?ref=${ref}` },
     { name: "Solflare", href: `https://solflare.com/ul/v1/browse/${url}?ref=${ref}` },
+    // coin_id 501 = Solana
+    { name: "Trust Wallet", href: `https://link.trustwallet.com/open_url?coin_id=501&url=${url}` },
+    { name: "Coinbase Wallet", href: `https://go.cb-w.com/dapp?cb_url=${url}` },
   ]
 }
 
@@ -32,7 +35,7 @@ export function MobileWalletDialog({ open, onOpenChange }: { open: boolean; onOp
               </a>
             ))}
         </div>
-        <p className="text-xs text-muted-foreground">Don&apos;t have a wallet yet? Install Phantom or Solflare from your app store first.</p>
+        <p className="text-xs text-muted-foreground">Don&apos;t have a wallet yet? Install Phantom, Solflare, Trust Wallet or Coinbase Wallet from your app store first. On Android, wallet apps also connect directly from Chrome.</p>
       </DialogContent>
     </Dialog>
   )

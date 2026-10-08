@@ -17,6 +17,7 @@ export const mainNav = [
   { href: "/token", label: "Token" },
   { href: "/meme-coin-ideas", label: "Ideas" },
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ]
 
 export function absoluteUrl(path = "/") {

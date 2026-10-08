@@ -17,7 +17,7 @@ Work in the milestones at the end, and keep the app building and working after e
 - shadcn/ui here is built on **Base UI, not Radix**. Components use the `render` prop, not `asChild`. Reuse `src/components/ui/*` and `src/components/dashboard/page-header.tsx`. Do not add a second component system or a heavy admin framework (no react-admin, Refine, AdminJS).
 - **Accounts are wallet-only.** Sign-in With Solana (`src/lib/auth/siws.ts`, `/api/auth/nonce`, `/api/auth/verify`) issues a 30-day HS256 JWT in the `fcl_session` cookie (`src/lib/auth/session.ts`). The account id is `sol:<base58 address>`. There is no email and no Supabase Auth.
 - **All data access is server-side** through the service-role client in `src/lib/supabase/admin.ts`. RLS is enabled with no client policies. Keep it that way: the admin panel never gets a browser Supabase client.
-- **Two hosts, one deployment** (`src/lib/hosts.ts`): marketing at `funcoinlab.com`, app at `app.funcoinlab.com`. `APP_PATHS` decides which host serves a path. `src/proxy.ts` routes between them. Localhost and `*.vercel.app` previews serve everything.
+- **Two hosts, one deployment** (`src/lib/hosts.ts`): marketing at `funcoinlab.com`, app at `app.funcoinlab.com`. `APP_PATHS` decides which host serves a path. `src/proxy.ts` routes between them. Localhost and `*.vercel.app` previews serve everything. The admin panel adds a **third host, `admin.funcoinlab.com`** (see "Admin host" in section 1).
 - **Schema** (`supabase/migrations/0004_billing.sql`, `0005_wallet_accounts.sql`):
   - `billing_accounts` (one row per wallet), `credit_ledger` (append-only, `ref` unique for idempotency), `payment_orders` (`sol | usdc | nowpayments`, status `pending | paid | expired | failed | partial`), `payment_events` (raw provider webhooks), `auth_nonces`.
   - SQL functions `billing_ensure_account`, `billing_balance`, `billing_spend`, `billing_credit`, `billing_fulfill_order`. These are the **only** way balances change. Use them; never `update` a balance or insert ledger rows by hand.
@@ -36,6 +36,21 @@ Work in the milestones at the end, and keep the app building and working after e
 
 An admin panel is the most valuable target on the site. Treat every rule here as required.
 
+### Admin host: `admin.funcoinlab.com`
+
+The panel is served only from its own subdomain, from the same Vercel deployment.
+
+- **Config**: a server-only `ADMIN_URL` env var (for example `https://admin.funcoinlab.com`). Do **not** make it `NEXT_PUBLIC_`; the admin address should not appear in the public JS bundle. Add `ADMIN_HOST` and `isAdminHost(host)` to `src/lib/hosts.ts` next to the existing helpers, reading the env only on the server.
+- **Clean URLs**: pages live in the route group `src/app/(admin)/admin/...`, but on the admin host the proxy **rewrites** (not redirects) `/` to `/admin` and `/users` to `/admin/users`, so people see `admin.funcoinlab.com/users`. Build every admin link with one `adminHref(path)` helper so the same code works on the admin host and on localhost (`/admin/users`).
+- **Host isolation in `src/proxy.ts`**:
+  - On the admin host, serve only admin pages plus `/api/admin/*`, `/api/auth/*`, `/api/solana/rpc` and static assets. Every other path returns 404. Do not redirect to the marketing site.
+  - On the marketing and app hosts (when `ADMIN_URL` is set), `/admin` and `/admin/*` return **404**. Do not redirect them to the admin host; that would reveal it.
+  - The proxy matcher skips `/api/`, so `requireAdmin` must also check the request host. Admin API calls from any host other than the admin host get 404. On localhost and `*.vercel.app` previews, where hosts aren't split, `/admin` works directly so development keeps working.
+- **Sign-in on the admin host**: the wallet adapter (`SolanaProvider`) must work there. The SIWS message `domain` must be `admin.funcoinlab.com` (use `requestHost(req)` as the existing verify route does). The shared `fcl_session` cookie already covers `*.funcoinlab.com`, so an admin who is signed in to the app arrives signed in. They still need the step-up admin signature below.
+- **Headers on the admin host**: `X-Robots-Tag: noindex, nofollow`, `Content-Security-Policy: frame-ancestors 'none'` (plus `X-Frame-Options: DENY`), `Referrer-Policy: no-referrer`, `Cache-Control: no-store` on every admin page and API response.
+- **robots and sitemap**: `robots.ts` returns `disallow: /` for the admin host, as it already does for the app host. The admin host never appears in `sitemap.ts`, and no page on the marketing or app hosts links to it.
+- **Deployment**: in the Vercel project `funcoin-lab`, add the domain `admin.funcoinlab.com`. At Hostinger DNS, add a `CNAME` record for `admin` pointing to the target Vercel shows (usually `cname.vercel-dns.com`). Write these steps in the README; do not change DNS yourself.
+
 ### Who is an admin
 
 - `ADMIN_WALLETS` env var: a comma-separated list of Solana addresses. These are **owners** and cannot be removed from the UI. This is the bootstrap and the break-glass path.
@@ -51,7 +66,7 @@ An admin panel is the most valuable target on the site. Treat every rule here as
 The normal 30-day wallet session is **not** enough to enter the admin panel.
 
 - `/admin` asks the wallet to sign a separate message: `FunCoin Lab admin sign-in`, with domain, nonce, issued-at and expiry. Reuse the SIWS nonce flow but use a distinct statement so a normal sign-in signature can never be replayed as an admin one.
-- On success, set a second cookie, `fcl_admin`: HttpOnly, `Secure`, `SameSite=Strict`, **host-only** (no shared parent domain), `path=/`, 8-hour max age. It is a JWT signed with `ADMIN_SESSION_SECRET` (separate from `SESSION_SECRET`, 32+ chars), whose subject must match the wallet session's account.
+- On success, set a second cookie, `fcl_admin`: HttpOnly, `Secure`, `SameSite=Strict`, **host-only on `admin.funcoinlab.com`** (no `Domain` attribute, so it is never sent to the marketing or app hosts), `path=/`, 8-hour max age. It is a JWT signed with `ADMIN_SESSION_SECRET` (separate from `SESSION_SECRET`, 32+ chars), whose subject must match the wallet session's account.
 - Re-check the role from the database (or `ADMIN_WALLETS`) on **every** admin request. Removing an admin takes effect immediately, not when their cookie expires.
 - **Dangerous actions** (credit adjustments over the support cap, refunds, banning a wallet, changing pricing, managing admins, enabling maintenance mode) require a fresh wallet signature over a message that names the action and its parameters, for example `Grant 500 credits to sol:7xK… — reason: failed IPN — nonce …`. Verify it server-side before executing.
 
@@ -59,8 +74,8 @@ The normal 30-day wallet session is **not** enough to enter the admin panel.
 
 - One server guard, `requireAdmin(permission)` in `src/lib/admin/guard.ts`, used by **every** admin page (in the server component, before any data is fetched) and **every** admin route handler or server action. Return a plain 404 to non-admins so the panel's existence isn't revealed.
 - Do not rely on `src/proxy.ts` or a layout for authorization. A layout check alone is bypassable through route handlers and server actions. The proxy may redirect for UX only.
-- Mutations go through route handlers under `/api/admin/*` or server actions, each validated with Zod and rate-limited per admin (`rateLimit(clientKey(req, "admin:<account>"))`). Check `Origin` matches the app host on every non-GET request.
-- `/admin` lives on the **app host**. Add it to `APP_PATHS`, set `robots: noindex, nofollow` metadata, add `/admin` to the `robots.ts` disallow list and keep it out of `sitemap.ts`.
+- Mutations go through route handlers under `/api/admin/*` or server actions, each validated with Zod and rate-limited per admin (`rateLimit(clientKey(req, "admin:<account>"))`). Check that `Origin` is exactly the admin host on every non-GET request.
+- Do **not** add `/admin` to `APP_PATHS`; the admin host has its own routing (above). Also set `robots: noindex, nofollow` in the admin layout's metadata.
 - Never send secrets to the browser. The health page shows whether an env var is **set**, never its value.
 - Optional, behind `ADMIN_IP_ALLOWLIST`: if set, the guard also rejects requests from IPs not on the list.
 
@@ -137,7 +152,7 @@ Move the operational knobs into `site_settings`, read through one cached accesso
 - **Pricing**: credit packs (name, credits, USD, tagline, best-value flag), image costs per type, welcome credits. `src/lib/billing/plans.ts` becomes the default source; all server code reads through the settings accessor. Price changes apply to **new** orders only; existing pending orders keep their price.
 - **Feature switches**: image generation, each AI tool, new sign-ins, checkout per payment method, publishing, domain search, waitlist. When off, the UI shows a friendly "temporarily unavailable" state and the API returns 503.
 - **Limits**: global daily image limit (replaces reading `IMAGE_GLOBAL_DAILY_LIMIT` directly, with the env value as the default), per-wallet daily image limit, per-route rate limits.
-- **Maintenance mode**: app host shows a maintenance page to everyone except admins; the marketing site stays up. Step-up required.
+- **Maintenance mode**: the app host shows a maintenance page to everyone except admins; the marketing site and the admin host stay up. Step-up required.
 - **Announcement banner**: text, link, tone (info, warning) and start/end dates, shown on the site, the app or both. Run the text through the safety filter.
 - **Social links**: editable here, with the `NEXT_PUBLIC_*` env values as defaults.
 - **Token contract address stays env-only.** Show the current `NEXT_PUBLIC_TOKEN_CA` read-only in Settings with a note that changing it requires a redeploy. This is deliberate: a hijacked admin session must never be able to swap the address people buy. The same applies to `MERCHANT_SOLANA_ADDRESS`.
@@ -145,15 +160,15 @@ Move the operational knobs into `site_settings`, read through one cached accesso
 ## 5. Quality bar
 
 - Typecheck, `npm run lint` and `npm run build` pass after each milestone.
-- Write tests for the guard and permissions (non-admin gets 404, viewer can't mutate, support cap enforced, removed admin is locked out immediately, normal-session signature can't be used for admin sign-in) and for each SQL mutation function (balance never negative, audit row always written, idempotent refs).
+- Write tests for the guard and permissions (non-admin gets 404, viewer can't mutate, support cap enforced, removed admin is locked out immediately, normal-session signature can't be used for admin sign-in, admin pages and APIs return 404 on the marketing and app hosts, the `fcl_admin` cookie has no `Domain` attribute) and for each SQL mutation function (balance never negative, audit row always written, idempotent refs).
 - No N+1 queries on list pages. Every list query is indexed and paginated.
 - Every empty, loading and error state is designed. Destructive actions use a confirm dialog that repeats what will happen.
 - Times shown in the admin's local timezone, stored in UTC.
-- Update `.env.example` (blank values only: `ADMIN_WALLETS=`, `ADMIN_SESSION_SECRET=`, `ADMIN_IP_ALLOWLIST=`), `scripts/push-env-vercel.sh` and the README with how to become the first admin.
+- Update `.env.example` (blank values only: `ADMIN_URL=`, `ADMIN_WALLETS=`, `ADMIN_SESSION_SECRET=`, `ADMIN_IP_ALLOWLIST=`), `scripts/push-env-vercel.sh` and the README with how to become the first admin and how to set up the `admin.funcoinlab.com` domain.
 
 ## Milestones
 
-1. **Foundation**: migration `0006_admin.sql`, `ADMIN_WALLETS`, step-up admin sign-in, `requireAdmin`, permissions map, audit log, admin layout, empty Overview, noindex and robots. Prove a non-admin gets 404 everywhere.
+1. **Foundation**: the `admin.funcoinlab.com` host (env, proxy rewrites and isolation, security headers, robots), migration `0006_admin.sql`, `ADMIN_WALLETS`, step-up admin sign-in, `requireAdmin`, permissions map, audit log, admin layout, empty Overview, noindex and robots. Prove a non-admin gets 404 everywhere, and that `/admin` returns 404 on `funcoinlab.com` and `app.funcoinlab.com`.
 2. **Users & credits**: user search and detail, credit adjustments, suspend/ban/reinstate, status enforcement across the app.
 3. **Billing**: orders, re-verify and re-check, webhook log, refunds, revenue report.
 4. **Content & safety**: sites and images moderation, reports queue and Report link, Discover featuring, safety terms.

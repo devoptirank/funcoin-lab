@@ -21,7 +21,7 @@ async function publishedSites(): Promise<MetadataRoute.Sitemap> {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
-  const core = ["/", "/discover", "/pricing", "/token", "/about"]
+  const core = ["/", "/discover", "/pricing", "/token", "/about", "/contact"]
   const legal = ["/terms", "/privacy", "/disclaimer", "/affiliate-disclosure"]
   return [
     ...core.map((p) => ({ url: absoluteUrl(p), lastModified: now, changeFrequency: "weekly" as const, priority: p === "/" ? 1 : 0.8 })),
