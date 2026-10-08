@@ -48,3 +48,6 @@ next-env.d.ts
 
 # local billing ledger (dev)
 .data/
+
+# Coin art masters and previews
+/art

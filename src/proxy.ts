@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server"
 import { APP_URL, SITE_HOST, SITE_URL, isAppHost, isAppPath, isSiteHost } from "@/lib/hosts"
 
 // Paths both hosts serve as-is: published sites, tracked registrar links and metadata files.
-const SHARED = ["/site/", "/go/", "/robots.txt", "/sitemap.xml", "/icon", "/apple-icon", "/opengraph-image", "/favicon", "/manifest"]
+const SHARED = ["/site/", "/go/", "/og/", "/robots.txt", "/sitemap.xml", "/icon", "/apple-icon", "/opengraph-image", "/favicon", "/manifest"]
 
 /**
  * Routes requests between the marketing site and the app host. Old /login links go to the app,

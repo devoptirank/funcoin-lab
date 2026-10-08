@@ -7,6 +7,7 @@ import { MascotLogo } from "@/components/shared/mascot-logo"
 import { generateMemesLocal } from "@/lib/generator/memes"
 import { generateDomainIdeas } from "@/lib/generator/domains"
 import { cn } from "@/lib/utils"
+import { TypingDomains, CyclingCaption, SpinningCoin } from "./live-demos"
 
 function Cell({ href, title, text, className, children }: { href: string; title: string; text: string; className?: string; children?: React.ReactNode }) {
   return (
@@ -30,15 +31,14 @@ function Cell({ href, title, text, className, children }: { href: string; title:
 }
 
 /** Asymmetric "lab kit" bento: six real tools, each cell showing real generated output. */
-export function KitBento({ concept }: { concept: MemeConcept }) {
+export function KitBento({ concept, coin }: { concept: MemeConcept; coin: { src: string; fallback: string } }) {
   const [meme] = generateMemesLocal({ name: concept.name, mascot: concept.mascot, catchphrase: concept.catchphrase, traits: concept.traits }, 1, 7)
-  const domains = generateDomainIdeas(concept.name, 4)
+  const domains = generateDomainIdeas(concept.name, 5)
 
   return (
     <section aria-labelledby="kit-title" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-24">
-      <p className="mb-3 text-sm font-semibold tracking-wide text-lab uppercase">The kit</p>
       <h2 id="kit-title" className="max-w-2xl font-heading text-4xl leading-[1.02] font-extrabold sm:text-5xl">
-        Six tools, one character.
+        One character, every asset.
       </h2>
       <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-6">
         <Cell
@@ -58,23 +58,22 @@ export function KitBento({ concept }: { concept: MemeConcept }) {
           </div>
         </Cell>
         <Cell href="/domains" title=".fun domains" text="Name ideas you can check with a real registrar." className="bg-card md:col-span-2">
-          <ul className="space-y-1.5 font-mono text-sm">
-            {domains.map((d) => (
-              <li key={d} className="truncate">
-                {d.replace(/\.fun$/, "")}
-                <span className="text-lab">.fun</span>
-              </li>
-            ))}
-          </ul>
+          <TypingDomains domains={domains} />
         </Cell>
         <Cell href="/memes" title="Meme gallery" text="Meme cards starring your mascot." className="bg-card md:col-span-2">
-          <MemeImage meme={meme} name={concept.name} className="max-w-[11rem] rotate-[-3deg] rounded-xl shadow-lg transition-transform duration-300 group-hover:rotate-0" />
+          <div className="flex flex-col gap-3">
+            <MemeImage meme={meme} name={concept.name} className="max-w-[11rem] rotate-[-3deg] rounded-xl shadow-lg transition-transform duration-300 group-hover:rotate-0" />
+            <CyclingCaption captions={concept.memeIdeas.slice(0, 4)} />
+          </div>
         </Cell>
-        <Cell href="/logo" title="Logo & palette" text="A mascot badge and colors that fit the personality." className="bg-[color-mix(in_oklab,var(--violet)_18%,var(--card))] md:col-span-3">
-          <div className="flex h-14 overflow-hidden rounded-2xl" aria-hidden>
-            {concept.palette.map((c) => (
-              <span key={c.hex} className="flex-1" style={{ background: c.hex }} />
-            ))}
+        <Cell href="/logo" title="Logo & palette" text="Collectible coin art and a palette that fit the personality." className="bg-[color-mix(in_oklab,var(--violet)_18%,var(--card))] md:col-span-3">
+          <div className="flex items-center gap-5">
+            <SpinningCoin src={coin.src} fallback={coin.fallback} />
+            <div className="flex h-14 flex-1 overflow-hidden rounded-2xl" aria-hidden>
+              {concept.palette.map((c) => (
+                <span key={c.hex} className="flex-1" style={{ background: c.hex }} />
+              ))}
+            </div>
           </div>
         </Cell>
         <Cell href="/social" title="Social bios" text="X, Instagram, TikTok, Telegram and Discord, ready to paste." className="bg-card md:col-span-3">

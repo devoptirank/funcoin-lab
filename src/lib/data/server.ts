@@ -141,6 +141,11 @@ export async function listBookmarks(account: string): Promise<string[]> {
   return (rows as { ref: string }[]).map((r) => r.ref)
 }
 
+export async function isBookmarked(account: string, ref: string): Promise<boolean> {
+  const row = check(await db().from("bookmarks").select("ref").eq("account_id", account).eq("ref", ref).maybeSingle())
+  return Boolean(row)
+}
+
 export async function toggleBookmark(account: string, ref: string, data: unknown): Promise<boolean> {
   const sb = db()
   const existing = check(await sb.from("bookmarks").select("ref").eq("account_id", account).eq("ref", ref).maybeSingle())

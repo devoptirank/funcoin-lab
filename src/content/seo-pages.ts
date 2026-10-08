@@ -85,7 +85,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does FunCoin Lab create or launch a real token?",
-        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, deploy, list or trade tokens, connect wallets or offer financial advice. Every concept is a starting point for your brand: name it, design it and build the site.",
+        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, deploy, list or trade tokens, hold your funds or offer financial advice. Your wallet is only used to sign in and buy image credits. Every concept is a starting point for your brand: name it, design it and build the site.",
       },
       {
         q: "How do I get better results from the idea generator?",
@@ -100,7 +100,7 @@ export const seoPages: SeoPage[] = [
         a: "No account and no email. Connect a Solana wallet such as Phantom and you're in. Your projects are saved to your wallet address, so you can connect the same wallet on another device and pick up exactly where you left off.",
       },
     ],
-    related: ["meme-coin-name-generator", "meme-brand-generator", "ai-meme-coin-generator", "meme-website-builder"],
+    related: ["meme-coin-name-generator", "cat-meme-coin-ideas", "dog-meme-coin-ideas", "funny-coin-name-ideas"],
   },
 
   // ---------------------------------------------------------------------------
@@ -272,7 +272,7 @@ export const seoPages: SeoPage[] = [
         a: "Yes. Once you have a name you like, open the domain tool to get .fun domain ideas based on it. Those are suggestions only, so confirm availability with a domain registrar before buying, and check that the name does not clash with an existing trademark.",
       },
     ],
-    related: ["meme-name-generator", "fun-domain-generator", "meme-logo-generator", "meme-coin-ideas"],
+    related: ["meme-name-generator", "fun-domain-generator", "meme-logo-generator", "solana-meme-coin-name-ideas"],
   },
 
   // ---------------------------------------------------------------------------
@@ -358,7 +358,7 @@ export const seoPages: SeoPage[] = [
         a: "No. FunCoin Lab is a creative and branding tool for meme brands. It does not create, list or trade tokens and does not give financial advice. Domain ideas are simply naming suggestions for creative projects and website prototypes.",
       },
     ],
-    related: ["meme-website-builder", "meme-coin-name-generator", "meme-brand-generator"],
+    related: ["meme-website-builder", "meme-coin-name-generator", "fun-domain-vs-com"],
   },
 
   // ---------------------------------------------------------------------------
@@ -437,7 +437,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does FunCoin Lab help launch or promote a token?",
-        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, list, sell or trade tokens, manage wallets or provide financial advice. Generated brands are starting points you can edit and make your own.",
+        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, list, sell or trade tokens, hold your funds or provide financial advice. Generated brands are starting points you can edit and make your own.",
       },
       {
         q: "Can I use the brand commercially?",
@@ -534,7 +534,7 @@ export const seoPages: SeoPage[] = [
         a: "No. FunCoin Lab is a creative and branding tool only. It does not create, list or trade tokens and does not give financial advice. Logos and other outputs are concepts to refine with a designer before launch.",
       },
     ],
-    related: ["meme-brand-generator", "meme-name-generator", "meme-website-builder", "meme-coin-name-generator"],
+    related: ["meme-brand-generator", "meme-coin-logo-ideas", "meme-mascot-generator", "meme-coin-name-generator"],
   },
 
   // ---------------------------------------------------------------------------
@@ -613,14 +613,14 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does FunCoin Lab connect the site to a token or wallet?",
-        a: "No. FunCoin Lab does not create, list or trade tokens, connect wallets or provide financial advice. Generated sites are drafts you can edit, export or publish. There are no buy buttons, wallet connections or real token details on the page.",
+        a: "No. FunCoin Lab does not create, list or trade tokens or provide financial advice. Generated sites are drafts you can edit, export or publish. There are no buy buttons or trading widgets on the page, and the token section only shows details you add yourself.",
       },
       {
         q: "Can I use the generated copy on my own website?",
         a: "You can use generated content as allowed by our Terms. Review it carefully, make sure it does not resemble existing brands, check trademarks and ensure any real-world use complies with the advertising and consumer laws that apply to you.",
       },
     ],
-    related: ["fun-domain-generator", "meme-brand-generator", "meme-logo-generator", "ai-meme-coin-generator"],
+    related: ["fun-domain-generator", "meme-coin-website-template", "meme-logo-generator", "meme-coin-launch-checklist"],
   },
 
   // ---------------------------------------------------------------------------
@@ -706,7 +706,7 @@ export const seoPages: SeoPage[] = [
         a: "Humor is personal and AI output varies. Generate in batches, keep the few that land and reroll the rest. Adding specific details about your character and audience usually improves the hit rate a lot. Telling the AI what to avoid, such as puns or certain topics, helps too.",
       },
     ],
-    related: ["meme-brand-generator", "meme-name-generator", "meme-coin-ideas"],
+    related: ["meme-brand-generator", "meme-coin-lore-generator", "meme-coin-ideas"],
   },
 
   // ---------------------------------------------------------------------------
@@ -720,7 +720,7 @@ export const seoPages: SeoPage[] = [
     intro: [
       "FunCoin Lab is an AI meme coin generator in the creative sense: it uses AI to imagine the brand side of a meme project, end to end. Names, ticker-style tags, lore, slogans, social bios, meme captions, logo concepts, .fun domain ideas and a landing page preview are all generated together and stay in sync, so you do not have to copy details between tools.",
       "Under the hood, your prompt is turned into a character profile and every output draws from it. That is why the name, lore, palette, captions and website copy all feel like the same character. You stay in control the whole time: regenerate, save the versions you like and edit the final wording in the website builder. Nothing is final until you say so.",
-      "Just as important is what it does not do. The AI meme coin generator does not create tokens, connect wallets, touch markets or predict anything. It is a studio for brand concepts, creative experimentation and website prototyping. Placeholder sections are labeled as such, and you are encouraged to check names and logos against existing trademarks before using them anywhere.",
+      "Just as important is what it does not do. The AI meme coin generator does not create tokens, hold funds, touch markets or predict anything. It is a studio for brand concepts, creative experimentation and website prototyping. Placeholder sections are labeled as such, and you are encouraged to check names and logos against existing trademarks before using them anywhere.",
     ],
     toolHref: "/create",
     toolCta: "Try the AI generator",
@@ -797,6 +797,963 @@ export const seoPages: SeoPage[] = [
       },
     ],
     related: ["meme-coin-ideas", "meme-brand-generator", "meme-website-builder", "fun-domain-generator"],
+  },
+  // ---------------------------------------------------------------------------
+  {
+    slug: "solana-meme-coin-name-ideas",
+    title: "Solana Meme Coin Name Ideas & Tickers | FunCoin Lab",
+    description:
+      "Solana meme coin name ideas with ticker concepts, naming formulas and examples. Brainstorm short, memorable names for a meme brand, then check them first.",
+    eyebrow: "Solana naming",
+    h1: "Solana meme coin name ideas that are short, loud and easy to repeat",
+    intro: [
+      "Solana is home to a fast-moving meme culture where a new character can appear in a feed, get a nickname and become a running joke within an afternoon. In that environment, the name is the whole first impression. It has to be readable in a tiny avatar, typeable on a phone and funny enough that someone repeats it without being asked. These Solana meme coin name ideas focus on exactly that: compact names with a character behind them.",
+      "Strong names usually follow a handful of patterns. There is the mascot plus a trait, like Sleepy Crab or Grumpy Bean. There is the one-word sound, like Bonko, Plip or Zorb, that feels like a noise a cartoon would make. There is the fake job title, like Chef Gecko or Captain Toast. And there is the misspelled everyday word, like Snaccident or Wifful, that looks like a typo until you get the joke. Each pattern gives you a different kind of humor to build on.",
+      "FunCoin Lab turns a theme into a batch of names in these styles, each with a ticker-style tag that echoes the sound of the name, like PLIP for Plip or CRAB for Sleepy Crab, plus a one-line hook. You can switch naming styles, reroll the misses and save the pairs that make you smile. The tags are branding labels for your concept, not identifiers on any network.",
+      "Treat every suggestion as a starting point. Short names are popular, so search the name and tag, look for existing projects and check trademark databases before you use one publicly. Doing that early saves you from getting attached to a name someone else already owns.",
+    ],
+    toolHref: "/create?style=short",
+    toolCta: "Generate Solana name ideas",
+    highlights: [
+      {
+        title: "Patterns, not random words",
+        text: "Names are built from proven formats like mascot plus trait, cartoon sounds, fake job titles and playful misspellings, so each one has a joke inside it.",
+      },
+      {
+        title: "Tags that echo the name",
+        text: "Every name comes with a three to five letter tag you can pronounce or clearly link back to the name, instead of a random string of letters.",
+      },
+      {
+        title: "Ready for the rest of the brand",
+        text: "Carry any name straight into lore, a mascot logo, .fun domain ideas, social bios and a landing page without retyping anything.",
+      },
+    ],
+    steps: [
+      {
+        title: "Pick a theme or mascot",
+        text: "Start with a creature, object or mood, such as a crab who hates Mondays or a bean with stage fright. One concrete image is enough.",
+      },
+      {
+        title: "Choose a naming style",
+        text: "Try short, one-word, slang or fake brand styles. Each style pushes the generator toward a different rhythm and kind of joke.",
+      },
+      {
+        title: "Shortlist five, then say them aloud",
+        text: "Save your top five, read each one out loud and imagine it as a username. Drop anything that needs explaining or spelling out.",
+      },
+      {
+        title: "Check before you commit",
+        text: "Search the finalists and their tags on the web, on social platforms and in trademark databases, then build out the brand around the survivor.",
+      },
+    ],
+    tips: [
+      {
+        title: "Keep it to two syllables where you can",
+        text: "Names like Plip, Bonko or Gub travel further than long phrases. If you need two words, keep both short, like Sad Toad or Lil Moth.",
+      },
+      {
+        title: "Make the tag pronounceable",
+        text: "A tag like ZORB or MOTH can be said in a voice chat. A tag like XQTV cannot. If people can say it, they will repeat it.",
+      },
+      {
+        title: "Avoid look-alike letters",
+        text: "Letters such as I and l, or rn and m, blur together in small fonts. Test the name and tag at avatar size before choosing.",
+      },
+      {
+        title: "Do not borrow famous identities",
+        text: "Names that lean on real people, celebrities or well-known brands create confusion and legal risk. Original characters age better and are safer to use.",
+      },
+      {
+        title: "Leave room for lore",
+        text: "A name that hints at a story, like Captain Toast, gives you material for captions and an origin tale. A purely abstract name needs more work later.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What makes a good Solana meme coin name?",
+        a: "A good name is short, easy to say, easy to spell from hearing it once and tied to a character with a clear personality. It should still read well as a tiny avatar label and as a social handle. The generator focuses on these qualities and pairs each name with a matching tag.",
+      },
+      {
+        q: "Does FunCoin Lab create a token on Solana?",
+        a: "No. FunCoin Lab is a creative and branding studio. Your account is a Solana wallet, but the tool does not create, deploy, list or trade tokens and does not give financial advice. Names and tags are branding concepts only.",
+      },
+      {
+        q: "Are the generated names guaranteed to be unique?",
+        a: "No. The AI aims for original combinations, but short names often collide with existing projects and trademarks. Search the name and tag, check social handles and look at trademark databases before using a name publicly.",
+      },
+      {
+        q: "How long should a ticker-style tag be?",
+        a: "Three to five letters is a common, readable range. The best tags either spell a pronounceable word or clearly echo the name, so people connect the two without effort.",
+      },
+      {
+        q: "Can I get .fun domain ideas for my name?",
+        a: "Yes. Once you have a name, open the domain tool for .fun suggestions based on it. They are ideas only, so confirm availability and pricing with a registrar before you buy.",
+      },
+    ],
+    related: ["meme-coin-name-generator", "funny-coin-name-ideas", "fun-domain-generator"],
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "meme-coin-logo-ideas",
+    title: "Meme Coin Logo Ideas: Mascots & Badges | FunCoin Lab",
+    description:
+      "Meme coin logo ideas with mascot poses, color palettes, badge shapes and type tips. Explore logo directions that read clearly at avatar size, then refine.",
+    eyebrow: "Logo directions",
+    h1: "Meme coin logo ideas that still work at 32 pixels",
+    intro: [
+      "A meme logo lives most of its life very small: a profile picture in a reply thread, a sticker in a chat, a favicon in a browser tab. That means the best meme coin logo ideas are less about detail and more about a single, instantly readable face or shape. If someone can recognize your mascot from across a crowded feed, the logo is doing its job.",
+      "Most memorable meme logos fall into a few families. The round badge puts the mascot's head inside a thick circle, like a coin or a sticker. The full-body sticker shows the character in one pose with a white outline, so it pops on any background. The wordmark-plus-face pairs a chunky name with a tiny mascot head as the dot of an i or the middle of an O. And the expression close-up crops tightly on one exaggerated face, such as a squinting cat or a crying frog, letting the emotion carry the joke.",
+      "Color does a lot of the work. Two strong colors plus black or white usually beat a full rainbow. Think lime and purple for chaotic energy, warm orange and cream for cozy characters, or electric blue and yellow for loud, cartoonish brands. Thick outlines, simple shading and one standout feature, like oversized eyes or a tiny hat, keep the mascot readable when it shrinks.",
+      "FunCoin Lab generates logo concepts from your brand: a written brief covering mascot, pose, expression, palette and type, plus a generated badge you can preview. Use them as a sketchbook to compare directions quickly, then refine your favorite in a design tool or hand the brief to an illustrator. AI image generation uses credits, and every concept should be checked for originality before public use.",
+    ],
+    toolHref: "/logo",
+    toolCta: "Generate logo ideas",
+    highlights: [
+      {
+        title: "Four proven formats",
+        text: "Explore round badges, outlined stickers, wordmark-plus-face lockups and expression close-ups for the same mascot to see which reads best.",
+      },
+      {
+        title: "Brief plus visual",
+        text: "Each concept comes with a written design brief you can reuse, alongside a generated badge preview of the idea.",
+      },
+      {
+        title: "Palette suggestions",
+        text: "Get two or three color combinations that match your mascot's personality, from cozy and soft to loud and chaotic.",
+      },
+    ],
+    steps: [
+      {
+        title: "Start from a saved brand or mascot",
+        text: "Pick a concept you already made or describe the character, its personality and one feature that defines it, like a cracked shell or a tiny crown.",
+      },
+      {
+        title: "Generate several directions",
+        text: "Create concepts in different formats and palettes. Seeing a badge, a sticker and a wordmark side by side makes the strongest option obvious.",
+      },
+      {
+        title: "Test at small sizes",
+        text: "Shrink each concept to avatar and favicon size. If the face turns into a blob, simplify the shapes or increase contrast.",
+      },
+      {
+        title: "Refine and check originality",
+        text: "Polish the winner in a design tool, run a reverse image search and a trademark check, then build the rest of the art kit around it.",
+      },
+    ],
+    tips: [
+      {
+        title: "Build a mini sticker sheet",
+        text: "Once the main logo is settled, sketch four or five variations: the mascot waving, sleeping, shocked and celebrating. A small sticker sheet gives your community ready-made reactions and keeps every piece of art recognizably part of the same brand.",
+      },
+      {
+        title: "Exaggerate one feature",
+        text: "Huge eyes, a tiny hat, an oversized grin or a single tooth. One exaggerated feature is easier to recognize than several small details.",
+      },
+      {
+        title: "Use a thick outline",
+        text: "A white or black outline around the mascot keeps it readable on dark mode, light mode and busy meme backgrounds alike.",
+      },
+      {
+        title: "Pick an expression, not a pose",
+        text: "Small logos show faces better than bodies. A smug squint or a panicked stare says more at 32 pixels than a full action pose.",
+      },
+      {
+        title: "Plan for variations",
+        text: "A good mascot logo can be redrawn in different moods: happy, sleepy, shocked. Those variants become reaction stickers and meme templates later.",
+      },
+      {
+        title: "Stay clear of existing characters",
+        text: "Avoid anything that resembles well-known cartoon characters, brand mascots or real people. An original design is safer and more memorable.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What makes a good meme coin logo?",
+        a: "A good meme logo is simple, high contrast and built around one recognizable face or shape. It should stay readable as a tiny avatar, work on both light and dark backgrounds and carry the character's personality without any text.",
+      },
+      {
+        q: "Does generating a logo cost anything?",
+        a: "Text tools in FunCoin Lab are free within fair-use limits. AI image generation, including logo badges, uses credits. New wallets get free credits, and any paid credit prices are shown before you buy.",
+      },
+      {
+        q: "Can I use a generated logo as my final logo?",
+        a: "You can use generated concepts as allowed by our Terms, but treat them as drafts. AI images can resemble existing marks, so refine the design, run a reverse image search and check trademarks before using it publicly.",
+      },
+      {
+        q: "Which file formats should a meme logo come in?",
+        a: "Aim for a square PNG with a transparent background for avatars and stickers, a larger version for banners, and ideally a vector file for print and scaling. A designer can redraw a concept as vector artwork.",
+      },
+    ],
+    related: ["meme-logo-generator", "meme-mascot-generator", "cat-meme-coin-ideas"],
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "meme-mascot-generator",
+    title: "Meme Mascot Generator: Character Ideas | FunCoin Lab",
+    description:
+      "Use the meme mascot generator to invent an original character with a name, personality, flaw, catchphrase and look, ready for logos, memes and lore.",
+    eyebrow: "Mascot design",
+    h1: "Meme mascot generator for characters people actually remember",
+    intro: [
+      "Every lasting meme brand has a face. The mascot is what people screenshot, redraw, turn into stickers and argue about in the replies. A good one feels like a character you could write a sitcom episode about, not just an animal with sunglasses. This meme mascot generator helps you build that character from the inside out, starting with personality and ending with a look.",
+      "A strong mascot has four ingredients. A clear species or object, like a pigeon, a bean or a houseplant. A defining trait, such as lazy, dramatic, paranoid or overconfident. A specific flaw or habit that makes it relatable, like falling asleep mid-sentence or hoarding bottle caps. And a catchphrase it would actually say. Put those together and you get characters like a paranoid houseplant who checks the window every five minutes, or an overconfident snail who calls itself the fastest in the garden.",
+      "FunCoin Lab takes your idea and drafts a full character profile: name, personality, backstory, catchphrase, visual description and a ticker-style tag. Because every other tool draws from the same profile, the logo concepts, meme captions, social bios and landing page all stay in character. You can reroll the parts that do not fit and keep the details that make you laugh.",
+      "Mascots are also where originality matters most. Build your own character rather than leaning on existing cartoons, brand mascots or real people. An original mascot is easier to grow, safer to use and far more satisfying when people start drawing fan art of it.",
+    ],
+    toolHref: "/create?style=character",
+    toolCta: "Create a mascot",
+    highlights: [
+      {
+        title: "Personality first",
+        text: "Each mascot starts with a trait, a flaw and a catchphrase, so it has something to say before it has a logo.",
+      },
+      {
+        title: "Visual description included",
+        text: "Get a written look for the character, covering shape, colors, expression and one signature accessory, ready for the logo tool or an illustrator.",
+      },
+      {
+        title: "One profile, every output",
+        text: "Lore, captions, bios and the landing page all draw from the same profile, so the mascot never drifts out of character.",
+      },
+    ],
+    steps: [
+      {
+        title: "Describe the creature or object",
+        text: "Start simple: a frog, a toaster, a sleepy moth. Add a setting if you have one, like a frog who works night shifts at a laundromat.",
+      },
+      {
+        title: "Give it a trait and a flaw",
+        text: "Pick one personality trait and one flaw. Dramatic and terrible at directions, or calm and secretly terrified of birds.",
+      },
+      {
+        title: "Generate and compare",
+        text: "Review the generated names, backstories and catchphrases. Keep the version that feels most like a real character and reroll the rest.",
+      },
+      {
+        title: "Turn it into visuals",
+        text: "Send the mascot to the logo tool for a badge concept, then try meme captions to hear how the character sounds in a post.",
+      },
+    ],
+    tips: [
+      {
+        title: "Write a one-line bio for the mascot",
+        text: "Describe the character in a single sentence, as if introducing it at a party: a snail who thinks it is an athlete and has never finished a race. If that line makes someone smile, you have a mascot worth building around.",
+      },
+      {
+        title: "Ordinary job, absurd creature",
+        text: "A raccoon accountant or a pigeon lifeguard works because the mismatch is instantly funny and gives you endless situations to write about.",
+      },
+      {
+        title: "One signature accessory",
+        text: "A tiny hat, a cracked phone, a backwards cap or a single sock. One accessory makes the mascot recognizable in every drawing and sticker.",
+      },
+      {
+        title: "Write three things it would never do",
+        text: "Limits sharpen a character. A lazy cat that never runs, never apologizes and never wakes before noon practically writes its own captions.",
+      },
+      {
+        title: "Design for reactions",
+        text: "Imagine the mascot happy, shocked, sleepy and smug. If you can picture all four, it will work as a set of reaction stickers.",
+      },
+      {
+        title: "Keep it original and kind",
+        text: "Avoid characters based on real people, existing brand mascots or jokes that punch down. Original, good-natured mascots last longer.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What does the meme mascot generator create?",
+        a: "It creates a character profile: a name, personality, flaw, catchphrase, short backstory, visual description and a ticker-style tag. You can then turn that profile into logo concepts, memes, social bios and a landing page.",
+      },
+      {
+        q: "Does it draw the mascot too?",
+        a: "The character profile is text and free to generate. Visual logo badges are created in the logo tool and use credits, which new wallets get some of for free. Prices for paid credits are shown before you buy.",
+      },
+      {
+        q: "How do I make my mascot feel unique?",
+        a: "Combine an unexpected creature or object with an ordinary job or habit, give it one flaw and one signature accessory, and write a catchphrase it would really say. Specific details beat generic cuteness.",
+      },
+      {
+        q: "Can I base a mascot on a real person or famous character?",
+        a: "We strongly recommend against it. Characters based on real people, celebrities or existing brand mascots can cause confusion and legal problems. Original characters are safer and more memorable.",
+      },
+      {
+        q: "Is FunCoin Lab a token launcher?",
+        a: "No. FunCoin Lab is a creative branding studio. It does not create, deploy, list or trade tokens and does not give financial advice. Mascots and concepts are creative work you can build a brand around.",
+      },
+    ],
+    related: ["meme-name-generator", "meme-coin-logo-ideas", "meme-coin-lore-generator"],
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "meme-coin-website-template",
+    title: "Meme Coin Website Template & Layout | FunCoin Lab",
+    description:
+      "A meme coin website template layout explained section by section: hero, lore, art, community and official links. Generate an editable page from your brand.",
+    eyebrow: "Site template",
+    h1: "A meme coin website template that tells the story in one scroll",
+    intro: [
+      "A meme brand website has one job: let a visitor understand the character, the joke and the official links within a few seconds. It does not need dozens of pages. It needs one confident scroll with a loud hero, a short story, plenty of art and clear links. This meme coin website template breaks down the layout that tends to work, section by section.",
+      "Start with a hero that shows the mascot large, the name in big type, a one-line slogan and two buttons, such as Read the lore and Join the community. Next comes a short about section of two or three sentences explaining who the character is. Then a lore timeline with three to five beats, like Chapter 1: the crab loses its shell, Chapter 2: the crab finds a traffic cone. After that, a meme gallery with six to nine images, a how to join section with community links, and a footer with the official links and a clear disclaimer.",
+      "Design matters as much as structure. Use your logo palette for backgrounds and buttons, one chunky display font for headings and one readable font for body text. Keep paragraphs short, put the mascot above the fold and make sure everything reads well on a phone, since most visitors arrive from social apps.",
+      "FunCoin Lab generates this layout from your brand automatically, with copy, colors and sections already filled in. You can edit headlines, toggle sections, tune fonts and animations, and preview desktop and mobile widths. Illustrative placeholder blocks are labeled as such, so the draft never pretends to be something it is not.",
+    ],
+    toolHref: "/create?goal=website",
+    toolCta: "Build your site from a template",
+    highlights: [
+      {
+        title: "A layout that fits memes",
+        text: "Hero, about, lore timeline, meme gallery, community and footer: the sections visitors expect from a meme brand, in a sensible order.",
+      },
+      {
+        title: "Filled with your brand",
+        text: "Copy, palette and mascot come from your concept, so the page feels finished from the first preview instead of a blank template.",
+      },
+      {
+        title: "Mobile preview",
+        text: "Check the layout at phone width, where most visitors from social apps will see it first.",
+      },
+    ],
+    steps: [
+      {
+        title: "Choose or create a brand",
+        text: "Start from a saved concept or describe a new idea with the website goal selected, so the generator writes page-ready copy.",
+      },
+      {
+        title: "Review each section",
+        text: "Read the hero, about, lore and community sections in order. Cut anything that slows the scroll or repeats itself.",
+      },
+      {
+        title: "Customize the look",
+        text: "Adjust fonts, colors and animations, swap in your logo and meme images, and hide sections you do not need yet.",
+      },
+      {
+        title: "Add your official links",
+        text: "Place your verified social links in the community section and footer, and make sure every link points to an account you control.",
+      },
+    ],
+    tips: [
+      {
+        title: "Plan an empty-state for every section",
+        text: "Some sections will be thin at first, like a meme gallery with only three images. Hide them until you have enough material, or label them as coming soon, rather than filling the space with filler copy that weakens the page.",
+      },
+      {
+        title: "Write the hero headline last",
+        text: "Draft the lore and about copy first. Once you know the story, the one-line headline that sums it up is much easier to write.",
+      },
+      {
+        title: "Keep the lore to five beats",
+        text: "A timeline with three to five short chapters is enough. Visitors skim, and a tight story is more likely to be shared.",
+      },
+      {
+        title: "Make official links impossible to miss",
+        text: "List your real accounts in one clear place and repeat them in the footer. Visitors should never have to guess which account is genuine.",
+      },
+      {
+        title: "Keep the copy playful, not promotional",
+        text: "Talk about the character, the jokes and the community. Avoid any language that promises gains, returns or results.",
+      },
+      {
+        title: "Test it on a phone",
+        text: "Open the preview at mobile width and scroll with your thumb. If the hero image pushes the name off screen, shrink it.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What sections should a meme coin website have?",
+        a: "A typical layout includes a hero with the mascot, name and slogan, a short about section, a lore timeline, a meme gallery, a community section with official links and a footer with a disclaimer. Simple and scannable beats long and complex.",
+      },
+      {
+        q: "Can I edit the generated template?",
+        a: "Yes. You can edit headlines and copy, toggle sections on or off and adjust colors, fonts and animations. Your changes are saved with the project so you can keep iterating later.",
+      },
+      {
+        q: "Does the template include buy buttons or wallet connections?",
+        a: "No. Generated sites focus on the brand: story, art and community. There are no buy buttons or trading widgets, and illustrative placeholder sections are clearly labeled.",
+      },
+      {
+        q: "Do I need a domain to use the template?",
+        a: "Not to preview it. If you want a real address later, the domain tool suggests .fun ideas based on your name. Confirm availability and pricing with a registrar before buying.",
+      },
+    ],
+    related: ["meme-website-builder", "fun-domain-vs-com", "meme-coin-launch-checklist"],
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "meme-coin-lore-generator",
+    title: "Meme Coin Lore Generator: Origin Stories | FunCoin Lab",
+    description:
+      "Write meme coin lore with an origin story, chapters, villains and running jokes. The lore generator keeps every story beat in your mascot's own voice.",
+    eyebrow: "Lore & story",
+    h1: "Meme coin lore generator for origin stories people retell",
+    intro: [
+      "Lore is what turns a mascot into a world. A name and a logo get attention, but a story gives people something to quote, extend and remix. The best meme lore is short, a little absurd and full of hooks for future jokes: a mysterious origin, a nemesis, a sacred object, a quest that never quite finishes. This meme coin lore generator helps you write that world in your mascot's voice.",
+      "Good lore usually has a simple shape. An origin, like a crab who woke up one day without a shell and decided a traffic cone was close enough. A conflict, such as a rival seagull who keeps stealing the cone. A running motif, maybe the crab's belief that every orange object is a sign. And an open ending that invites the community to add chapters. That structure gives you weeks of posts without repeating yourself.",
+      "In FunCoin Lab, the content tool turns your saved concept into lore drops, chapter teasers, community posts and announcements that all sound like the same character. Pick a format, set the tone from wholesome to chaotic, and generate a batch. Keep the beats that feel true to the mascot and reroll the rest. Because the tool reads your character profile, details like the catchphrase and signature accessory show up naturally.",
+      "Lore is fiction, and it should stay that way. Keep the story about the character and the community, never about money or results. Avoid real people, real brands and real events that could be misread as fact. A story that is clearly invented is more fun to join, because everyone knows the rules of the world are yours to make up.",
+    ],
+    toolHref: "/content",
+    toolCta: "Generate lore drops",
+    highlights: [
+      {
+        title: "Story structure built in",
+        text: "Get origins, conflicts, rivals, sacred objects and open endings, the pieces that make a story easy to extend over time.",
+      },
+      {
+        title: "Lore in post-sized pieces",
+        text: "Generate chapter teasers and lore drops short enough for a single post, so the story unfolds naturally in your feed.",
+      },
+      {
+        title: "Same voice every time",
+        text: "Every chapter draws from your mascot's profile, so catchphrases, traits and quirks stay consistent from chapter one onward.",
+      },
+    ],
+    steps: [
+      {
+        title: "Select your mascot",
+        text: "Choose a saved concept so the generator knows the character's name, personality, flaw and catchphrase.",
+      },
+      {
+        title: "Pick a lore format",
+        text: "Choose an origin story, a chapter teaser, a villain introduction or a community lore prompt that invites people to contribute.",
+      },
+      {
+        title: "Set the tone",
+        text: "Go wholesome and cozy, dramatic and theatrical, or chaotic and absurd. The same mascot can carry very different stories.",
+      },
+      {
+        title: "Curate the canon",
+        text: "Save the beats you love into a simple timeline. That becomes your official canon and feeds the lore section of your website.",
+      },
+    ],
+    tips: [
+      {
+        title: "Number your chapters",
+        text: "Labels like Chapter 3 or Episode 7 tell newcomers there is a story to catch up on and make it easy to link back. A numbered timeline on your website then becomes the natural home for the full canon.",
+      },
+      {
+        title: "Give the mascot a rival",
+        text: "A nemesis creates instant story. A smug pigeon, a rival snail or a vacuum cleaner that haunts the house gives you endless conflict to write about.",
+      },
+      {
+        title: "Invent a sacred object",
+        text: "A lucky sock, a golden bottle cap or a legendary sandwich. A recurring object becomes a symbol people reference in memes and fan art.",
+      },
+      {
+        title: "Keep chapters under 80 words",
+        text: "Short chapters are easier to read on a phone and easier to share. If a beat needs more space, split it into two posts.",
+      },
+      {
+        title: "Leave gaps on purpose",
+        text: "Unexplained details, like why the mascot fears the color blue, invite the community to fill in theories and write their own chapters.",
+      },
+      {
+        title: "Stay in fiction",
+        text: "Keep lore about the character's world. Do not mix in claims about money, results or real-world events, which can mislead readers.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What is meme coin lore?",
+        a: "Lore is the fictional story around a meme mascot: where it came from, what it wants, who its rivals are and what running jokes surround it. Good lore gives a community something to quote, extend and turn into memes.",
+      },
+      {
+        q: "How long should meme lore be?",
+        a: "Short. An origin of a few sentences and chapters under about 80 words each work best on social feeds. You can always add chapters over time instead of writing everything at once.",
+      },
+      {
+        q: "Is the lore generator free?",
+        a: "Yes. Text tools, including lore and content generation, are free within fair-use limits. Only AI image generation uses credits.",
+      },
+      {
+        q: "Can the community contribute to the lore?",
+        a: "Absolutely. Leaving open questions and posting lore prompts invites people to suggest chapters. You can then pick favorites and add them to your official timeline.",
+      },
+      {
+        q: "Should lore mention tokens or prices?",
+        a: "No. Keep lore as fiction about the character and its world. FunCoin Lab does not give financial advice, and mixing story with claims about money or value can mislead people.",
+      },
+    ],
+    related: ["meme-brand-generator", "meme-mascot-generator", "meme-generator"],
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "funny-coin-name-ideas",
+    title: "Funny Coin Name Ideas for Meme Brands | FunCoin Lab",
+    description:
+      "Funny coin name ideas built on puns, fake job titles, cartoon sounds and absurd pairings. Find a meme brand name that makes people laugh and repeat it.",
+    eyebrow: "Funny names",
+    h1: "Funny coin name ideas that land on the first read",
+    intro: [
+      "A funny name does half your marketing for free. People repeat it because it is fun to say, and they screenshot it because it made them laugh. But funny is harder than it looks: a name can be clever without being memorable, or silly without being shareable. These funny coin name ideas focus on comedy formulas that tend to work, with examples you can riff on.",
+      "The absurd pairing puts two things together that should not meet, like Tax Frog, Gym Snail or Disco Potato. The fake job title gives a creature a serious role, like Dr. Pigeon, Sergeant Waffle or Professor Crumb. The cartoon sound is a word that sounds like a noise, like Bonk, Splorp or Wibble. The relatable complaint names a feeling, like Monday Moth or Low Battery Bear. And the dignified misspelling dresses a silly word up, like Sir Snaccident or Duke Of Naps.",
+      "Each formula leads to a different kind of brand. Absurd pairings are great for visual memes. Fake job titles generate endless captions, since the mascot is always on the job. Cartoon sounds make short, loud tickers. Relatable complaints connect with everyday feelings, which makes them easy to share.",
+      "FunCoin Lab generates names in all these styles from a single idea, with a short personality note and a ticker-style tag for each. Save the ones that make you laugh out loud, test them on a friend, and check that nobody else is already using them before you build the rest of the brand. A name that still makes you laugh a week later is usually one worth keeping.",
+    ],
+    toolHref: "/create",
+    toolCta: "Generate funny names",
+    highlights: [
+      {
+        title: "Five comedy formulas",
+        text: "Absurd pairings, fake job titles, cartoon sounds, relatable complaints and dignified misspellings, all from one prompt.",
+      },
+      {
+        title: "Names with a personality",
+        text: "Every name arrives with a quick character note, so you can tell whether the joke has room to grow into lore and captions.",
+      },
+      {
+        title: "Full brand on demand",
+        text: "Turn a favorite name into a complete concept with lore, slogans, bios, logo ideas and a landing page preview.",
+      },
+    ],
+    steps: [
+      {
+        title: "Name the joke",
+        text: "Describe what is funny about your idea in one sentence, such as a snail who thinks it is an athlete. The joke guides the name.",
+      },
+      {
+        title: "Generate across styles",
+        text: "Let the generator try every formula. Sometimes the funniest version comes from a style you would not have picked yourself.",
+      },
+      {
+        title: "Run the friend test",
+        text: "Send three finalists to a friend without explanation. The one they laugh at or repeat back to you is usually the winner.",
+      },
+      {
+        title: "Check and build",
+        text: "Search the name and tag for existing projects and trademarks, then expand the winner into a full meme brand.",
+      },
+    ],
+    tips: [
+      {
+        title: "Test it in a sentence",
+        text: "Drop the name into a fake caption, like Tax Frog has filed your feelings under miscellaneous. If the name makes the sentence funnier, it has comedic range. If it just sits there, keep looking until a name earns its place.",
+      },
+      {
+        title: "Specific is funnier than generic",
+        text: "Tax Frog beats Funny Frog. A specific detail creates a picture in the reader's head, and pictures are what make people laugh.",
+      },
+      {
+        title: "Use hard consonants",
+        text: "Sounds like k, p, b and g are naturally funnier and punchier. Bonk, Plop and Gub feel more playful than softer sounds.",
+      },
+      {
+        title: "Avoid jokes that need context",
+        text: "If the name only works with a long explanation or an obscure reference, most people will scroll past. Aim for jokes that land instantly.",
+      },
+      {
+        title: "Keep humor kind",
+        text: "Skip names that mock groups of people or rely on shock. Good-natured humor travels further and does not age badly.",
+      },
+      {
+        title: "Do not ride on real names",
+        text: "Puns on celebrities, real people or famous brands invite confusion and legal trouble. Original jokes are safer and more distinctive.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What makes a coin name funny?",
+        a: "Usually surprise plus a clear picture: an unexpected pairing, a creature with a serious job or a word that sounds like a cartoon noise. The name should land on first read without explanation.",
+      },
+      {
+        q: "Can I ask for a specific kind of humor?",
+        a: "Yes. Choose a tone such as wholesome, deadpan, absurd or chaotic, and mention any words or topics to avoid. The generator adjusts its suggestions to match.",
+      },
+      {
+        q: "Will my funny name be available?",
+        a: "FunCoin Lab cannot guarantee it. Funny short names are popular, so search the web, social platforms and trademark databases before using one publicly.",
+      },
+      {
+        q: "Does a name mean I have created a token?",
+        a: "No. FunCoin Lab is a branding and creative tool. It does not create, deploy, list or trade tokens, and it does not give financial advice.",
+      },
+    ],
+    related: ["solana-meme-coin-name-ideas", "meme-name-generator", "meme-coin-ideas"],
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "cat-meme-coin-ideas",
+    title: "Cat Meme Coin Ideas: Names, Lore & Logos | FunCoin Lab",
+    description:
+      "Cat meme coin ideas with original names, cat personalities, lore hooks and logo directions. Build a fresh feline meme brand that stands out from the litter.",
+    eyebrow: "Cat concepts",
+    h1: "Cat meme coin ideas that go beyond another cat in a hat",
+    intro: [
+      "Cats are the internet's oldest mascots, which is both a gift and a challenge. Everyone already loves cats, but a feed full of generic cat brands blurs together. The way to stand out is personality: a cat with a job, a grudge, a strange habit or a very specific worldview. These cat meme coin ideas focus on giving your feline a character people recognize instantly.",
+      "Start with the behaviors cat owners already joke about, then push them further. A cat who knocks things off tables as a form of protest, named Gravity Cat. A cat who has never once been on time, called Late Whiskers. A cat who believes it owns the apartment and charges the humans rent in head bumps, called Landlord Mittens. A cat who sits in every box and considers itself an architect, called Box Baron. Each one comes with built-in jokes.",
+      "Visually, cats give you lots to play with: ears, whiskers, slit or saucer eyes, and that unmistakable loaf pose. Pick one exaggerated feature for your logo, like enormous unimpressed eyes or a tail shaped like a question mark, and a palette that suits the personality, such as soft orange and cream for a cozy cat or black and neon green for a chaotic night cat.",
+      "FunCoin Lab turns any of these into a full brand: names, a ticker-style tag, lore, slogans, social bios, meme captions, logo concepts and a landing page preview. Keep the cat original rather than borrowing a famous internet cat or cartoon, and check names before using them publicly.",
+    ],
+    toolHref: "/create",
+    toolCta: "Generate a cat concept",
+    highlights: [
+      {
+        title: "Personality over breed",
+        text: "Concepts start from a behavior or attitude, like protest knocking or box ownership, so your cat feels like a real character.",
+      },
+      {
+        title: "Lore hooks included",
+        text: "Each cat comes with story ideas: rivals like the vacuum cleaner, sacred objects like the red laser dot and running feuds with the dog next door.",
+      },
+      {
+        title: "Logo-ready descriptions",
+        text: "Get a visual brief covering pose, expression, features and palette that you can send straight to the logo tool.",
+      },
+    ],
+    steps: [
+      {
+        title: "Pick a cat behavior",
+        text: "Choose a classic cat move like knocking things over, ignoring names, sitting in boxes or staring at walls, and describe it in one line.",
+      },
+      {
+        title: "Give it attitude",
+        text: "Decide whether the cat is smug, dramatic, sleepy, paranoid or secretly kind. Attitude shapes the name and every caption.",
+      },
+      {
+        title: "Generate the brand",
+        text: "Let FunCoin Lab draft names, lore, slogans and bios, then reroll anything that feels like a generic cat joke.",
+      },
+      {
+        title: "Design the face",
+        text: "Send the concept to the logo tool and test which expression reads best at avatar size: the slow blink, the glare or the startled stare.",
+      },
+    ],
+    tips: [
+      {
+        title: "Give the cat a daily routine",
+        text: "A schedule, like a 6 a.m. breakfast scream, a noon nap shift and a midnight zoomies session, gives you recurring post formats. People enjoy checking in on a character whose day they already know, and the routine writes captions for you.",
+      },
+      {
+        title: "Avoid famous internet cats",
+        text: "Do not use the likeness or name of any well-known cat, cartoon cat or brand mascot. Your own original cat is safer and more distinctive.",
+      },
+      {
+        title: "Use cat-specific words",
+        text: "Words like loaf, blep, zoomies, biscuits and slow blink give captions instant cat energy and help your brand sound authentic.",
+      },
+      {
+        title: "Give the cat a rival",
+        text: "The vacuum cleaner, the cucumber, the bath or the neighbor's dog. A recurring enemy creates story and meme formats you can reuse.",
+      },
+      {
+        title: "Make the pose part of the logo",
+        text: "The loaf, the stretch or the tail curl can be just as recognizable as the face. Pick one and use it everywhere.",
+      },
+      {
+        title: "Lean into indifference",
+        text: "Cats are funniest when they do not care. Captions where the mascot is unimpressed by everything feel true to the species.",
+      },
+    ],
+    faqs: [
+      {
+        q: "How do I make a cat meme brand stand out?",
+        a: "Focus on a specific personality and behavior rather than just being a cat. Give it a job, a grudge or a strange belief, an exaggerated visual feature and a recurring rival. Specific characters stand out in a crowded feed.",
+      },
+      {
+        q: "Can I base my mascot on my own cat?",
+        a: "Yes, your own pet can be great inspiration. Just avoid including personal details like your address, and make sure any photos you use are yours.",
+      },
+      {
+        q: "Can I use a famous internet cat as my mascot?",
+        a: "No. Using a well-known cat's likeness, name or a cartoon character can infringe on others' rights and confuse people. Create an original cat instead.",
+      },
+      {
+        q: "Does FunCoin Lab launch a cat token?",
+        a: "No. FunCoin Lab is a creative branding studio. It does not create, deploy, list or trade tokens and does not offer financial advice.",
+      },
+    ],
+    related: ["dog-meme-coin-ideas", "meme-coin-logo-ideas", "meme-mascot-generator"],
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "dog-meme-coin-ideas",
+    title: "Dog Meme Coin Ideas: Names, Lore & Logos | FunCoin Lab",
+    description:
+      "Dog meme coin ideas with original pup names, personalities, lore hooks and logo directions. Build a fresh dog meme brand with a character all its own.",
+    eyebrow: "Dog concepts",
+    h1: "Dog meme coin ideas with more personality than another good boy",
+    intro: [
+      "Dogs are pure, earnest and endlessly expressive, which makes them perfect meme mascots. The catch is that dog memes are everywhere, so a generic happy dog disappears in the scroll. The fix is to give your dog a specific personality and a world of its own. These dog meme coin ideas help you go from a cute pup to a character with stories to tell.",
+      "Start from things dogs actually do, then exaggerate. A dog who is convinced the mail carrier is a supervillain, named Agent Woof. A dog who greets every person as if they have been gone for years, called Reunion Rex. A dog with one floppy ear who is trying very hard to look serious, called Officer Flop. A tiny dog with the confidence of a wolf, named Big Biscuit. Each concept has a built-in joke and a clear voice.",
+      "For visuals, dogs give you a lot of range: floppy or pointed ears, a tongue that never goes back in, a head tilt, a wagging tail drawn as motion lines. Pick one feature to exaggerate in your logo and a palette that suits the mood, such as sunny yellow and sky blue for a cheerful pup or deep navy and orange for a dramatic guard dog.",
+      "FunCoin Lab turns any of these sparks into a full brand with names, a ticker-style tag, lore, slogans, social bios, meme captions, logo concepts and a landing page preview. Keep the dog original, rather than echoing a famous internet dog or cartoon, and check names before you use them in public.",
+    ],
+    toolHref: "/create",
+    toolCta: "Generate a dog concept",
+    highlights: [
+      {
+        title: "Behavior-based characters",
+        text: "Concepts start from real dog habits, like guarding the house from leaves or loving every stranger, so the jokes feel true.",
+      },
+      {
+        title: "Story-ready lore",
+        text: "Each dog comes with lore hooks: a rival squirrel, a lost tennis ball of legend, or a never-ending mission to catch its own tail.",
+      },
+      {
+        title: "Visual direction",
+        text: "Get a description of pose, ears, expression and palette to turn into a mascot badge in the logo tool.",
+      },
+    ],
+    steps: [
+      {
+        title: "Choose a dog habit",
+        text: "Pick something dogs do, like barking at nothing, stealing socks or waiting by the door, and write it in a sentence.",
+      },
+      {
+        title: "Decide the dog's energy",
+        text: "Heroic, anxious, sleepy, dramatic or relentlessly happy. Energy shapes the name, the voice and how the mascot reacts in memes.",
+      },
+      {
+        title: "Generate the concept",
+        text: "Let FunCoin Lab draft names, lore, slogans and bios, then keep the parts that feel like your dog and reroll the rest.",
+      },
+      {
+        title: "Test it in captions",
+        text: "Write a few meme captions in the dog's voice. If they come easily, the character is working. If not, sharpen the personality.",
+      },
+    ],
+    tips: [
+      {
+        title: "Give the dog a mission",
+        text: "Dogs are funniest when they are very serious about something small: guarding the couch, finding the perfect stick or protecting the house from the mail. A clear mission gives every meme and lore chapter a purpose the community can follow along with.",
+      },
+      {
+        title: "Do not copy famous dogs",
+        text: "Avoid the names, faces or poses of well-known internet dogs, cartoon dogs and brand mascots. An original pup is safer and more memorable.",
+      },
+      {
+        title: "Use dog vocabulary",
+        text: "Words like zoomies, sploot, boop, borf and good boy instantly signal dog energy and make captions sound authentic.",
+      },
+      {
+        title: "Write in a dog voice",
+        text: "Many dog characters work best with simple, enthusiastic grammar. Decide on a voice early and keep it consistent across every post.",
+      },
+      {
+        title: "Give it a sworn enemy",
+        text: "The squirrel, the vacuum, the doorbell or the cat next door. A recurring rival makes lore and meme formats easy to repeat.",
+      },
+      {
+        title: "Pick a signature item",
+        text: "A tennis ball, a stolen sock or a tiny bandana gives the mascot something to hold in every drawing and sticker.",
+      },
+    ],
+    faqs: [
+      {
+        q: "How do I make a dog meme brand feel original?",
+        a: "Pick a specific behavior and personality, add a recurring rival and a signature item, and exaggerate one visual feature like ears or tongue. A specific dog is far more memorable than a generic one.",
+      },
+      {
+        q: "Can I create a cat and dog rivalry?",
+        a: "Yes, and it is a classic setup. Create both mascots in FunCoin Lab, give them opposing personalities and write lore about their feud. Rivalries are a great source of recurring memes.",
+      },
+      {
+        q: "Can I use a well-known dog meme as my mascot?",
+        a: "No. Using a famous dog's photo, likeness or name can infringe on other people's rights and mislead your audience. Build an original character instead.",
+      },
+      {
+        q: "Does FunCoin Lab create a dog token?",
+        a: "No. FunCoin Lab is a creative branding studio. It does not create, deploy, list or trade tokens and does not give financial advice.",
+      },
+    ],
+    related: ["cat-meme-coin-ideas", "meme-mascot-generator", "funny-coin-name-ideas"],
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "meme-coin-launch-checklist",
+    title: "Meme Coin Launch Checklist: Brand & Safety | FunCoin Lab",
+    description:
+      "A non-financial meme coin launch checklist for your brand: name and trademark checks, domain, socials, art kit, website, community rules and scam safety.",
+    eyebrow: "Brand checklist",
+    h1: "A meme coin launch checklist for your brand, website and community",
+    intro: [
+      "Before a meme brand goes public, a surprising number of small details decide whether it looks trustworthy or chaotic. Missing social handles, a logo that blurs at small sizes, three different spellings of the name and no clear official links all create confusion and give impersonators room to operate. This checklist covers the brand and safety side only. It is not financial or legal advice, and it says nothing about markets or token mechanics.",
+      "Work through it in order. Lock the name first: search the web, social platforms and trademark databases, and make sure the name does not lean on a real person or existing brand. Then secure a domain and matching handles on the platforms you plan to use, even ones you will not post on yet, so nobody else grabs them. Write consistent bios and use the same avatar everywhere.",
+      "Next, prepare an art kit: the logo as a transparent PNG, a square avatar, a banner for each platform, a few mascot expressions for reactions and a short style note covering colors and fonts. Publish a simple website with the story, art and one clear list of official links. Then write community rules covering respect, spam, impersonation and what the team will never do.",
+      "Safety deserves its own focus. If a contract address exists, publish exactly one official address in one place, such as your website, and pin it on every official channel. State clearly that the team will never DM people first, never ask for seed phrases or private keys and never run surprise giveaways that require sending anything. Pin your official links, and report impersonator accounts quickly. FunCoin Lab can help with the creative pieces: names, logos, bios, posts and an editable site.",
+    ],
+    toolHref: "/social",
+    toolCta: "Write your social bios",
+    highlights: [
+      {
+        title: "Brand first, not hype",
+        text: "Covers naming, trademark checks, domains, handles, art and website, the parts that make a meme brand look consistent and real.",
+      },
+      {
+        title: "Safety built in",
+        text: "One official contract address, no DM-first contact, pinned links and clear rules help your community spot impersonators fast.",
+      },
+      {
+        title: "Creative tools for each step",
+        text: "FunCoin Lab generates names, logo concepts, social bios, posts and a landing page, so the checklist does not stall on blank pages.",
+      },
+    ],
+    steps: [
+      {
+        title: "Lock the name and check it",
+        text: "Search the name and tag on the web, social platforms and trademark databases. Avoid real people, celebrities and existing brands, and settle on one spelling.",
+      },
+      {
+        title: "Secure domain and handles",
+        text: "Register a matching domain with a registrar and claim the same handle on every platform you might use, even if you post there later.",
+      },
+      {
+        title: "Build the art kit and website",
+        text: "Prepare a logo, avatar, banners, reaction stickers and a style note, then publish a simple site with the story, art and one official links list.",
+      },
+      {
+        title: "Write rules and safety notices",
+        text: "Publish community rules and a pinned safety post: the single official address, the official links, no DMs first and no requests for keys or seed phrases.",
+      },
+    ],
+    tips: [
+      {
+        title: "One source of truth",
+        text: "Keep the official address and links on your website and point every channel back to that page. Duplicate lists drift and confuse people.",
+      },
+      {
+        title: "Claim handles early",
+        text: "Impersonators often register look-alike handles. Claiming your name on every major platform, including spelling variants, closes easy gaps.",
+      },
+      {
+        title: "Pin, then pin again",
+        text: "Pin the official links and safety notice in every channel, including chat groups, and repeat the reminder regularly as new people arrive.",
+      },
+      {
+        title: "Set moderator rules",
+        text: "Moderators should never DM first, never share links outside the official list and should know how to report and remove impersonator accounts.",
+      },
+      {
+        title: "Keep copy promise-free",
+        text: "Describe the character, art and community. Avoid any wording that suggests gains, returns or guaranteed outcomes in bios, posts or the website.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Is this checklist financial advice?",
+        a: "No. It covers branding, website, community and safety only. It does not cover markets, token mechanics or anything financial, and FunCoin Lab does not give financial, investment or legal advice.",
+      },
+      {
+        q: "Why publish only one official contract address?",
+        a: "Impersonators often post fake addresses that look similar to real ones. Publishing a single address in one official place, and pinning it everywhere, gives your community one simple way to verify what is genuine.",
+      },
+      {
+        q: "Why should a team never DM people first?",
+        a: "Scammers commonly pose as team members or support staff in direct messages. A clear rule that official accounts never DM first makes any unsolicited message an obvious red flag.",
+      },
+      {
+        q: "Do I need a trademark before going public?",
+        a: "Requirements depend on your situation and location. At minimum, search trademark databases to make sure you are not using someone else's mark, and consider speaking with a qualified professional.",
+      },
+      {
+        q: "Which FunCoin Lab tools help with this checklist?",
+        a: "Use the name and brand tools for naming, the logo tool for your art kit, the domain tool for .fun ideas, social bios and content tools for posts, and the website builder for your landing page.",
+      },
+    ],
+    related: ["meme-brand-generator", "meme-coin-website-template", "fun-domain-vs-com"],
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "fun-domain-vs-com",
+    title: ".fun Domain vs .com for Meme Brands | FunCoin Lab",
+    description:
+      "Comparing a .fun domain vs .com for a meme brand: availability, memorability, audience and cost. An honest look at which extension fits your project.",
+    eyebrow: "Domain guide",
+    h1: ".fun domain vs .com: which extension fits a meme brand?",
+    intro: [
+      "Choosing a domain extension feels small, but it shapes how people type, remember and judge your project. For meme brands, the choice usually comes down to .com, the familiar default, or .fun, a newer extension whose name matches the playful tone. Neither is automatically better. This guide compares them honestly so you can pick what fits your name, audience and plans.",
+      "Availability is the biggest practical difference. Because .com has been around for decades, short and simple names are often already registered, which can push you toward longer names, extra words or hyphens. Newer extensions like .fun usually have more short names open, so you may get the exact name you want, like bonko.fun, instead of a compromise like getbonkonow.com. Always confirm availability with a registrar, since any specific name may be taken on either extension.",
+      "Memorability cuts both ways. A .com is what many people type by default, so if someone hears your name once, they may try .com first. On the other hand, .fun can become part of the joke: names like snailrace.fun or needmorenaps.fun read like a short phrase and match the tone of a meme brand. If you choose .fun, repeat the full address in your bios and posts so people learn it.",
+      "Audience and cost round out the picture. Communities that live online and in crypto spaces are generally used to newer extensions, while a broader mainstream audience may expect .com. Cost varies by registrar, by name and between first-year and renewal pricing, so compare the renewal price, not only the first year. Many projects register both and redirect one to the other, which also helps protect against look-alike sites.",
+    ],
+    toolHref: "/domains",
+    toolCta: "Generate .fun domain ideas",
+    highlights: [
+      {
+        title: "Availability",
+        text: "Short .com names are often taken already. Newer extensions such as .fun more often have short, exact-match names available.",
+      },
+      {
+        title: "Memorability",
+        text: ".com is the default people guess, while .fun can complete the joke. Either way, repeat the full address everywhere you post.",
+      },
+      {
+        title: "Cost and renewals",
+        text: "Pricing varies by registrar and name. Check renewal costs before buying, not just the first-year offer.",
+      },
+    ],
+    steps: [
+      {
+        title: "Generate domain ideas",
+        text: "Enter your name or mascot in the domain tool to get .fun suggestions, from exact-match names to playful phrases.",
+      },
+      {
+        title: "Check both extensions",
+        text: "Search your favorite on a registrar in both .fun and .com. Note which are available and compare renewal prices.",
+      },
+      {
+        title: "Say it out loud",
+        text: "Read each option as you would in a voice chat. Pick the address people can type correctly after hearing it once.",
+      },
+      {
+        title: "Protect your choice",
+        text: "If budget allows, register the other extension too and redirect it, then list only one official address on your website and socials.",
+      },
+    ],
+    tips: [
+      {
+        title: "Test the address on a phone",
+        text: "Type each option on a phone keyboard and paste it into a chat preview. Names that autocorrect into other words, or that look odd in lowercase, cause friction. The extension that survives this test cleanly is usually the right one for you.",
+      },
+      {
+        title: "Exact match beats a compromise",
+        text: "A short exact name on .fun is often easier to remember than a long .com with extra words. Avoid hyphens and numbers on either extension.",
+      },
+      {
+        title: "Let the extension finish the phrase",
+        text: "With .fun, the ending can be part of the message, like a name that reads as a short sentence. This works best when it stays easy to type.",
+      },
+      {
+        title: "Think about your audience",
+        text: "If most visitors come from social links, the extension matters less because people click. If they will type it from memory, familiarity matters more.",
+      },
+      {
+        title: "Watch for look-alikes",
+        text: "Impersonators may register your name on other extensions. Owning both, or at least listing one official address clearly, reduces confusion.",
+      },
+      {
+        title: "Check the brand, not just the domain",
+        text: "An available domain does not mean the name is free to use. Search trademarks and existing projects before you buy.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Is .fun a real domain extension?",
+        a: "Yes. .fun is a generic top-level domain that can be registered through many domain registrars, just like .com. Availability and pricing depend on the registrar and the specific name.",
+      },
+      {
+        q: "Is .com better for a meme brand?",
+        a: "Not necessarily. .com is familiar and widely trusted by default, but short names are harder to find. .fun matches a playful brand and often has shorter names available. The best choice depends on your name, audience and budget.",
+      },
+      {
+        q: "Does FunCoin Lab sell domains?",
+        a: "No. The domain tool suggests .fun ideas. Unless a registrar integration is connected, it does not check live availability or sell domains, so always confirm with a registrar before buying.",
+      },
+      {
+        q: "Should I register both .fun and .com?",
+        a: "If budget allows, owning both and redirecting one to the other can prevent confusion and make impersonation harder. Just keep one address as the official one you share.",
+      },
+    ],
+    related: ["fun-domain-generator", "meme-coin-website-template", "meme-coin-launch-checklist"],
   },
 ]
 

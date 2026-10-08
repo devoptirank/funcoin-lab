@@ -31,7 +31,9 @@ export function buildImagePrompt(type: ImageAssetType, b: Brand, extra: { pose?:
   const { subject, colors } = describe(b)
   switch (type) {
     case "logo":
-      return `Mascot logo mark for a playful meme brand: ${subject}. ${b.logoConcept ? `Concept: ${b.logoConcept}.` : ""} Bold flat vector style, thick clean outlines, simple shapes, centered head-and-shoulders mascot inside a circular badge, on a plain solid background that uses the darkest palette color. Sticker-ready, high contrast, works at small sizes. ${colors} ${RULES}`
+      // Same art direction as the coin library (src/lib/coin-art.ts). gpt-image-2 has no transparent
+      // backgrounds, so the coin sits on a plain dark backdrop.
+      return `Premium collectible meme coin, 3D render, three-quarter view tilted about 15 degrees so the thick reeded edge is visible. Coin face: ${subject} embossed in raised relief, colored glossy enamel fills inside crisp metal outlines, expressive face. ${b.logoConcept ? `Concept: ${b.logoConcept}.` : ""} Rim: thick beveled polished metal rim with fine reeding, a ring of tiny engraved stars, thin inner ring, one accent of holographic foil or glowing enamel. Studio lighting with a warm key light and a cool rim light, crisp specular highlights, subtle micro-scratches, a few small sparkles. Centered with padding on a plain solid background in the darkest palette color, soft contact shadow. ${colors} ${RULES.replace(" no coins,", "")}`
     case "mascot":
       return `Full-body character illustration of ${subject}, pose and expression: ${extra.pose ?? "happy"}. Expressive 2D cartoon style with thick outlines and soft shading, character centered with breathing room, plain light background with a subtle soft shadow under the feet. ${colors} ${RULES}`
     case "meme":

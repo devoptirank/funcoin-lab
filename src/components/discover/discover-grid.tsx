@@ -10,6 +10,8 @@ import { useRepoData, useStore } from "@/components/providers/store-provider"
 import { useBilling } from "@/components/billing/billing-provider"
 import { cn } from "@/lib/utils"
 import { MascotArt } from "@/components/shared/mascot-art"
+import { CoinImage } from "@/components/shared/coin-image"
+import Link from "next/link"
 
 function shuffle<T>(items: T[]): T[] {
   const a = [...items]
@@ -95,14 +97,15 @@ export function DiscoverGrid() {
                   Join The Fun
                 </span>
               </div>
-              <MascotArt value={p.mascot} className="size-24 shrink-0 drop-shadow-lg" style={{ animation: "fc-bob 4s ease-in-out infinite" }} />
+              <CoinImage src={p.coin} fallback={p.mascot} alt={`${p.name} coin`} size={160} className="size-28 shrink-0 drop-shadow-lg transition-transform duration-500 group-hover:rotate-6" />
             </div>
             <div className="flex flex-1 flex-col gap-3 p-5">
               <div className="flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element -- generated coin artwork */}
-                <img src={p.coin} alt={`${p.name} coin`} width={56} height={56} className="size-14 shrink-0 transition-transform duration-500 group-hover:rotate-12" />
+                <MascotArt value={p.mascot} className="size-12 shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <h2 className="truncate font-heading text-xl font-extrabold">${p.ticker}</h2>
+                  <h2 className="truncate font-heading text-xl font-extrabold">
+                    <Link href={`/discover/${p.slug}`} className="hover:text-lab">${p.ticker}</Link>
+                  </h2>
                   <p className="truncate text-sm text-muted-foreground">
                     {p.name} · {p.domain}
                   </p>

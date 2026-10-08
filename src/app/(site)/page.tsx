@@ -2,7 +2,12 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ButtonLink } from "@/components/shared/button-link"
 import { Hero } from "@/components/home/hero"
-import { ExamplesMarquee } from "@/components/home/examples-marquee"
+import { CoinWall } from "@/components/home/coin-wall"
+import { TemplatesShowcase } from "@/components/home/templates-showcase"
+import { LaunchChecklist, PricingTeaser, TokenTeaser } from "@/components/home/launch-sections"
+import { HomeFaq, HOME_FAQS } from "@/components/home/home-faq"
+import { DISCOVER_PROJECTS } from "@/lib/discover"
+import { ArrowRight } from "lucide-react"
 import { IdeaStory } from "@/components/home/idea-story"
 import { KitBento } from "@/components/home/kit-bento"
 import { generateConceptLocal } from "@/lib/generator/concept"
@@ -58,23 +63,27 @@ const STORY_TOPIC = "sleepy cat"
 export default function HomePage() {
   const concept = generateConceptLocal({ topic: STORY_TOPIC, theme: "animals", personality: "cute", namingStyle: "short", seed: 2026 })
   const site = conceptToSite(concept)
+  const storyCoin = DISCOVER_PROJECTS.find((p) => p.slug === "sleepy") ?? DISCOVER_PROJECTS[0]
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: HOME_FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  }
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([...jsonLd, faqLd]).replace(/</g, "\\u003c") }} />
       <Hero />
-
-      <section aria-label="Example concepts" className="border-y border-border py-6">
-        <p className="sr-only">Freshly generated brand concepts</p>
-        <ExamplesMarquee />
-      </section>
-
+      <CoinWall />
       <IdeaStory concept={concept} site={site} topic={STORY_TOPIC} />
-
-      <KitBento concept={concept} />
+      <KitBento concept={concept} coin={{ src: storyCoin.coin, fallback: storyCoin.mascot }} />
+      <TemplatesShowcase site={site} />
+      <LaunchChecklist />
+      <PricingTeaser />
+      <TokenTeaser />
 
       {/* Guides: every landing page, linked from the home page. */}
-      <section aria-labelledby="guides-title" className="mx-auto max-w-7xl px-4 pt-14 sm:px-6 sm:pt-24">
+      <section aria-labelledby="guides-title" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-24">
         <h2 id="guides-title" className="font-heading text-3xl font-extrabold sm:text-4xl">
           Guides and generators
         </h2>
@@ -82,8 +91,7 @@ export default function HomePage() {
           {seoPages.map((p) => (
             <li key={p.slug} className="border-t border-border pt-4">
               <Link href={`/${p.slug}`} className="group block">
-                <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{p.eyebrow}</span>
-                <span className="mt-1 block font-semibold group-hover:text-lab">{p.h1}</span>
+                <span className="block font-semibold group-hover:text-lab">{p.h1}</span>
                 <span className="mt-1 line-clamp-2 block text-sm text-muted-foreground">{p.description}</span>
               </Link>
             </li>
@@ -91,28 +99,9 @@ export default function HomePage() {
         </ul>
       </section>
 
-      {/* Principles: a plain statement, no card. */}
-      <section aria-labelledby="principles-title" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-24">
-        <div className="grid gap-8 border-t border-border pt-12 lg:grid-cols-[1fr_1.2fr]">
-          <h2 id="principles-title" className="font-heading text-4xl leading-[1.02] font-extrabold sm:text-5xl">
-            Creative, not financial.
-          </h2>
-          <div className="space-y-4 text-lg text-muted-foreground">
-            <p>
-              FunCoin Lab makes names, lore, logos and website prototypes. We don&apos;t create, list or sell tokens, show prices or give investment advice.
-            </p>
-            <p>
-              Generated copy never promises gains, and every site carries a risk notice.{" "}
-              <Link href="/disclaimer" className="text-foreground underline underline-offset-4">
-                Read the disclaimer
-              </Link>
-              .
-            </p>
-          </div>
-        </div>
-      </section>
+      <HomeFaq />
 
-      {/* Final CTA: editorial, left-aligned. */}
+      {/* Final call to action. */}
       <section className="relative isolate overflow-hidden px-4 py-16 sm:px-6 sm:py-28">
         <div aria-hidden className="absolute bottom-[-40%] left-1/2 -z-10 size-[44rem] -translate-x-1/2 rounded-full bg-[var(--violet)] blur-[170px] [opacity:var(--glow-opacity)]" />
         <div className="mx-auto flex max-w-7xl flex-col gap-8">
@@ -122,7 +111,7 @@ export default function HomePage() {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
             <p className="max-w-md text-lg text-muted-foreground">Create the name. Build the brand. Make the meme. Have some fun.</p>
             <ButtonLink href="/create" variant="glow" size="xl" className="px-7">
-              Create Your Idea →
+              Mint my idea <ArrowRight />
             </ButtonLink>
           </div>
         </div>

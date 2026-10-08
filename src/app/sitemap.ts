@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next"
 import { seoPages } from "@/content/seo-pages"
+import { DISCOVER_PROJECTS } from "@/lib/discover"
 import { absoluteUrl } from "@/lib/site-config"
 import { getSupabaseAdmin } from "@/lib/supabase/admin"
 
@@ -25,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...core.map((p) => ({ url: absoluteUrl(p), lastModified: now, changeFrequency: "weekly" as const, priority: p === "/" ? 1 : 0.8 })),
     ...seoPages.map((p) => ({ url: absoluteUrl(`/${p.slug}`), lastModified: now, changeFrequency: "monthly" as const, priority: 0.8 })),
+    ...DISCOVER_PROJECTS.map((p) => ({ url: absoluteUrl(`/discover/${p.slug}`), lastModified: new Date(p.addedAt), changeFrequency: "monthly" as const, priority: 0.6 })),
     ...legal.map((p) => ({ url: absoluteUrl(p), lastModified: now, changeFrequency: "yearly" as const, priority: 0.2 })),
     ...(await publishedSites().catch(() => [])),
   ]
