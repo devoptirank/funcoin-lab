@@ -23,11 +23,15 @@ const names = ["funcoinlab.com", `funcoinlab-test-${Date.now().toString(36)}.fun
 const params = new URLSearchParams({ key, command: "search", show_price: "1", currency: "USD" })
 names.forEach((d, i) => params.set(`domain${i}`, d))
 const res = await fetch(`${base}/api3.json?${params}`, { signal: AbortSignal.timeout(15_000) })
-const json = (await res.json().catch(() => ({}))) as { SearchResponse?: { ResponseCode?: string; Error?: string; SearchResults?: { DomainName?: string; Available?: string; Price?: string }[] } }
+const json = (await res.json().catch(() => ({}))) as {
+  SearchResponse?: { ResponseCode?: string; Error?: string; SearchResults?: { DomainName?: string; Available?: string; Price?: string }[] }
+  Response?: { ResponseCode?: string; Error?: string }
+}
 const sr = json.SearchResponse
 if (!res.ok || !sr || sr.ResponseCode !== "0") {
-  console.log(`FAIL  Dynadot said: ${sr?.Error ?? `HTTP ${res.status}`}`)
-  console.log("      If it mentions IP or permission, allow API access for any IP in Dynadot's API settings (Vercel has no fixed IP).")
+  const error = sr?.Error ?? json.Response?.Error ?? `HTTP ${res.status}`
+  console.log(`FAIL  Dynadot said: ${error}`)
+  if (/ip address/i.test(error)) console.log("      Add that IP in Dynadot: Account > Tools > API > IP whitelist. Vercel has no fixed IP, see README (Domain checks).")
   process.exit(1)
 }
 console.log("PASS  API key works")

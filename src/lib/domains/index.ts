@@ -105,6 +105,8 @@ const httpProvider: DomainProvider = {
 // ---------------- Dynadot (api3.json "search") ----------------
 
 type DynadotSearch = {
+  /** Account-level errors (bad key, IP not on the whitelist) come back here. */
+  Response?: { ResponseCode?: string; Error?: string }
   SearchResponse?: {
     ResponseCode?: string
     Error?: string
@@ -142,7 +144,7 @@ const dynadotProvider: DomainProvider = {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const json = (await res.json()) as DynadotSearch
       const sr = json.SearchResponse
-      if (!sr || sr.ResponseCode !== "0") throw new Error(sr?.Error || "Unexpected Dynadot response")
+      if (!sr || sr.ResponseCode !== "0") throw new Error(sr?.Error || json.Response?.Error || "Unexpected Dynadot response")
       const byName = new Map(sr.SearchResults?.map((r) => [r.DomainName?.toLowerCase() ?? "", r]))
       looked = todo.map((domain) => {
         const r = byName.get(domain)
@@ -159,8 +161,10 @@ const dynadotProvider: DomainProvider = {
         return result
       })
     } catch (error) {
-      console.error("[domains] dynadot lookup failed:", error instanceof Error ? error.message : error)
-      looked = todo.map((domain) => ({ domain, status: "error" as DomainStatus, provider: "dynadot", message: "Registrar lookup failed. Try again in a moment.", checkedAt: now() }))
+      // Dynadot only accepts whitelisted IPs, and serverless hosts have no fixed IP. Fall back to the
+      // public registry (RDAP) so users still get an honest "registered / no record" answer.
+      console.error("[domains] dynadot lookup failed, using RDAP:", error instanceof Error ? error.message : error)
+      looked = await rdapProvider.check(todo)
     }
     const all = [...fresh, ...looked]
     return domains.map((d) => all.find((r) => r.domain === d)!)

@@ -116,6 +116,7 @@ FunCoin Lab never claims a domain is available unless a real API says so.
 - `none` returns "Unknown" and points users to a registrar search.
 - `rdap` queries the public registry. It reports "Registered" or "No record found", but never "available", because premium or reserved names can have no record.
 - `dynadot` uses Dynadot's `api3.json` search command (`DYNADOT_API_KEY`). It reports "Available" with the first-year price, or "Registered", and caches results for 10 minutes.
+  - Dynadot only answers API calls from IP addresses on your whitelist (Account > Tools > API). Vercel functions have no fixed IP, so on Vercel the lookup falls back to `rdap` unless you add a static outbound IP (Vercel Static IPs or a proxy) and whitelist it. Run `npm run check:domains` to test.
 - `http` POSTs `{domains}` to your `DOMAIN_API_URL` and expects `{results:[{domain, available}]}`.
 
 Only `dynadot` and `http` can show "Available".
