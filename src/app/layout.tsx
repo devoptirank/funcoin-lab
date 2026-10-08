@@ -3,6 +3,7 @@ import Script from "next/script"
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google"
 import { Providers } from "@/components/providers/providers"
 import { siteConfig } from "@/lib/site-config"
+import { OG_IMAGE } from "@/lib/seo"
 import "./globals.css"
 
 const display = Bricolage_Grotesque({ variable: "--font-display", subsets: ["latin"], display: "swap", axes: ["wdth", "opsz"] })
@@ -44,8 +45,9 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     title: `${siteConfig.name}: ${siteConfig.tagline}`,
     description: siteConfig.description,
+    images: [OG_IMAGE],
   },
-  twitter: { card: "summary_large_image", title: siteConfig.name, description: siteConfig.tagline },
+  twitter: { card: "summary_large_image", title: siteConfig.name, description: siteConfig.tagline, images: [OG_IMAGE.url] },
 }
 
 export const viewport: Viewport = {

@@ -9,10 +9,12 @@ import { generateConceptLocal } from "@/lib/generator/concept"
 import { conceptToSite } from "@/lib/generator/site"
 import { siteConfig } from "@/lib/site-config"
 import { seoPages } from "@/content/seo-pages"
+import { OG_IMAGE } from "@/lib/seo"
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
-  openGraph: { url: "/", title: `${siteConfig.name}: ${siteConfig.tagline}`, description: siteConfig.description },
+  openGraph: { url: "/", type: "website", siteName: siteConfig.name, title: `${siteConfig.name}: ${siteConfig.tagline}`, description: siteConfig.description, images: [OG_IMAGE] },
+  twitter: { card: "summary_large_image", title: siteConfig.name, description: siteConfig.tagline, images: [OG_IMAGE.url] },
 }
 
 // Organization + WebSite + the app itself, so search engines understand the brand and the product.
@@ -72,7 +74,7 @@ export default function HomePage() {
       <KitBento concept={concept} />
 
       {/* Guides: every landing page, linked from the home page. */}
-      <section aria-labelledby="guides-title" className="mx-auto max-w-7xl px-4 pt-24 sm:px-6">
+      <section aria-labelledby="guides-title" className="mx-auto max-w-7xl px-4 pt-14 sm:px-6 sm:pt-24">
         <h2 id="guides-title" className="font-heading text-3xl font-extrabold sm:text-4xl">
           Guides and generators
         </h2>
@@ -90,7 +92,7 @@ export default function HomePage() {
       </section>
 
       {/* Principles: a plain statement, no card. */}
-      <section aria-labelledby="principles-title" className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
+      <section aria-labelledby="principles-title" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-24">
         <div className="grid gap-8 border-t border-border pt-12 lg:grid-cols-[1fr_1.2fr]">
           <h2 id="principles-title" className="font-heading text-4xl leading-[1.02] font-extrabold sm:text-5xl">
             Creative, not financial.
@@ -111,7 +113,7 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA: editorial, left-aligned. */}
-      <section className="relative isolate overflow-hidden px-4 py-28 sm:px-6">
+      <section className="relative isolate overflow-hidden px-4 py-16 sm:px-6 sm:py-28">
         <div aria-hidden className="absolute bottom-[-40%] left-1/2 -z-10 size-[44rem] -translate-x-1/2 rounded-full bg-[var(--violet)] blur-[170px] [opacity:var(--glow-opacity)]" />
         <div className="mx-auto flex max-w-7xl flex-col gap-8">
           <h2 className="max-w-4xl font-heading text-[clamp(2.75rem,7vw,6rem)] leading-[0.95] font-extrabold tracking-[-0.045em]">

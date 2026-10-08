@@ -103,7 +103,7 @@ export function Hero() {
         <div className="absolute bottom-[-30%] left-[-15%] size-[30rem] rounded-full bg-[var(--lab)] blur-[170px] [opacity:calc(var(--glow-opacity)*0.3)]" />
       </div>
 
-      <div className="mx-auto grid min-h-[calc(100dvh-4rem)] max-w-7xl grid-cols-1 items-center gap-6 px-4 pt-10 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-4 lg:pt-6">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-4 pt-10 pb-10 lg:min-h-[calc(100dvh-4rem)] lg:pb-12 sm:px-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-4 lg:pt-6">
         <div className="relative z-10 flex min-w-0 flex-col gap-6">
           <h1 className="hero-title font-heading text-[clamp(2.75rem,7.2vw,5.6rem)] leading-[0.95] font-extrabold tracking-[-0.045em]">
             <span className="wobble-word">Create</span> <span className="wobble-word">Your</span> <span className="wobble-word">Next</span>{" "}
@@ -176,7 +176,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="hero-visual relative mx-auto aspect-square w-full max-w-[34rem] lg:max-w-none">
+        <div className="hero-visual relative mx-auto aspect-square w-full max-w-[19rem] sm:max-w-[34rem] lg:max-w-none">
           <Image
             src={theme === "light" ? "/hero-flask-light.png" : "/hero-flask.png"}
             alt=""

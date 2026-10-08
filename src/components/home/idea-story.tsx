@@ -54,7 +54,7 @@ export function IdeaStory({ concept, site, topic }: { concept: MemeConcept; site
   )
 
   const panelBase =
-    "story-panel flex min-h-[22rem] flex-col justify-center rounded-[2rem] border border-border bg-card p-6 sm:p-10 group-data-[pinned]/story:absolute group-data-[pinned]/story:inset-0"
+    "story-panel flex flex-col rounded-[2rem] border border-border bg-card p-6 sm:p-10 lg:min-h-[22rem] lg:justify-center group-data-[pinned]/story:absolute group-data-[pinned]/story:inset-0"
 
   return (
     <section ref={root} aria-labelledby="story-title" className="group/story relative">
@@ -129,7 +129,7 @@ export function IdeaStory({ concept, site, topic }: { concept: MemeConcept; site
 
           {/* 6. The website, live */}
           <article className={`${panelBase} justify-start overflow-hidden p-3 sm:p-3`}>
-            <div className="h-full min-h-[22rem] overflow-hidden rounded-[1.5rem] border border-border">
+            <div className="h-full min-h-[16rem] overflow-hidden rounded-[1.5rem] lg:min-h-[22rem] border border-border">
               <div className="pointer-events-none h-[200%] w-[200%] origin-top-left scale-50">
                 <MemeSite config={site} embedded />
               </div>

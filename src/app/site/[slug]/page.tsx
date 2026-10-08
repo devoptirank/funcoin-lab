@@ -5,6 +5,7 @@ import Link from "next/link"
 import type { SiteConfig } from "@/lib/types"
 import { MemeSite } from "@/components/site/meme-site"
 import { getPublishedSite } from "@/lib/data/server"
+import { OG_IMAGE } from "@/lib/seo"
 
 // Public, published meme sites. Only projects with published = true are served.
 const getSite = cache((slug: string): Promise<SiteConfig | null> => getPublishedSite(slug))
@@ -17,7 +18,8 @@ export async function generateMetadata({ params }: PageProps<"/site/[slug]">): P
     title: { absolute: `${site.brand.name} ($${site.brand.ticker}): ${site.hero.subheadline}` },
     description: `${site.hero.subheadline} Built with FunCoin Lab.`,
     alternates: { canonical: `/site/${slug}` },
-    openGraph: { title: `${site.brand.name} ($${site.brand.ticker})`, description: site.hero.headline },
+    openGraph: { title: `${site.brand.name} ($${site.brand.ticker})`, description: site.hero.headline, images: [site.brand.mascotImage?.startsWith("https://") ? site.brand.mascotImage : OG_IMAGE] },
+    twitter: { card: "summary_large_image" },
   }
 }
 

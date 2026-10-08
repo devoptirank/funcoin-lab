@@ -35,7 +35,7 @@ export function KitBento({ concept }: { concept: MemeConcept }) {
   const domains = generateDomainIdeas(concept.name, 4)
 
   return (
-    <section aria-labelledby="kit-title" className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
+    <section aria-labelledby="kit-title" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-24">
       <p className="mb-3 text-sm font-semibold tracking-wide text-lab uppercase">The kit</p>
       <h2 id="kit-title" className="max-w-2xl font-heading text-4xl leading-[1.02] font-extrabold sm:text-5xl">
         Six tools, one character.
