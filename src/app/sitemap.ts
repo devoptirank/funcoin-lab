@@ -6,11 +6,18 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin"
 
 export const revalidate = 3600
 
-/** Published meme sites, so search engines can find what people build. */
+/** Published meme sites, so search engines can find what people build. Skips moderated sites and banned owners. */
 async function publishedSites(): Promise<MetadataRoute.Sitemap> {
   const sb = getSupabaseAdmin()
   if (!sb) return []
-  const { data } = await sb.from("projects").select("slug, updated_at").eq("published", true).order("updated_at", { ascending: false }).limit(5000)
+  const { data } = await sb
+    .from("projects")
+    .select("slug, updated_at, billing_accounts!inner(status)")
+    .eq("published", true)
+    .eq("moderation_status", "ok")
+    .neq("billing_accounts.status", "banned")
+    .order("updated_at", { ascending: false })
+    .limit(5000)
   return (data ?? []).map((r: { slug: string; updated_at: string }) => ({
     url: absoluteUrl(`/site/${r.slug}`),
     lastModified: new Date(r.updated_at),

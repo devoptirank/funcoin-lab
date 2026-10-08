@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { LogoMark } from "@/components/shared/logo-mark"
 import { SocialLinks } from "@/components/shared/social-icons"
+import { getSocials } from "@/lib/official"
 
 const columns = [
   {
@@ -35,7 +36,8 @@ const columns = [
   },
 ]
 
-export function Footer() {
+export async function Footer() {
+  const socials = await getSocials()
   return (
     <footer className="relative border-t border-border/60">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_repeat(3,1fr)]">
@@ -45,7 +47,7 @@ export function Footer() {
           <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
             FunCoin Lab is a creative branding and website-prototyping tool. Nothing here is financial advice.
           </p>
-          <SocialLinks className="mt-2" />
+          <SocialLinks socials={socials} className="mt-2" />
         </div>
         {columns.map((col) => (
           <div key={col.title}>

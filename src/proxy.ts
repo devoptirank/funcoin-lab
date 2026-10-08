@@ -23,7 +23,10 @@ function adminHeaders(res: NextResponse) {
  * An ordinary 404, identical to any missing page. Used to hide the admin panel on public hosts
  * (never a redirect, which would reveal the admin address).
  */
-const hidden = (request: NextRequest) => NextResponse.rewrite(new URL("/_not-found-hidden", request.url))
+const hidden = (request: NextRequest) =>
+  request.nextUrl.pathname.startsWith("/api/")
+    ? new NextResponse("Not Found", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } })
+    : NextResponse.rewrite(new URL("/hidden-404", request.url))
 
 /**
  * Routes requests between the marketing site, the app host and the admin host. Old /login links go

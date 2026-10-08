@@ -12,7 +12,7 @@ import { brandRef, postJSON } from "@/lib/client-api"
 import { imageBrand, useGenerateAsset } from "@/lib/assets/store"
 import { useImagesEnabled } from "@/lib/assets/status"
 import { useBilling } from "@/components/billing/billing-provider"
-import { IMAGE_COSTS } from "@/lib/billing/plans"
+import { usePublicSettings } from "@/lib/public-settings"
 import { NeedsActionError } from "@/lib/assets/store"
 
 export function MemeGallery({ concept, count = 6 }: { concept: MemeConcept; count?: number }) {
@@ -32,6 +32,7 @@ function MemeGalleryInner({ concept, count }: { concept: MemeConcept; count: num
   const imagesEnabled = useImagesEnabled()
   const generateAsset = useGenerateAsset()
   const billing = useBilling()
+  const IMAGE_COSTS = usePublicSettings().pricing.imageCosts
 
   const aiImage = async (meme: MemeCardData) => {
     setAiBusy((b) => ({ ...b, [meme.id]: true }))

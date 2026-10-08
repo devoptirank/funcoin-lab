@@ -10,7 +10,7 @@ import { MobileWalletDialog } from "./mobile-wallet-dialog"
 import { WalletReadyState } from "@solana/wallet-adapter-base"
 import { appHref, isAppPath } from "@/lib/hosts"
 
-export type BillingMethods = { ready?: boolean; wallet: boolean; nowpayments: boolean; cluster: string }
+export type BillingMethods = { ready?: boolean; wallet: boolean; sol?: boolean; usdc?: boolean; nowpayments: boolean; cluster: string }
 export type BillingState = {
   signedIn: boolean
   address: string | null

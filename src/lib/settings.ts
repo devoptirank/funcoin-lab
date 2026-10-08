@@ -1,5 +1,6 @@
 import "server-only"
 import { unstable_cache, revalidateTag } from "next/cache"
+import { NextResponse } from "next/server"
 import { z } from "zod"
 import { getSupabaseAdmin } from "@/lib/supabase/admin"
 import { CREDIT_PACKS, IMAGE_COSTS, WELCOME_CREDITS } from "@/lib/billing/plans"
@@ -32,6 +33,12 @@ const imageCostsSchema = z.object({
 })
 
 const iso = z.string().datetime().or(z.literal("")).default("")
+/** A social profile link: https only, or empty to hide it. */
+const socialUrl = z
+  .string()
+  .trim()
+  .max(200)
+  .refine((v) => v === "" || /^https:\/\/\S+$/i.test(v), "must be an https:// link or empty")
 
 export const SETTINGS = {
   pricing: {
@@ -91,13 +98,13 @@ export const SETTINGS = {
   },
   socials: {
     schema: z.object({
-      x: z.string(),
-      telegram: z.string(),
-      discord: z.string(),
-      github: z.string(),
-      instagram: z.string(),
-      tiktok: z.string(),
-      youtube: z.string(),
+      x: socialUrl,
+      telegram: socialUrl,
+      discord: socialUrl,
+      github: socialUrl,
+      instagram: socialUrl,
+      tiktok: socialUrl,
+      youtube: socialUrl,
     }),
     default: {
       x: process.env.NEXT_PUBLIC_X_URL ?? "",
@@ -159,4 +166,56 @@ export function parseSetting<K extends SettingKey>(key: K, value: unknown): Sett
 /** Call after saving, so every instance picks up the change on its next request. */
 export function settingsChanged() {
   revalidateTag(SETTINGS_TAG, { expire: 0 })
+}
+
+/* Helpers used by routes and pages to enforce settings. */
+
+export type Features = SettingValue<"features">
+export type ToolKey = keyof Features["tools"]
+
+/** The 503 every switched-off feature returns. The UI shows the message as is. */
+export function unavailable(what = "This feature") {
+  return NextResponse.json(
+    { error: `${what} is temporarily unavailable. Please try again a little later.`, code: "unavailable" },
+    { status: 503, headers: { "Retry-After": "300", "Cache-Control": "no-store" } },
+  )
+}
+
+/** null when the feature is on, otherwise the 503 response. A settings failure keeps features on. */
+export async function featureGate(pick: (f: Features) => boolean, what: string): Promise<NextResponse | null> {
+  let on = true
+  try {
+    on = pick(await getSetting("features"))
+  } catch {
+    on = true
+  }
+  return on ? null : unavailable(what)
+}
+
+/** Whether an announcement should show right now. */
+export function announcementActive(a: SettingValue<"announcement">, now = Date.now()): boolean {
+  if (!a.text.trim()) return false
+  if (a.start && Date.parse(a.start) > now) return false
+  if (a.end && Date.parse(a.end) <= now) return false
+  return true
+}
+
+/**
+ * Maintenance message for this account, or null. Admins (env owners and active admin_users) always
+ * get through. Fails open: if settings can't be read, the app stays up.
+ */
+export async function maintenanceFor(accountId: string | null | undefined): Promise<string | null> {
+  let m: SettingValue<"maintenance">
+  try {
+    m = await getSetting("maintenance")
+  } catch {
+    return null
+  }
+  if (!m.enabled) return null
+  if (accountId) {
+    const { getAdminRole } = await import("@/lib/admin/guard")
+    const role = await getAdminRole(accountId).catch(() => null)
+    if (role) return null
+  }
+  return m.message || SETTINGS.maintenance.default.message
 }

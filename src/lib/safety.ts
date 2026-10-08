@@ -1,5 +1,6 @@
 // Guardrails applied to every generated string (AI or local) before it reaches the UI.
-// FunCoin Lab generates creative branding — never financial promises.
+// FunCoin Lab generates creative branding, never financial promises.
+// Client-safe: no server imports here. Admin-added blocked terms are merged in by src/lib/safety-server.ts.
 
 const REPLACEMENTS: [RegExp, string][] = [
   [/\b(?:to|till|until) the moon\b/gi, "to the meme-iverse"],
@@ -45,12 +46,58 @@ export function sanitizeDeep<T>(value: T): T {
   return value
 }
 
+/** The built-in financial-promise rewrites, for read-only display (pattern source and replacement). */
+export const SAFETY_REPLACEMENTS: readonly { pattern: string; flags: string; replacement: string }[] = REPLACEMENTS.map(([re, replacement]) => ({
+  pattern: re.source,
+  flags: re.flags,
+  replacement,
+}))
+
 // Topics we won't build meme brands around. Deliberately short: the AI provider's own
 // safety systems handle nuance; this catches the obvious cases in local mode too.
-const BLOCKED_TOPIC = /\b(nazi|hitler|terroris[mt]|isis|genocide|rape|porn|nsfw|child abuse|suicide|kkk|slur)\b/i
+// These are the floor: admins can add terms on top, never remove these.
+export const BUILT_IN_BLOCKED_TERMS: readonly string[] = [
+  "nazi",
+  "hitler",
+  "terrorism",
+  "terrorist",
+  "isis",
+  "genocide",
+  "rape",
+  "porn",
+  "nsfw",
+  "child abuse",
+  "suicide",
+  "kkk",
+  "slur",
+]
 
-export function checkTopic(topic: string): { ok: true } | { ok: false; reason: string } {
-  if (BLOCKED_TOPIC.test(topic)) {
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+const termsRegex = (terms: readonly string[]) => new RegExp(`\\b(?:${terms.map((t) => escapeRe(t).replace(/\s+/g, "\\s+")).join("|")})\\b`, "i")
+
+const BLOCKED_TOPIC = termsRegex(BUILT_IN_BLOCKED_TERMS)
+
+/** Admin-added terms: lowercase, 2 to 40 characters, letters, digits, spaces and hyphens. */
+export const SAFETY_TERM_PATTERN = /^[a-z0-9][a-z0-9 -]{0,38}[a-z0-9]$/
+
+/** Normalize a term an admin typed: trim, lowercase, collapse spaces. Returns null if invalid. */
+export function normalizeSafetyTerm(input: string): string | null {
+  const t = input.trim().toLowerCase().replace(/\s+/g, " ")
+  return SAFETY_TERM_PATTERN.test(t) ? t : null
+}
+
+/** Which blocked term (built-in or extra) the text hits, or null. */
+export function matchBlockedTerm(text: string, extraTerms: readonly string[] = []): string | null {
+  const built = text.match(BLOCKED_TOPIC)
+  if (built) return built[0].toLowerCase()
+  const extra = extraTerms.map(normalizeSafetyTerm).filter((t): t is string => Boolean(t))
+  if (!extra.length) return null
+  const hit = text.match(termsRegex(extra))
+  return hit ? hit[0].toLowerCase() : null
+}
+
+export function checkTopic(topic: string, extraTerms: readonly string[] = []): { ok: true } | { ok: false; reason: string } {
+  if (matchBlockedTerm(topic, extraTerms)) {
     return { ok: false, reason: "Let's keep it fun. Try a different meme topic." }
   }
   return { ok: true }
@@ -58,3 +105,16 @@ export function checkTopic(topic: string): { ok: true } | { ok: false; reason: s
 
 export const CONCEPT_DISCLAIMER =
   "Not financial advice. Crypto assets are risky: do your own research and follow the rules where you launch."
+
+/** Reasons offered by the public Report link on published sites (stored on content_reports.reason). */
+export const REPORT_REASONS = [
+  { id: "scam", label: "Scam or fraud" },
+  { id: "financial-promise", label: "Promises profits or price gains" },
+  { id: "hate", label: "Hateful or harmful" },
+  { id: "sexual", label: "Sexual content" },
+  { id: "impersonation", label: "Impersonation or copyright" },
+  { id: "spam", label: "Spam" },
+  { id: "other", label: "Something else" },
+] as const
+
+export type ReportReasonId = (typeof REPORT_REASONS)[number]["id"]

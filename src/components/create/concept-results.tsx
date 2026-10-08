@@ -26,7 +26,7 @@ import { conceptToSite } from "@/lib/generator/site"
 import { cn } from "@/lib/utils"
 import { imageBrand, useAssets, useGenerateAsset, NeedsActionError } from "@/lib/assets/store"
 import { useImagesEnabled } from "@/lib/assets/status"
-import { IMAGE_COSTS } from "@/lib/billing/plans"
+import { usePublicSettings } from "@/lib/public-settings"
 
 const NAV = [
   { id: "brand", label: "Brand" },
@@ -377,6 +377,7 @@ function IdeaList({ title, items }: { title: string; items: string[] }) {
 function JarLogo({ concept }: { concept: MemeConcept }) {
   const logos = useAssets(concept.id).filter((a) => a.type === "logo")
   const imagesEnabled = useImagesEnabled()
+  const { pricing, features } = usePublicSettings()
   const generate = useGenerateAsset()
   const [busy, setBusy] = useState(false)
   const latest = logos[0]
@@ -414,9 +415,15 @@ function JarLogo({ concept }: { concept: MemeConcept }) {
               </>
             )}
           </p>
-          <Button variant="glow" size="lg" className="w-full px-4" onClick={make} disabled={busy}>
+          <Button variant="glow" size="lg" className="w-full px-4" onClick={make} disabled={busy || !features.images}>
             {busy ? <Loader2 className="animate-spin" /> : <Palette />}
-            {latest ? "New version" : "Generate real logo"} <span className="opacity-70">{IMAGE_COSTS.logo} credits</span>
+            {features.images ? (
+              <>
+                {latest ? "New version" : "Generate real logo"} <span className="opacity-70">{pricing.imageCosts.logo} credits</span>
+              </>
+            ) : (
+              "AI images temporarily unavailable"
+            )}
           </Button>
         </div>
       )}

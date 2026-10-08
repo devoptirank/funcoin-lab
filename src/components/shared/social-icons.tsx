@@ -1,5 +1,5 @@
 import { siDiscord, siGithub, siInstagram, siTelegram, siTiktok, siX, siYoutube, type SimpleIcon } from "simple-icons"
-import { SOCIALS, type SocialId } from "@/lib/official"
+import type { Social, SocialId } from "@/lib/official"
 import { cn } from "@/lib/utils"
 
 const ICONS: Record<SocialId, SimpleIcon> = { x: siX, telegram: siTelegram, discord: siDiscord, github: siGithub, instagram: siInstagram, tiktok: siTiktok, youtube: siYoutube }
@@ -13,12 +13,12 @@ export function BrandIcon({ id, className }: { id: SocialId; className?: string 
   )
 }
 
-/** The official FunCoin Lab social accounts (only the ones configured). */
-export function SocialLinks({ className, size = "md" }: { className?: string; size?: "md" | "lg" }) {
-  if (!SOCIALS.length) return null
+/** The official FunCoin Lab social accounts. Pass the list from getSocials() (server). */
+export function SocialLinks({ socials, className, size = "md" }: { socials: Social[]; className?: string; size?: "md" | "lg" }) {
+  if (!socials.length) return null
   return (
     <ul className={cn("flex flex-wrap gap-2", className)} aria-label="FunCoin Lab on social media">
-      {SOCIALS.map((s) => (
+      {socials.map((s) => (
         <li key={s.id}>
           <a
             href={s.url}

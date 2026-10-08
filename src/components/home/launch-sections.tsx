@@ -1,10 +1,10 @@
 import Link from "next/link"
 import { ArrowUpRight, AtSign, Globe, Image as ImageIcon, LayoutTemplate, ScrollText, ShieldCheck, Sparkles, Wallet, Zap } from "lucide-react"
-import { CREDIT_PACKS, IMAGE_COSTS } from "@/lib/billing/plans"
 import { toAppUrl } from "@/lib/hosts"
 import { ButtonLink } from "@/components/shared/button-link"
 import { TokenWaitlist } from "./token-waitlist"
-import { TOKEN } from "@/lib/official"
+import { TOKEN, getSocials } from "@/lib/official"
+import { getSetting } from "@/lib/settings"
 import { ContractAddress } from "@/components/shared/contract-address"
 import { SocialLinks } from "@/components/shared/social-icons"
 
@@ -55,9 +55,10 @@ export function LaunchChecklist() {
   )
 }
 
-/** Free text tools, paid image credits. Packs come straight from billing/plans. */
-export function PricingTeaser() {
-  const cheapest = Math.min(...Object.values(IMAGE_COSTS))
+/** Free text tools, paid image credits. Packs come from the pricing settings (billing/plans by default). */
+export async function PricingTeaser() {
+  const pricing = await getSetting("pricing")
+  const cheapest = Math.min(...Object.values(pricing.imageCosts))
   return (
     <section aria-labelledby="pricing-teaser-title" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
       <div className="grid gap-8 rounded-[2rem] border border-border bg-[color-mix(in_oklab,var(--violet)_14%,var(--card))] p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center">
@@ -73,7 +74,7 @@ export function PricingTeaser() {
           </ButtonLink>
         </div>
         <ul className="grid gap-3 sm:grid-cols-3">
-          {CREDIT_PACKS.map((p) => (
+          {pricing.packs.map((p) => (
             <li key={p.id} className={`rounded-3xl border p-5 ${p.best ? "border-transparent bg-lab-fill text-lab-ink" : "border-border bg-background/60"}`}>
               <p className="text-sm font-semibold">{p.name}</p>
               <p className="mt-2 font-heading text-3xl font-black">{p.credits}</p>
@@ -88,7 +89,8 @@ export function PricingTeaser() {
 }
 
 /** The FunCoin Lab token: a teaser only. No price, supply or value claims. */
-export function TokenTeaser() {
+export async function TokenTeaser() {
+  const socials = await getSocials()
   return (
     <section aria-labelledby="token-title" className="relative isolate overflow-hidden px-4 py-14 sm:px-6 sm:py-24">
       <div aria-hidden className="absolute top-1/2 left-1/2 -z-10 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,var(--lab),transparent)] opacity-10" />
@@ -122,7 +124,7 @@ export function TokenTeaser() {
             <TokenWaitlist />
           </>
         )}
-        <SocialLinks className="justify-center" />
+        <SocialLinks socials={socials} className="justify-center" />
         <p className="text-xs text-muted-foreground">
           Nothing here is financial advice or an offer. Read the{" "}
           <Link href="/disclaimer" className="underline underline-offset-4">

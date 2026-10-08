@@ -2,7 +2,8 @@ import { Check } from "lucide-react"
 import { BackgroundFX } from "@/components/shared/background-fx"
 import { SectionHeading } from "@/components/shared/section-heading"
 import { BuyCreditsButton } from "@/components/billing/buy-button"
-import { CREDIT_PACKS, IMAGE_COSTS, WELCOME_CREDITS } from "@/lib/billing/plans"
+import type { IMAGE_COSTS } from "@/lib/billing/plans"
+import { getSetting } from "@/lib/settings"
 import { pageMetadata } from "@/lib/seo"
 
 export const metadata = pageMetadata({
@@ -28,14 +29,15 @@ const FAQ = [
   { q: "Is buying credits an investment?", a: "No. Credits are a prepaid balance for FunCoin Lab tools. They aren't a token, can't be traded and have no cash value." },
 ]
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const { packs, imageCosts, welcomeCredits } = await getSetting("pricing")
   return (
     <div className="relative isolate px-4 py-14 sm:px-6 sm:py-20">
       <BackgroundFX className="opacity-60" />
       <div className="mx-auto max-w-6xl">
-        <SectionHeading as="h1" eyebrow="Pricing" title={<>Build free. Pay only for <span className="text-lab">AI art</span>.</>} description={`Every wallet gets ${WELCOME_CREDITS} free credits to start. Top up with crypto when you need more.`} />
+        <SectionHeading as="h1" eyebrow="Pricing" title={<>Build free. Pay only for <span className="text-lab">AI art</span>.</>} description={welcomeCredits > 0 ? `Every wallet gets ${welcomeCredits} free credits to start. Top up with crypto when you need more.` : "Top up with crypto when you need credits for AI images."} />
 
-        <div className="mt-12 grid gap-4 lg:grid-cols-[1.1fr_1fr_1fr_1fr]">
+        <div className={packs.length === 3 ? "mt-12 grid gap-4 lg:grid-cols-[1.1fr_1fr_1fr_1fr]" : "mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"}>
           <div className="rounded-[2rem] border border-border p-7">
             <p className="text-sm font-semibold text-muted-foreground">Always free</p>
             <p className="mt-2 font-heading text-4xl font-black">$0</p>
@@ -47,7 +49,7 @@ export default function PricingPage() {
               ))}
             </ul>
           </div>
-          {CREDIT_PACKS.map((p) => (
+          {packs.map((p) => (
             <div key={p.id} className={p.best ? "flex flex-col rounded-[2rem] bg-lab-fill p-7 text-lab-ink" : "flex flex-col rounded-[2rem] border border-border p-7"}>
               <p className="text-sm font-semibold opacity-75">{p.name}</p>
               <p className="mt-2 font-heading text-4xl font-black">${p.usd}</p>
@@ -68,10 +70,10 @@ export default function PricingPage() {
             <p className="mt-2 text-muted-foreground">AI images are generated with OpenAI from your brand&apos;s mascot, personality and palette.</p>
           </div>
           <dl className="grid gap-px overflow-hidden rounded-[2rem] border border-border bg-border sm:grid-cols-2">
-            {(Object.keys(IMAGE_COSTS) as (keyof typeof IMAGE_COSTS)[]).map((k) => (
+            {(Object.keys(COST_LABELS) as (keyof typeof IMAGE_COSTS)[]).map((k) => (
               <div key={k} className="flex items-center justify-between bg-background p-5">
                 <dt>{COST_LABELS[k]}</dt>
-                <dd className="font-heading text-xl font-bold tabular-nums">{IMAGE_COSTS[k]} credits</dd>
+                <dd className="font-heading text-xl font-bold tabular-nums">{imageCosts[k]} credits</dd>
               </div>
             ))}
           </dl>

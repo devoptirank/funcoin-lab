@@ -10,7 +10,7 @@ import { useImagesEnabled } from "@/lib/assets/status"
 import { downloadFile } from "@/lib/client-api"
 import { kebab } from "@/lib/generator/text"
 import { cn } from "@/lib/utils"
-import { IMAGE_COSTS } from "@/lib/billing/plans"
+import { usePublicSettings } from "@/lib/public-settings"
 
 type Slot = { key: string; type: AssetType; pose?: string; label: string; hint: string; aspect: string; span: string }
 
@@ -34,6 +34,7 @@ export function downloadAsset(asset: AssetRecord, name: string) {
 }
 
 export function BrandKit({ concept }: { concept: MemeConcept }) {
+  const IMAGE_COSTS = usePublicSettings().pricing.imageCosts
   const enabled = useImagesEnabled()
   const assets = useAssets(concept.id)
   const generate = useGenerateAsset()
@@ -68,7 +69,7 @@ export function BrandKit({ concept }: { concept: MemeConcept }) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted-foreground">
-        Generated with OpenAI from your brand&apos;s mascot, personality and palette. Each image takes about 20 to 40 seconds and costs 4 to 6 credits; failed images are refunded automatically.
+        Generated with OpenAI from your brand&apos;s mascot, personality and palette. Each image takes about 20 to 40 seconds and costs {Math.min(...Object.values(IMAGE_COSTS))} to {Math.max(...Object.values(IMAGE_COSTS))} credits; failed images are refunded automatically.
       </p>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {SLOTS.map((slot) => {

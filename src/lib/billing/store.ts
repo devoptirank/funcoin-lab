@@ -42,7 +42,8 @@ export type LedgerEntry = { id: string; accountId: string; delta: number; reason
 
 export interface BillingStore {
   readonly kind: "file" | "supabase"
-  ensureAccount(accountId: string, wallet: string): Promise<void>
+  /** Create the account if new, with `welcome` one-time credits (defaults to WELCOME_CREDITS). */
+  ensureAccount(accountId: string, wallet: string, welcome?: number): Promise<void>
   balance(accountId: string): Promise<number>
   ledger(accountId: string, limit?: number): Promise<LedgerEntry[]>
   /** Atomically spend; returns ok=false (and leaves the balance alone) if there isn't enough. */
@@ -108,11 +109,11 @@ const now = () => new Date().toISOString()
 
 const fileStore: BillingStore = {
   kind: "file",
-  ensureAccount: (accountId, wallet) =>
+  ensureAccount: (accountId, wallet, welcome = WELCOME_CREDITS) =>
     locked((d) => {
       if (d.accounts[accountId]) return
       d.accounts[accountId] = { wallet, createdAt: now() }
-      if (WELCOME_CREDITS > 0) d.ledger.push({ id: newId(), accountId, delta: WELCOME_CREDITS, reason: "Welcome credits", ref: `welcome:${accountId}`, createdAt: now() })
+      if (welcome > 0) d.ledger.push({ id: newId(), accountId, delta: welcome, reason: "Welcome credits", ref: `welcome:${accountId}`, createdAt: now() })
     }),
   balance: (accountId) => locked((d) => sum(d, accountId), false),
   ledger: (accountId, limit = 50) => locked((d) => d.ledger.filter((e) => e.accountId === accountId).slice(-limit).reverse(), false),
@@ -215,8 +216,8 @@ function supabaseStore(): BillingStore {
   }
   return {
     kind: "supabase",
-    async ensureAccount(accountId, wallet) {
-      must(await sb.rpc("billing_ensure_account", { p_account: accountId, p_wallet: wallet, p_welcome: WELCOME_CREDITS }))
+    async ensureAccount(accountId, wallet, welcome = WELCOME_CREDITS) {
+      must(await sb.rpc("billing_ensure_account", { p_account: accountId, p_wallet: wallet, p_welcome: welcome }))
     },
     async balance(accountId) {
       return Number(must(await sb.rpc("billing_balance", { p_account: accountId })) ?? 0)

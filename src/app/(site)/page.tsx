@@ -5,7 +5,7 @@ import { Hero } from "@/components/home/hero"
 import { CoinWall } from "@/components/home/coin-wall"
 import { TemplatesShowcase } from "@/components/home/templates-showcase"
 import { LaunchChecklist, PricingTeaser, TokenTeaser } from "@/components/home/launch-sections"
-import { HomeFaq, HOME_FAQS } from "@/components/home/home-faq"
+import { HomeFaq, homeFaqs } from "@/components/home/home-faq"
 import { DISCOVER_PROJECTS } from "@/lib/discover"
 import { ArrowRight } from "lucide-react"
 import { IdeaStory } from "@/components/home/idea-story"
@@ -15,7 +15,8 @@ import { conceptToSite } from "@/lib/generator/site"
 import { siteConfig } from "@/lib/site-config"
 import { seoPages } from "@/content/seo-pages"
 import { OG_IMAGE } from "@/lib/seo"
-import { SOCIALS } from "@/lib/official"
+import { getSocials, type Social } from "@/lib/official"
+import { getSetting } from "@/lib/settings"
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 }
 
 // Organization + WebSite + the app itself, so search engines understand the brand and the product.
-const jsonLd = [
+const jsonLd = (socials: Social[]) => [
   {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -33,7 +34,7 @@ const jsonLd = [
     url: siteConfig.url,
     logo: `${siteConfig.url}/icon.png`,
     email: siteConfig.contactEmail,
-    sameAs: SOCIALS.map((s) => s.url),
+    sameAs: socials.map((s) => s.url),
   },
   {
     "@context": "https://schema.org",
@@ -61,19 +62,21 @@ const jsonLd = [
 
 const STORY_TOPIC = "sleepy cat"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [socials, pricing] = await Promise.all([getSocials(), getSetting("pricing")])
+  const faqs = homeFaqs(pricing)
   const concept = generateConceptLocal({ topic: STORY_TOPIC, theme: "animals", personality: "cute", namingStyle: "short", seed: 2026 })
   const site = conceptToSite(concept)
   const storyCoin = DISCOVER_PROJECTS.find((p) => p.slug === "sleepy") ?? DISCOVER_PROJECTS[0]
   const faqLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: HOME_FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
   }
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([...jsonLd, faqLd]).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([...jsonLd(socials), faqLd]).replace(/</g, "\\u003c") }} />
       <Hero />
       <CoinWall />
       <IdeaStory concept={concept} site={site} topic={STORY_TOPIC} />
@@ -100,7 +103,7 @@ export default function HomePage() {
         </ul>
       </section>
 
-      <HomeFaq />
+      <HomeFaq faqs={faqs} />
 
       {/* Final call to action. */}
       <section className="relative isolate overflow-hidden px-4 py-16 sm:px-6 sm:py-28">

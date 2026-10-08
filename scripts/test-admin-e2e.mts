@@ -60,7 +60,7 @@ if (process.env.E2E_PHASE === "removed") {
   const jar = existsSync(JAR_FILE) ? (JSON.parse(readFileSync(JAR_FILE, "utf8")) as { cookie: string }) : null
   if (!jar) throw new Error("Run the main phase first")
   const page = await request("GET", "/", ADMIN, { cookie: jar.cookie })
-  check("removed admin is locked out immediately (page)", page.status === 404 && !/Your permissions/.test(page.body), `status ${page.status}`)
+  check("removed admin is locked out immediately (page)", page.status === 404 && !/Sign out of admin/.test(page.body), `status ${page.status}`)
   const nonce = await request("POST", "/api/admin/auth/nonce", ADMIN, { cookie: jar.cookie })
   check("removed admin is locked out immediately (API)", nonce.status === 404, `status ${nonce.status}`)
   process.exit(failed ? 1 : 0)
@@ -76,7 +76,7 @@ for (const [name, host] of [["marketing", SITE], ["app", APP]] as const) {
 
 // 2. Admin host: anonymous visitors, headers, and nothing but admin routes.
 const anon = await request("GET", "/", ADMIN)
-check("admin host shows only a wallet connect screen to anonymous visitors", /Connect your wallet to continue/.test(anon.body) && !/Your permissions/.test(anon.body))
+check("admin host shows only a wallet connect screen to anonymous visitors", /Connect your wallet to continue/.test(anon.body) && !/Sign out of admin/.test(anon.body))
 check("admin host sends noindex", /noindex/.test(String(anon.headers["x-robots-tag"])))
 check("admin host forbids framing", String(anon.headers["x-frame-options"]) === "DENY" && /frame-ancestors 'none'/.test(String(anon.headers["content-security-policy"])))
 check("admin host sends no-referrer and no-store", anon.headers["referrer-policy"] === "no-referrer" && /no-store/.test(String(anon.headers["cache-control"])))
@@ -88,7 +88,7 @@ check("admin host robots.txt disallows everything", /Disallow: \/\s*$/m.test(rob
 // 3. A signed-in wallet that isn't an admin gets a 404 everywhere.
 const stranger = await walletSession(nacl.sign.keyPair(), ADMIN)
 const sp = await request("GET", "/", ADMIN, { cookie: stranger })
-check("non-admin wallet: admin page is a 404", sp.status === 404 && !/Admin sign-in|Your permissions/.test(sp.body), `status ${sp.status}`)
+check("non-admin wallet: admin page is a 404", sp.status === 404 && !/Admin sign-in|Sign out of admin/.test(sp.body), `status ${sp.status}`)
 check("non-admin wallet: admin nonce API is a 404", (await request("POST", "/api/admin/auth/nonce", ADMIN, { cookie: stranger })).status === 404)
 
 // 4. The owner needs the step-up signature before seeing the panel.
@@ -98,7 +98,7 @@ const owner = nacl.sign.keyPair.fromSecretKey(bs58.decode(secret))
 const ownerAddress = bs58.encode(owner.publicKey)
 const session = await walletSession(owner, ADMIN)
 const before = await request("GET", "/", ADMIN, { cookie: session })
-check("owner without admin cookie sees the step-up screen", /Admin sign-in/.test(before.body) && !/Your permissions/.test(before.body))
+check("owner without admin cookie sees the step-up screen", /Admin sign-in/.test(before.body) && !/Sign out of admin/.test(before.body))
 
 const n = JSON.parse((await request("POST", "/api/admin/auth/nonce", ADMIN, { cookie: session })).body) as { message: string; token: string }
 check("admin message is the admin statement", /FunCoin Lab admin sign-in/.test(n.message))
@@ -121,8 +121,13 @@ check("an admin signature can't be replayed", reuse.status === 400 || reuse.stat
 
 const both = `${session}; ${setCookie.split(";")[0]}`
 const panel = await request("GET", "/", ADMIN, { cookie: both })
-check("owner with both cookies sees the panel", panel.status === 200 && /Your permissions/.test(panel.body), `status ${panel.status}`)
+check("owner with both cookies sees the panel", panel.status === 200 && /Overview/.test(panel.body) && /Sign out of admin/.test(panel.body) && !/Connect your wallet to continue|Admin sign-in/.test(panel.body), `status ${panel.status}`)
 check("clean URLs on the admin host (/ serves the Overview)", /Overview/.test(panel.body))
+for (const path of ["/users", "/billing", "/billing?tab=webhooks", "/billing?tab=revenue", "/content", "/content?tab=images", "/content?tab=reports", "/safety", "/settings", "/domains", "/waitlist", "/team", "/system", "/audit", "/?period=7d"]) {
+  const r = await request("GET", path, ADMIN, { cookie: both })
+  const broken = /Application error|Internal Server Error|The lab exploded/.test(r.body)
+  check(`admin page ${path} renders for the owner`, r.status === 200 && !broken, `status ${r.status}`)
+}
 const onSite = await request("GET", "/admin", SITE, { cookie: both })
 check("even a signed-in admin gets a 404 for /admin on the marketing host", onSite.status === 404)
 

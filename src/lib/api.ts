@@ -4,17 +4,28 @@ import type { z } from "zod"
 import { clientKey, rateLimit } from "./rate-limit"
 import { getSession } from "./auth/session"
 import { blockedAccountResponse } from "./admin/account-status"
+import { featureGate, maintenanceFor, type Features } from "./settings"
 
-/** Shared plumbing for JSON route handlers: wallet session → rate limit → parse → validate → run. */
+/**
+ * Shared plumbing for JSON route handlers: wallet session, maintenance mode, feature switch, rate
+ * limit, parse, validate, run. `feature` names a switch from admin Settings; when it is off the route
+ * answers 503 with a friendly message.
+ */
 export async function handleJson<S extends z.ZodType, R>(
   req: Request,
-  opts: { scope: string; schema: S; limit?: number },
+  opts: { scope: string; schema: S; limit?: number; feature?: { on: (f: Features) => boolean; name: string } },
   run: (input: z.infer<S>) => Promise<R>,
 ) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: "Connect your wallet to use the lab.", code: "auth" }, { status: 401 })
   const blocked = await blockedAccountResponse(session.accountId)
   if (blocked) return blocked
+  const maintenance = await maintenanceFor(session.accountId)
+  if (maintenance) return NextResponse.json({ error: maintenance, code: "maintenance" }, { status: 503, headers: { "Retry-After": "300" } })
+  if (opts.feature) {
+    const off = await featureGate(opts.feature.on, opts.feature.name)
+    if (off) return off
+  }
   const rl = rateLimit(clientKey(req, opts.scope), opts.limit ?? 20)
   if (!rl.ok) {
     return NextResponse.json(

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { Keypair } from "@solana/web3.js"
-import { packById } from "@/lib/billing/plans"
 import { getBillingStore, type Order } from "@/lib/billing/store"
 import { billingUnavailable, requireSession } from "@/lib/billing/server"
 import { solUsdPrice, solanaConfig, walletPaymentsEnabled } from "@/lib/billing/solana"
 import { clientKey, rateLimit } from "@/lib/rate-limit"
+import { getSetting, unavailable } from "@/lib/settings"
 
 const schema = z.object({ packId: z.string(), method: z.enum(["sol", "usdc"]) })
 
@@ -18,8 +18,13 @@ export async function POST(req: Request) {
   if (!walletPaymentsEnabled()) return NextResponse.json({ error: "Wallet payments aren't configured yet." }, { status: 503 })
   if (!rateLimit(clientKey(req, "order"), 10, 60_000).ok) return NextResponse.json({ error: "Too many orders. Wait a minute." }, { status: 429 })
   const parsed = schema.safeParse(await req.json().catch(() => null))
-  const pack = parsed.success ? packById(parsed.data.packId) : undefined
-  if (!parsed.success || !pack) return NextResponse.json({ error: "Unknown credit pack" }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ error: "Unknown credit pack" }, { status: 400 })
+  // Packs and switches come from admin Settings (billing/plans by default). The price is locked into
+  // the order, so later price changes never affect it.
+  const [pricing, features] = await Promise.all([getSetting("pricing"), getSetting("features")])
+  if (!(parsed.data.method === "usdc" ? features.checkoutUsdc : features.checkoutSol)) return unavailable(`Paying with ${parsed.data.method.toUpperCase()}`)
+  const pack = pricing.packs.find((p) => p.id === parsed.data.packId)
+  if (!pack) return NextResponse.json({ error: "Unknown credit pack" }, { status: 400 })
 
   const { merchant, usdcMint, cluster } = solanaConfig()
   let amount: bigint

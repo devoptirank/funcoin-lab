@@ -12,7 +12,7 @@ import { Check, Coins, ExternalLink, Loader2, Wallet } from "lucide-react"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { CREDIT_PACKS } from "@/lib/billing/plans"
+import { usePublicSettings } from "@/lib/public-settings"
 import type { Order } from "@/lib/billing/store"
 import { burst } from "@/lib/burst"
 import { cn } from "@/lib/utils"
@@ -32,8 +32,10 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
   const billing = useBilling()
   const wallet = useWallet()
   const { connection } = useConnection()
-  const [packId, setPackId] = useState(CREDIT_PACKS.find((p) => p.best)?.id ?? CREDIT_PACKS[0].id)
-  const [method, setMethod] = useState<Method>("usdc")
+  const { pricing, features } = usePublicSettings()
+  const packs = pricing.packs
+  const [chosenPack, setPackId] = useState<string | null>(null)
+  const [chosenMethod, setMethod] = useState<Method>("usdc")
   const [phase, setPhase] = useState<Phase>("idle")
   const [detail, setDetail] = useState<string | null>(null)
   const [coins, setCoins] = useState<{ code: string; name: string }[]>([])
@@ -47,11 +49,18 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
       .then((j) => setCoins(j.coins ?? []))
       .catch(() => undefined)
   }, [open, coins.length, billing.methods.nowpayments])
-  const pack = CREDIT_PACKS.find((p) => p.id === packId)!
+  // Packs come from the pricing settings; fall back to the best-value (or first) pack.
+  const pack = packs.find((p) => p.id === chosenPack) ?? packs.find((p) => p.best) ?? packs[0]
+  const packId = pack.id
   const busy = phase !== "idle" && phase !== "paid"
 
   const walletAvailable = billing.methods.wallet
   const npAvailable = billing.methods.nowpayments
+  // Methods an admin switched off are hidden; methods that aren't configured show "Not set up yet".
+  const shown = { usdc: features.checkoutUsdc, sol: features.checkoutSol, nowpayments: features.checkoutNowpayments }
+  const METHOD_ORDER: Method[] = ["usdc", "sol", "nowpayments"]
+  const method: Method = shown[chosenMethod] ? chosenMethod : (METHOD_ORDER.find((m) => shown[m]) ?? chosenMethod)
+  const anyMethod = METHOD_ORDER.some((m) => shown[m])
 
   // Signing in happens outside this modal (wallet pickers can't sit on top of a modal dialog);
   // checkout reopens automatically once the wallet is signed in.
@@ -130,7 +139,7 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
   }
 
   const pay = () => (method === "nowpayments" ? payWithNowPayments() : payWithWallet(method))
-  const methodEnabled = method === "nowpayments" ? npAvailable : walletAvailable
+  const methodEnabled = shown[method] && (method === "nowpayments" ? npAvailable : walletAvailable)
 
   return (
     <Dialog
@@ -164,7 +173,7 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
         ) : (
           <div className="flex flex-col gap-5">
             <div role="radiogroup" aria-label="Credit pack" className="grid gap-2 sm:grid-cols-3">
-              {CREDIT_PACKS.map((p) => (
+              {packs.map((p) => (
                 <button
                   key={p.id}
                   type="button"
@@ -187,6 +196,7 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
 
             <div>
               <p className="mb-2 text-sm font-semibold">Pay with</p>
+              {!anyMethod && <p className="rounded-2xl border border-border p-3 text-sm text-muted-foreground">Checkout is temporarily unavailable. Please try again a little later.</p>}
               <div role="radiogroup" aria-label="Payment method" className="grid gap-2 sm:grid-cols-3">
                 {(
                   [
@@ -194,7 +204,9 @@ export function BuyCreditsDialog({ open, reason, onOpenChange }: { open: boolean
                     { id: "sol", label: "SOL", sub: "Solana wallet", icon: Wallet, on: walletAvailable },
                     { id: "nowpayments", label: "Other crypto", sub: "BTC, ETH, USDT and more", icon: Coins, on: npAvailable },
                   ] as const
-                ).map((m) => (
+                )
+                  .filter((m) => shown[m.id])
+                  .map((m) => (
                   <button
                     key={m.id}
                     type="button"

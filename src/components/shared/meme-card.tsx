@@ -6,7 +6,7 @@ import type { MemeCardData } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { CopyButton } from "./copy-button"
 import { cn } from "@/lib/utils"
-import { IMAGE_COSTS } from "@/lib/billing/plans"
+import { usePublicSettings } from "@/lib/public-settings"
 import { MascotArt } from "./mascot-art"
 
 const impact = "min-w-0 [overflow-wrap:anywhere] font-heading font-black uppercase tracking-tight text-white [text-shadow:0_2px_0_#000,0_-2px_0_#000,2px_0_0_#000,-2px_0_0_#000,0_4px_14px_rgba(0,0,0,.5)]"
@@ -108,6 +108,7 @@ export function MemeCard({
   onAiImage?: () => void
   aiLoading?: boolean
 }) {
+  const { pricing, features } = usePublicSettings()
   return (
     <motion.article
       layout
@@ -119,9 +120,15 @@ export function MemeCard({
       <p className="px-1 text-sm leading-snug">{meme.caption}</p>
       <div className="mt-auto flex flex-col gap-1.5 px-1 pb-1">
         {onAiImage && (
-          <Button size="sm" variant="glass" className="w-full" onClick={onAiImage} disabled={aiLoading}>
+          <Button size="sm" variant="glass" className="w-full" onClick={onAiImage} disabled={aiLoading || !features.images}>
             {aiLoading ? <Loader2 className="animate-spin" /> : <ImagePlus />}
-            {meme.imageRef ? "New AI image" : "Real AI image"} <span className="text-xs opacity-60">{IMAGE_COSTS.meme} credits</span>
+            {!features.images ? (
+              "AI images temporarily unavailable"
+            ) : (
+              <>
+                {meme.imageRef ? "New AI image" : "Real AI image"} <span className="text-xs opacity-60">{pricing.imageCosts.meme} credits</span>
+              </>
+            )}
           </Button>
         )}
         <div className="flex flex-wrap gap-1.5">

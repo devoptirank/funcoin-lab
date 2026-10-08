@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowUpRight, ShieldAlert } from "lucide-react"
 import { pageMetadata } from "@/lib/seo"
-import { TOKEN, SOCIALS } from "@/lib/official"
+import { TOKEN, getSocials } from "@/lib/official"
 import { CoinImage } from "@/components/shared/coin-image"
 import { ContractAddress } from "@/components/shared/contract-address"
 import { SocialLinks } from "@/components/shared/social-icons"
@@ -22,7 +22,8 @@ const SAFETY = [
   "Links on this page go to independent third-party sites. Check you're on the real domain before connecting a wallet.",
 ]
 
-export default function TokenPage() {
+export default async function TokenPage() {
+  const socials = await getSocials()
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-20">
       <header className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
@@ -66,11 +67,11 @@ export default function TokenPage() {
         )}
       </section>
 
-      {SOCIALS.length > 0 && (
+      {socials.length > 0 && (
         <section aria-labelledby="social-title" className="mt-10">
           <h2 id="social-title" className="font-heading text-2xl font-extrabold">Official channels</h2>
           <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-            {SOCIALS.map((s) => (
+            {socials.map((s) => (
               <li key={s.id}>
                 <a href={s.url} target="_blank" rel="noopener noreferrer me" className="flex items-center justify-between gap-3 rounded-2xl border border-border px-4 py-3 hover:border-lab-fill/60">
                   <span className="font-semibold">{s.label}</span>
@@ -79,7 +80,7 @@ export default function TokenPage() {
               </li>
             ))}
           </ul>
-          <SocialLinks size="lg" className="mt-6 sm:hidden" />
+          <SocialLinks socials={socials} size="lg" className="mt-6 sm:hidden" />
         </section>
       )}
 

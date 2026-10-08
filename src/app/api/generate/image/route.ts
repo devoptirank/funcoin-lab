@@ -3,20 +3,20 @@ import { z } from "zod"
 import { brandRefSchema } from "@/lib/ai/schemas"
 import { getImageProvider } from "@/lib/ai"
 import { IMAGE_ASSET_TYPES, IMAGE_SIZE, MASCOT_POSES, buildImagePrompt } from "@/lib/ai/image-prompts"
-import { checkTopic, sanitizeText } from "@/lib/safety"
+import { sanitizeText } from "@/lib/safety"
+import { checkTopicServer } from "@/lib/safety-server"
+import { getSetting, maintenanceFor, unavailable } from "@/lib/settings"
 import { clientKey, rateLimit } from "@/lib/rate-limit"
 import { getSession } from "@/lib/auth/session"
 import { blockedAccountResponse } from "@/lib/admin/account-status"
 import { getBillingStore } from "@/lib/billing/store"
 import { billingUnavailable } from "@/lib/billing/server"
-import { IMAGE_COSTS } from "@/lib/billing/plans"
 import { saveAsset } from "@/lib/data/server"
 import { getSupabaseAdmin } from "@/lib/supabase/admin"
 
 export const maxDuration = 150
 
 const DAY = 24 * 60 * 60 * 1000
-const GLOBAL_DAILY = Number(process.env.IMAGE_GLOBAL_DAILY_LIMIT ?? 300)
 // High by default: credit prices cover it, and these are the images people post. IMAGE_QUALITY overrides.
 const QUALITY = (["low", "medium", "high", "auto"] as const).find((q) => q === process.env.IMAGE_QUALITY) ?? "high"
 
@@ -28,7 +28,20 @@ const schema = z.object({
   scene: z.string().trim().max(200).optional(),
 })
 
+/** Images this wallet generated since 00:00 UTC, or null if the count can't be read. */
+async function walletImagesToday(accountId: string): Promise<number | null> {
+  const sb = getSupabaseAdmin()
+  if (!sb) return null
+  const since = new Date()
+  since.setUTCHours(0, 0, 0, 0)
+  const { count, error } = await sb.from("generated_assets").select("id", { count: "exact", head: true }).eq("account_id", accountId).gte("created_at", since.toISOString())
+  return error ? null : (count ?? 0)
+}
+
 export async function POST(req: Request) {
+  // Admin Settings: image switch, costs and daily limits. Code defaults apply when nothing is saved.
+  const [features, pricing, limits] = await Promise.all([getSetting("features"), getSetting("pricing"), getSetting("limits")])
+  if (!features.images) return unavailable("AI image generation")
   const provider = getImageProvider()
   if (!provider?.generateImage || !getSupabaseAdmin()) {
     return NextResponse.json({ error: "AI image generation isn't configured on this deployment." }, { status: 503 })
@@ -50,19 +63,27 @@ export async function POST(req: Request) {
   if (!session) return NextResponse.json({ error: "Connect your wallet to generate AI images.", code: "auth" }, { status: 401 })
   const blocked = await blockedAccountResponse(session.accountId)
   if (blocked) return blocked
+  const maintenance = await maintenanceFor(session.accountId)
+  if (maintenance) return NextResponse.json({ error: maintenance, code: "maintenance" }, { status: 503, headers: { "Retry-After": "300" } })
 
   // Abuse guards on top of credits: a short burst limit and a site-wide daily cap.
   const burst = rateLimit(clientKey(req, "image-burst"), 4, 60_000)
   if (!burst.ok) {
     return NextResponse.json({ error: "Slow down a little. Try again in a minute." }, { status: 429, headers: { "Retry-After": String(burst.retryAfter) } })
   }
-  if (!rateLimit("image-global", GLOBAL_DAILY, DAY).ok) {
+  // Per-wallet daily cap: counted from generated_assets, or in memory if the count can't be read.
+  const used = await walletImagesToday(session.accountId)
+  const walletOk = used === null ? rateLimit(`image-wallet:${session.accountId}`, limits.perWalletDailyImages, DAY).ok : used < limits.perWalletDailyImages
+  if (!walletOk) {
+    return NextResponse.json({ error: `You've reached today's limit of ${limits.perWalletDailyImages} AI images for this wallet. Try again tomorrow.` }, { status: 429 })
+  }
+  if (!rateLimit("image-global", limits.globalDailyImages, DAY).ok) {
     return NextResponse.json({ error: "The lab's image budget for today is used up. Try again tomorrow." }, { status: 429 })
   }
 
   // Everything the user can influence gets checked before we spend anything.
   const userText = [input.brand.name, input.brand.tagline, input.brand.catchphrase, input.brand.slogan, input.scene].filter(Boolean).join("\n")
-  if (!checkTopic(userText).ok) return NextResponse.json({ error: "Let's keep it fun. Try a different idea." }, { status: 422 })
+  if (!(await checkTopicServer(userText)).ok) return NextResponse.json({ error: "Let's keep it fun. Try a different idea." }, { status: 422 })
   try {
     if (provider.moderate && (await provider.moderate(userText))) {
       return NextResponse.json({ error: "That idea didn't pass our content check. Try something else." }, { status: 422 })
@@ -74,7 +95,7 @@ export async function POST(req: Request) {
 
   // Charge first; refund if anything below fails.
   const store = getBillingStore()
-  const cost = IMAGE_COSTS[input.type]
+  const cost = pricing.imageCosts[input.type]
   const chargeRef = `image:${crypto.randomUUID()}`
   const charge = await store.spend(session.accountId, cost, `AI ${input.type.replace("-", " ")}`, chargeRef)
   if (!charge.ok) {

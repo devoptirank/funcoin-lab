@@ -89,12 +89,24 @@ export async function setPublished(account: string, id: string, published: boole
   return row ? toProject(row as ProjectRow) : null
 }
 
-/** Public: a published site by slug, or null. */
+/**
+ * Public: a published site by slug, or null. Hidden or removed sites (moderation) and sites whose
+ * owner is banned are never served.
+ */
 export async function getPublishedSite(slug: string): Promise<SiteConfig | null> {
   const sb = getSupabaseAdmin()
   if (!sb || !/^[a-z0-9-]{2,64}$/.test(slug)) return null
-  const { data } = await sb.from("projects").select("site, concept").eq("slug", slug).eq("published", true).maybeSingle()
-  return (data?.site as SiteConfig | null) ?? null
+  const { data } = await sb
+    .from("projects")
+    .select("site, account_id")
+    .eq("slug", slug)
+    .eq("published", true)
+    .eq("moderation_status", "ok")
+    .maybeSingle()
+  if (!data?.site) return null
+  const { data: owner, error } = await sb.from("billing_accounts").select("status").eq("id", data.account_id).maybeSingle()
+  if (error || owner?.status === "banned") return null
+  return data.site as SiteConfig
 }
 
 // ---------------- Saved domains ----------------
@@ -173,7 +185,7 @@ function toAsset(sb: SupabaseClient, r: AssetRow): AssetRecord {
 
 export async function listAssets(account: string, conceptId: string): Promise<AssetRecord[]> {
   const sb = db()
-  const rows = check(await sb.from("generated_assets").select(ASSET_COLS).eq("account_id", account).eq("concept_id", conceptId).order("created_at", { ascending: false }).limit(200))
+  const rows = check(await sb.from("generated_assets").select(ASSET_COLS).eq("account_id", account).eq("concept_id", conceptId).neq("moderation_status", "removed").order("created_at", { ascending: false }).limit(200))
   return (rows as AssetRow[]).map((r) => toAsset(sb, r))
 }
 

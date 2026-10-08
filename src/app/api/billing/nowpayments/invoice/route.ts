@@ -1,22 +1,25 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { packById } from "@/lib/billing/plans"
 import { getBillingStore, type Order } from "@/lib/billing/store"
 import { appOrigin, billingUnavailable, requireSession, siteOrigin } from "@/lib/billing/server"
 import { createInvoice, enabledCoins, nowPaymentsEnabled } from "@/lib/billing/nowpayments"
 import { clientKey, rateLimit } from "@/lib/rate-limit"
+import { featureGate, getSetting } from "@/lib/settings"
 
 export async function POST(req: Request) {
   const offline = billingUnavailable()
   if (offline) return offline
   const session = await requireSession()
   if (session instanceof NextResponse) return session
+  const off = await featureGate((f) => f.checkoutNowpayments, "Crypto checkout (NOWPayments)")
+  if (off) return off
   if (!nowPaymentsEnabled()) return NextResponse.json({ error: "Crypto checkout (NOWPayments) isn't configured yet." }, { status: 503 })
   if (!rateLimit(clientKey(req, "np-invoice"), 6, 60_000).ok) return NextResponse.json({ error: "Too many checkouts. Wait a minute." }, { status: 429 })
   const parsed = z
     .object({ packId: z.string(), payCurrency: z.string().regex(/^[a-z0-9]{2,20}$/).optional() })
     .safeParse(await req.json().catch(() => null))
-  const pack = parsed.success ? packById(parsed.data.packId) : undefined
+  // Packs come from admin Settings (billing/plans by default); the price is locked into the order.
+  const pack = parsed.success ? (await getSetting("pricing")).packs.find((p) => p.id === parsed.data.packId) : undefined
   if (!parsed.success || !pack) return NextResponse.json({ error: "Unknown credit pack" }, { status: 400 })
   const payCurrency = parsed.data.payCurrency
   if (payCurrency && !(await enabledCoins()).includes(payCurrency)) {

@@ -3,8 +3,11 @@
  * without a code edit. Anything left empty is simply not shown.
  *
  * The contract address is the one value scammers fake most, so it is validated and shown in exactly
- * one form everywhere (footer, /token, home).
+ * one form everywhere (footer, /token, home). It stays env-only on purpose: admin Settings can change
+ * the social links but never the contract address.
  */
+import "server-only"
+import { getSetting } from "@/lib/settings"
 
 const env = (v: string | undefined) => (v ?? "").trim()
 const httpsUrl = (v: string | undefined) => {
@@ -13,18 +16,46 @@ const httpsUrl = (v: string | undefined) => {
 }
 
 export type SocialId = "x" | "telegram" | "discord" | "github" | "instagram" | "tiktok" | "youtube"
+export type Social = { id: SocialId; label: string; url: string }
 
-export const SOCIALS: { id: SocialId; label: string; url: string }[] = (
-  [
-    { id: "x", label: "X (Twitter)", url: httpsUrl(process.env.NEXT_PUBLIC_X_URL) },
-    { id: "telegram", label: "Telegram", url: httpsUrl(process.env.NEXT_PUBLIC_TELEGRAM_URL) },
-    { id: "discord", label: "Discord", url: httpsUrl(process.env.NEXT_PUBLIC_DISCORD_URL) },
-    { id: "github", label: "GitHub", url: httpsUrl(process.env.NEXT_PUBLIC_GITHUB_URL) || "https://github.com/devoptirank/funcoin-lab" },
-    { id: "instagram", label: "Instagram", url: httpsUrl(process.env.NEXT_PUBLIC_INSTAGRAM_URL) },
-    { id: "tiktok", label: "TikTok", url: httpsUrl(process.env.NEXT_PUBLIC_TIKTOK_URL) },
-    { id: "youtube", label: "YouTube", url: httpsUrl(process.env.NEXT_PUBLIC_YOUTUBE_URL) },
-  ] as const
-).filter((s) => s.url)
+/** Display order and names for the official accounts. */
+export const SOCIAL_LABELS: { id: SocialId; label: string }[] = [
+  { id: "x", label: "X (Twitter)" },
+  { id: "telegram", label: "Telegram" },
+  { id: "discord", label: "Discord" },
+  { id: "github", label: "GitHub" },
+  { id: "instagram", label: "Instagram" },
+  { id: "tiktok", label: "TikTok" },
+  { id: "youtube", label: "YouTube" },
+]
+
+const ENV_SOCIALS: Record<SocialId, string> = {
+  x: httpsUrl(process.env.NEXT_PUBLIC_X_URL),
+  telegram: httpsUrl(process.env.NEXT_PUBLIC_TELEGRAM_URL),
+  discord: httpsUrl(process.env.NEXT_PUBLIC_DISCORD_URL),
+  github: httpsUrl(process.env.NEXT_PUBLIC_GITHUB_URL) || "https://github.com/devoptirank/funcoin-lab",
+  instagram: httpsUrl(process.env.NEXT_PUBLIC_INSTAGRAM_URL),
+  tiktok: httpsUrl(process.env.NEXT_PUBLIC_TIKTOK_URL),
+  youtube: httpsUrl(process.env.NEXT_PUBLIC_YOUTUBE_URL),
+}
+
+/** The env defaults only. Prefer getSocials(), which applies the admin's Settings on top. */
+export const SOCIALS: Social[] = SOCIAL_LABELS.map((s) => ({ ...s, url: ENV_SOCIALS[s.id] })).filter((s) => s.url)
+
+/**
+ * The official social accounts: links saved in admin Settings over the NEXT_PUBLIC_* env defaults.
+ * Only https links are returned; an empty link hides that account. Falls back to the env values if
+ * settings can't be read.
+ */
+export async function getSocials(): Promise<Social[]> {
+  let stored: Record<SocialId, string> = ENV_SOCIALS
+  try {
+    stored = await getSetting("socials")
+  } catch {
+    stored = ENV_SOCIALS
+  }
+  return SOCIAL_LABELS.map((s) => ({ ...s, url: httpsUrl(stored[s.id]) })).filter((s) => s.url)
+}
 
 /** Solana addresses are base58, 32 to 44 characters. Anything else is ignored rather than shown. */
 const CA = env(process.env.NEXT_PUBLIC_TOKEN_CA)
