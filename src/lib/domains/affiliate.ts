@@ -1,5 +1,5 @@
 // Registrar links (shared by server and client). An affiliate template, when set, takes priority.
-// Templates use {domain} (URL-encoded) e.g. "https://www.dynadot.com/domain/search?domain={domain}&rscreg=YOURID".
+// Templates use {domain} (URL-encoded), copied from the Dynadot affiliate dashboard.
 
 const AFFILIATE = process.env.NEXT_PUBLIC_DOMAIN_AFFILIATE_URL_TEMPLATE?.trim() ?? ""
 const SEARCH = process.env.NEXT_PUBLIC_REGISTRAR_SEARCH_URL?.trim() || "https://www.dynadot.com/domain/search?domain={domain}"

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check:payments": "tsx scripts/check-payments.mts"
+    "check:payments": "tsx scripts/check-payments.mts",
+    "check:domains": "tsx scripts/check-dynadot.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

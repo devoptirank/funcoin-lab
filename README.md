@@ -123,7 +123,7 @@ Only `dynadot` and `http` can show "Available".
 **Affiliate links.**
 - Every buy button points to `/go/domain?d=<domain>&src=<where>`.
 - That route logs the click to `domain_clicks` (migration `0003`), or to the server log without Supabase, then redirects.
-- The redirect target is built only from `DOMAIN_AFFILIATE_URL_TEMPLATE` (or the plain registrar search URL), so the route can't be used as an open redirect.
+- The redirect target is built only from `NEXT_PUBLIC_DOMAIN_AFFILIATE_URL_TEMPLATE` (or the plain registrar search URL), so the route can't be used as an open redirect.
 - Links use `rel="sponsored nofollow"`, and `/affiliate-disclosure` explains the arrangement.
 
 ### Database
