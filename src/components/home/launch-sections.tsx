@@ -4,6 +4,9 @@ import { CREDIT_PACKS, IMAGE_COSTS } from "@/lib/billing/plans"
 import { toAppUrl } from "@/lib/hosts"
 import { ButtonLink } from "@/components/shared/button-link"
 import { TokenWaitlist } from "./token-waitlist"
+import { TOKEN } from "@/lib/official"
+import { ContractAddress } from "@/components/shared/contract-address"
+import { SocialLinks } from "@/components/shared/social-icons"
 
 const CHECKLIST = [
   { icon: Sparkles, title: "A name people repeat", text: "Short, sayable, and searchable. Check trademarks before you go public.", href: "/create" },
@@ -94,12 +97,32 @@ export function TokenTeaser() {
           <Wallet className="size-6 text-lab" aria-hidden />
         </span>
         <h2 id="token-title" className="font-heading text-4xl leading-[1.02] font-extrabold sm:text-5xl">
-          The FunCoin Lab token is coming later
+          {TOKEN.live ? `$${TOKEN.ticker} is live` : "The FunCoin Lab token is coming"}
         </h2>
-        <p className="max-w-xl text-lg text-muted-foreground">
-          We plan to launch our own token on this platform. Join the waitlist with your wallet to hear first. There is no sale, price or allocation today.
-        </p>
-        <TokenWaitlist />
+        {TOKEN.live ? (
+          <>
+            <p className="max-w-xl text-lg text-muted-foreground">Our community meme token on Solana. This is the only official contract address.</p>
+            <ContractAddress ca={TOKEN.ca} />
+            <div className="flex flex-wrap justify-center gap-2">
+              {TOKEN.links.slice(0, 3).map((l) => (
+                <a key={l.id} href={l.url} target="_blank" rel="noopener noreferrer" className="rounded-full border border-border px-4 py-2 text-sm font-semibold hover:border-lab-fill/60">
+                  {l.label}
+                </a>
+              ))}
+              <Link href="/token" className="rounded-full bg-lab-fill px-4 py-2 text-sm font-semibold text-lab-ink">
+                Official details
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="max-w-xl text-lg text-muted-foreground">
+              We plan to launch our own token on this platform. Join the waitlist with your wallet to hear first. There is no sale, price or allocation today.
+            </p>
+            <TokenWaitlist />
+          </>
+        )}
+        <SocialLinks className="justify-center" />
         <p className="text-xs text-muted-foreground">
           Nothing here is financial advice or an offer. Read the{" "}
           <Link href="/disclaimer" className="underline underline-offset-4">

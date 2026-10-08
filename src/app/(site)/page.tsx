@@ -15,6 +15,7 @@ import { conceptToSite } from "@/lib/generator/site"
 import { siteConfig } from "@/lib/site-config"
 import { seoPages } from "@/content/seo-pages"
 import { OG_IMAGE } from "@/lib/seo"
+import { SOCIALS } from "@/lib/official"
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -32,7 +33,7 @@ const jsonLd = [
     url: siteConfig.url,
     logo: `${siteConfig.url}/icon.png`,
     email: siteConfig.contactEmail,
-    sameAs: Object.values(siteConfig.social).filter(Boolean),
+    sameAs: SOCIALS.map((s) => s.url),
   },
   {
     "@context": "https://schema.org",

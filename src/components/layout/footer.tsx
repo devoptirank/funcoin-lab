@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { LogoMark } from "@/components/shared/logo-mark"
+import { SocialLinks } from "@/components/shared/social-icons"
 
 const columns = [
   {
@@ -18,6 +19,7 @@ const columns = [
       { href: "/meme-logo-generator", label: "Logo Generator" },
       { href: "/meme-generator", label: "Meme Generator" },
       { href: "/discover", label: "FunCoin Universe" },
+      { href: "/token", label: "Official token" },
     ],
   },
   {
@@ -42,6 +44,7 @@ export function Footer() {
           <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
             FunCoin Lab is a creative branding and website-prototyping tool. Nothing here is financial advice.
           </p>
+          <SocialLinks className="mt-2" />
         </div>
         {columns.map((col) => (
           <div key={col.title}>
