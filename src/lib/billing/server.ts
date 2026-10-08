@@ -19,7 +19,7 @@ export function billingMethods() {
 /** 503 response when the credit ledger can't run on this host, otherwise null. */
 export function billingUnavailable(): NextResponse | null {
   if (billingAvailable()) return null
-  return NextResponse.json({ error: "Accounts and credits are switching on soon. Everything else works without signing in." }, { status: 503 })
+  return NextResponse.json({ error: "Wallet sign-in is being switched on. Please try again in a few minutes." }, { status: 503 })
 }
 
 export async function accountSnapshot(session: Session) {
