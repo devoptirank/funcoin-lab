@@ -1,16 +1,51 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { APP_URL, SITE_HOST, SITE_URL, isAppHost, isAppPath, isSiteHost } from "@/lib/hosts"
+import { APP_URL, SITE_HOST, SITE_URL, isAdminHost, isAppHost, isAppPath, isSiteHost } from "@/lib/hosts"
 
 // Paths both hosts serve as-is: published sites, tracked registrar links and metadata files.
 const SHARED = ["/site/", "/go/", "/og/", "/robots.txt", "/sitemap.xml", "/icon", "/apple-icon", "/opengraph-image", "/favicon", "/manifest"]
 
+// APIs the admin host may serve: its own, wallet sign-in, and the Solana RPC relay the wallet needs.
+const ADMIN_HOST_APIS = /^\/api\/(admin|auth)\/|^\/api\/solana\/rpc$/
+
+const isAdminPath = (p: string) => p === "/admin" || p.startsWith("/admin/") || p === "/api/admin" || p.startsWith("/api/admin/")
+
+/** Security headers for every admin page and API response. */
+function adminHeaders(res: NextResponse) {
+  res.headers.set("X-Robots-Tag", "noindex, nofollow")
+  res.headers.set("Content-Security-Policy", "frame-ancestors 'none'")
+  res.headers.set("X-Frame-Options", "DENY")
+  res.headers.set("Referrer-Policy", "no-referrer")
+  res.headers.set("Cache-Control", "no-store")
+  return res
+}
+
 /**
- * Routes requests between the marketing site and the app host. Old /login links go to the app,
- * which asks for a wallet instead of an account.
+ * An ordinary 404, identical to any missing page. Used to hide the admin panel on public hosts
+ * (never a redirect, which would reveal the admin address).
+ */
+const hidden = (request: NextRequest) => NextResponse.rewrite(new URL("/_not-found-hidden", request.url))
+
+/**
+ * Routes requests between the marketing site, the app host and the admin host. Old /login links go
+ * to the app, which asks for a wallet instead of an account.
  */
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl
   const host = (request.headers.get("host") ?? "").toLowerCase()
+
+  // Admin host: clean URLs (/users -> /admin/users), its own APIs only, everything else is a 404.
+  if (isAdminHost(host)) {
+    if (pathname.startsWith("/api/")) return adminHeaders(ADMIN_HOST_APIS.test(pathname) ? NextResponse.next() : hidden(request))
+    if (pathname === "/admin" || pathname.startsWith("/admin/")) return adminHeaders(hidden(request))
+    if (SHARED.some((p) => pathname.startsWith(p))) return adminHeaders(hidden(request))
+    return adminHeaders(NextResponse.rewrite(new URL(`/admin${pathname === "/" ? "" : pathname}${search}`, request.url)))
+  }
+  // Public hosts: the admin panel doesn't exist here.
+  if ((isSiteHost(host) || isAppHost(host)) && isAdminPath(pathname)) return hidden(request)
+  // Localhost and preview deployments serve /admin directly, with the same headers.
+  if (isAdminPath(pathname)) return adminHeaders(NextResponse.next())
+
+  if (pathname.startsWith("/api/")) return NextResponse.next()
 
   // One canonical marketing host: www and the production *.vercel.app URL redirect to it.
   if (SITE_URL && (host === `www.${SITE_HOST}` || (process.env.VERCEL_ENV === "production" && host.endsWith(".vercel.app")))) {
@@ -42,6 +77,6 @@ function crossHost(request: NextRequest, target: string, status: 307 | 308) {
 }
 
 export const config = {
-  // Pages only: skip API routes, Next internals and files with an extension.
-  matcher: ["/((?!api/|_next/|.*\\.[a-zA-Z0-9]+$).*)"],
+  // Pages and API routes; skip Next internals and files with an extension.
+  matcher: ["/((?!_next/|.*\\.[a-zA-Z0-9]+$).*)"],
 }

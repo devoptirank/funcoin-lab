@@ -136,6 +136,16 @@ Run the migrations in `supabase/migrations/` in order (or paste `supabase/setup-
 - Every generated site carries a non-removable disclaimer, and the token block tells visitors to trust only the contract address published there.
 - `src/content/legal.ts` contains **templates**. Have a lawyer review them before launch.
 
+### Admin panel (admin.funcoinlab.com)
+A hidden operator panel, served only on its own subdomain from the same deployment.
+- **Become the first admin:** put your wallet address in `ADMIN_WALLETS` (comma-separated). Those wallets are owners. Set `ADMIN_URL=https://admin.funcoinlab.com` and a 32+ character `ADMIN_SESSION_SECRET`.
+- **Database:** run `supabase/migrations/0006_admin.sql` in the Supabase SQL editor.
+- **Domain:** in Vercel (project `funcoin-lab`) add `admin.funcoinlab.com`. At Hostinger DNS add a `CNAME` record named `admin` pointing to the target Vercel shows.
+- **Signing in:** open admin.funcoinlab.com, connect your wallet, then sign the separate "admin sign-in" message. That sets an 8-hour, host-only cookie. Roles are re-checked on every request.
+- **Isolation:** on funcoinlab.com and app.funcoinlab.com, `/admin` is an ordinary 404, never a redirect. Non-admin wallets also get a 404 on the admin host. On localhost and preview deployments the panel lives at `/admin`.
+- Permissions live in `src/lib/admin/permissions.ts`, the guard in `src/lib/admin/guard.ts`. Every mutation is a SQL function that also writes the append-only `admin_audit` log.
+- Tests: `npm run test:admin` (unit) and `npm run test:admin:e2e` (against a running server, see the script header).
+
 ### Hosting on Vercel
 1. Add `funcoinlab.com`, `www.funcoinlab.com` and `app.funcoinlab.com` to the project, and point DNS at Vercel.
 2. Run `bash scripts/push-env-vercel.sh`. It copies `.env.local` to Vercel, sets both URLs, creates a production `SESSION_SECRET` once, and deploys.

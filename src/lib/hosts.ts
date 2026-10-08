@@ -64,3 +64,12 @@ export function toAppUrl(href: string): string {
   const path = href.split(/[?#]/)[0]
   return isAppPath(path) ? `${APP_URL}${href}` : href
 }
+
+/**
+ * Admin host (admin.funcoinlab.com), from the server-only ADMIN_URL. It is deliberately not a
+ * NEXT_PUBLIC_ variable, so the admin address never appears in the browser bundle; on the client
+ * these helpers always see "not configured".
+ */
+export const adminHost = () => hostOf(process.env.ADMIN_URL)
+export const adminConfigured = () => Boolean(adminHost())
+export const isAdminHost = (host: string) => adminConfigured() && host.toLowerCase() === adminHost()

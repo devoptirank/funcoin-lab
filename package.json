@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "check:payments": "tsx scripts/check-payments.mts",
-    "check:domains": "tsx scripts/check-dynadot.mts"
+    "check:domains": "tsx scripts/check-dynadot.mts",
+    "test:admin": "node --conditions=react-server --import tsx --test tests/admin.test.mts",
+    "test:admin:e2e": "tsx scripts/test-admin-e2e.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
