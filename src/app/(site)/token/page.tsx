@@ -6,6 +6,7 @@ import { CoinImage } from "@/components/shared/coin-image"
 import { ContractAddress } from "@/components/shared/contract-address"
 import { SocialLinks } from "@/components/shared/social-icons"
 import { TokenWaitlist } from "@/components/home/token-waitlist"
+import { TokenDashboard } from "@/components/token/token-dashboard"
 
 export const metadata = pageMetadata({
   title: `$${TOKEN.ticker}: Official ${TOKEN.name} Token Details`,
@@ -66,6 +67,8 @@ export default async function TokenPage() {
           </div>
         )}
       </section>
+
+      {TOKEN.live && <TokenDashboard ca={TOKEN.ca} ticker={TOKEN.ticker} pumpUrl={TOKEN.links.find((l) => l.id === "pumpfun")?.url ?? `https://pump.fun/coin/${TOKEN.ca}`} />}
 
       {socials.length > 0 && (
         <section aria-labelledby="social-title" className="mt-10">
