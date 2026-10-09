@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { copyText } from "@/lib/client-api"
 import { cn } from "@/lib/utils"
 import type { ChartPoint, ChartRange, TokenMarket } from "@/lib/token-market"
+import { usdCompact, usdPrice } from "@/lib/token-format"
 
 const RANGES: { id: ChartRange; label: string }[] = [
   { id: "1h", label: "1H" },
@@ -14,13 +15,6 @@ const RANGES: { id: ChartRange; label: string }[] = [
 ]
 const MARKET_POLL_MS = 60_000
 const CHART_POLL_MS = 120_000
-
-const usdCompact = (n: number) =>
-  n.toLocaleString("en-US", { style: "currency", currency: "USD", notation: n >= 100_000 ? "compact" : "standard", maximumFractionDigits: n >= 100 ? 0 : 2 })
-
-/** Small prices keep 4 significant digits ($0.000004101) instead of rounding to $0.00. */
-const usdPrice = (n: number) =>
-  n >= 1 ? n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 4 }) : `$${n.toPrecision(4).replace(/0+$/, "").replace(/\.$/, "")}`
 
 const time = (iso: string | number) => new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })
 

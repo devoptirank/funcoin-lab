@@ -1,11 +1,24 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useSyncExternalStore } from "react"
 import { useReducedMotion } from "framer-motion"
 import { CoinImage } from "@/components/shared/coin-image"
 
+const REDUCE_QUERY = "(prefers-reduced-motion: reduce)"
+const subscribeReduce = (cb: () => void) => {
+  const mq = window.matchMedia(REDUCE_QUERY)
+  mq.addEventListener("change", cb)
+  return () => mq.removeEventListener("change", cb)
+}
+
+/**
+ * Reduced-motion preference that matches the server render during hydration (false), then updates.
+ * framer's useReducedMotion reads it immediately, which changed the rendered text and broke hydration.
+ */
+const useHydratedReducedMotion = () => useSyncExternalStore(subscribeReduce, () => window.matchMedia(REDUCE_QUERY).matches, () => false)
+
 /** Types each domain idea out, one after another. */
 export function TypingDomains({ domains }: { domains: string[] }) {
-  const reduce = useReducedMotion()
+  const reduce = useHydratedReducedMotion()
   const [i, setI] = useState(0)
   const [chars, setChars] = useState(0)
   const word = domains[i % domains.length].replace(/\.fun$/, "")
