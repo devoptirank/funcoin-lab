@@ -232,7 +232,7 @@ export function TokenDashboard({ ca, ticker, pumpUrl }: { ca: string; ticker: st
         </div>
       )}
 
-      <PriceChart key={range} range={range} onRange={setRange} />
+      <PriceChart key={range} range={range} onRange={setRange} lastPrice={m?.priceUsd ?? null} />
 
       <p className="mt-6 text-xs text-muted-foreground">
         Sources: price, market cap, FDV, volume, liquidity and pair from DexScreener; price history from GeckoTerminal; supply and mint details from the Solana
@@ -242,41 +242,60 @@ export function TokenDashboard({ ca, ticker, pumpUrl }: { ca: string; ticker: st
   )
 }
 
-function PriceChart({ range, onRange }: { range: ChartRange; onRange: (r: ChartRange) => void }) {
+const RANGE_MS: Record<ChartRange, number> = { "1h": 3_600_000, "24h": 86_400_000, "7d": 7 * 86_400_000, "30d": 30 * 86_400_000 }
+const axisTime = (t: number, range: ChartRange) =>
+  new Date(t).toLocaleString(undefined, range === "1h" || range === "24h" ? { hour: "numeric", minute: "2-digit" } : { month: "short", day: "numeric" })
+
+/**
+ * Price over the selected window, from real trades only. Each period with trades is a dot joined by a
+ * solid line. Between the last trade and now the price hasn't changed, so a dashed line carries the
+ * last traded price forward (clearly labelled), which keeps a thinly traded token's chart readable.
+ */
+function PriceChart({ range, onRange, lastPrice }: { range: ChartRange; onRange: (r: ChartRange) => void; lastPrice: number | null }) {
   const chart = usePolled<ChartResponse>(`/api/token/chart?range=${range}`, CHART_POLL_MS)
   const points = chart.data?.range === range ? chart.data.points : null
   const [hover, setHover] = useState<number | null>(null)
 
   const W = 600
   const H = 200
-  let path = ""
+  const end = chart.data ? new Date(chart.data.fetchedAt).getTime() : 0
+  const startT = end - RANGE_MS[range]
+  // The price carried forward: the last trade in range, else the current market price.
+  const carry = points?.length ? points[points.length - 1][1] : lastPrice
+  const drawable = points !== null && carry !== null
+
+  let solid = ""
+  let dashed = ""
   let area = ""
-  let coords: [number, number][] = []
-  let min = 0
-  let max = 0
-  if (points && points.length > 0) {
-    const t0 = points[0][0]
-    const t1 = points[points.length - 1][0]
-    const prices = points.map((p) => p[1])
-    min = Math.min(...prices)
-    max = Math.max(...prices)
-    const pad = (max - min) * 0.1 || max * 0.05
-    const lo = min - pad
-    const hi = max + pad
-    coords = points.map(([t, p]) => [t1 === t0 ? W / 2 : ((t - t0) / (t1 - t0)) * W, H - ((p - lo) / (hi - lo)) * H])
-    path = coords.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ")
-    area = coords.length > 1 ? `${path} L${W},${H} L0,${H} Z` : ""
+  let dots: { x: number; y: number }[] = []
+  let lo = 0
+  let hi = 0
+  if (drawable) {
+    const prices = [...points.map((p) => p[1]), carry]
+    const min = Math.min(...prices)
+    const max = Math.max(...prices)
+    const pad = (max - min) * 0.15 || max * 0.08
+    lo = min - pad
+    hi = max + pad
+    const x = (t: number) => Math.min(W, Math.max(0, ((t - startT) / (end - startT)) * W))
+    const y = (v: number) => H - ((v - lo) / (hi - lo)) * H
+    dots = points.map(([t, v]) => ({ x: x(t), y: y(v) }))
+    solid = dots.map((d, i) => `${i ? "L" : "M"}${d.x.toFixed(1)},${d.y.toFixed(1)}`).join(" ")
+    const from = dots.at(-1) ?? { x: 0, y: y(carry) }
+    dashed = `M${from.x.toFixed(1)},${from.y.toFixed(1)} L${W},${from.y.toFixed(1)}`
+    const first = dots[0] ?? from
+    area = `M${first.x.toFixed(1)},${H} ${dots.map((d) => `L${d.x.toFixed(1)},${d.y.toFixed(1)}`).join(" ")} L${from.x.toFixed(1)},${from.y.toFixed(1)} L${W},${from.y.toFixed(1)} L${W},${H} Z`
   }
-  const shown = hover !== null && points?.[hover] ? points[hover] : points?.at(-1)
+  const hovered = hover !== null && points?.[hover] ? points[hover] : null
 
   return (
     <figure className="mt-6 rounded-2xl border border-border p-4">
       <figcaption className="flex flex-wrap items-center justify-between gap-3">
         <span>
-          <span className="block text-xs font-semibold text-muted-foreground">Price (USD)</span>
+          <span className="block text-xs font-semibold text-muted-foreground">{hovered ? "Traded at" : "Price (USD)"}</span>
           <span className="block font-heading text-lg font-extrabold tabular-nums">
-            {shown ? `${usdPrice(shown[1])}` : " "}
-            {shown && <span className="ml-2 text-xs font-normal text-muted-foreground">{time(shown[0])}</span>}
+            {hovered ? usdPrice(hovered[1]) : lastPrice !== null ? usdPrice(lastPrice) : carry !== null ? usdPrice(carry) : " "}
+            <span className="ml-2 text-xs font-normal text-muted-foreground">{hovered ? time(hovered[0]) : lastPrice !== null ? "now" : ""}</span>
           </span>
         </span>
         <span role="group" aria-label="Chart range" className="inline-flex rounded-full border border-border p-0.5">
@@ -306,50 +325,81 @@ function PriceChart({ range, onRange }: { range: ChartRange; onRange: (r: ChartR
             </span>
           </div>
         )}
-        {points && points.length === 0 && (
+        {points && !drawable && (
           <div className="grid size-full place-items-center rounded-xl bg-foreground/[0.03] p-4 text-center text-sm text-muted-foreground">
             No trades in this time range, so there is no price history to draw.
           </div>
         )}
-        {points && points.length > 0 && (
-          <svg
-            viewBox={`0 0 ${W} ${H}`}
-            preserveAspectRatio="none"
-            className="size-full overflow-visible"
+        {drawable && (
+          <div
+            className="relative size-full"
             role="img"
-            aria-label={`Price over the last ${range}: ${points.length} data points, low ${usdPrice(min)}, high ${usdPrice(max)}.`}
+            aria-label={`Price over the last ${range}: ${points.length} trading ${points.length === 1 ? "period" : "periods"}, last traded at ${usdPrice(carry)}.`}
             onPointerMove={(e) => {
+              if (!dots.length) return
               const box = e.currentTarget.getBoundingClientRect()
-              const x = ((e.clientX - box.left) / box.width) * W
+              const px = ((e.clientX - box.left) / box.width) * W
               let best = 0
-              coords.forEach(([cx], i) => {
-                if (Math.abs(cx - x) < Math.abs(coords[best][0] - x)) best = i
+              dots.forEach((d, i) => {
+                if (Math.abs(d.x - px) < Math.abs(dots[best].x - px)) best = i
               })
-              setHover(best)
+              setHover(Math.abs(dots[best].x - px) < 40 ? best : null)
             }}
             onPointerLeave={() => setHover(null)}
           >
-            <defs>
-              <linearGradient id="token-area" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="var(--lab)" stopOpacity="0.28" />
-                <stop offset="100%" stopColor="var(--lab)" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            {area && <path d={area} fill="url(#token-area)" />}
-            {coords.length > 1 && <path d={path} fill="none" stroke="var(--lab)" strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />}
-            {(coords.length === 1 || hover !== null) && (
-              <circle cx={coords[hover ?? 0][0]} cy={coords[hover ?? 0][1]} r="4" fill="var(--lab)" vectorEffect="non-scaling-stroke" />
-            )}
-          </svg>
+            {/* Grid lines and price labels */}
+            {[0, 1 / 3, 2 / 3, 1].map((f) => (
+              <div key={f} className="absolute inset-x-0 border-t border-border/50" style={{ top: `${f * 100}%` }} aria-hidden>
+                <span className="absolute -top-2 left-0 bg-card pr-1 text-[10px] text-muted-foreground tabular-nums">{usdPrice(hi - (hi - lo) * f)}</span>
+              </div>
+            ))}
+            <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible" aria-hidden>
+              <defs>
+                <linearGradient id="token-area" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="var(--lab)" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="var(--lab)" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path d={area} fill="url(#token-area)" />
+              {dots.length > 1 && <path d={solid} fill="none" stroke="var(--lab)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />}
+              <path d={dashed} fill="none" stroke="var(--lab)" strokeOpacity="0.7" strokeWidth="2" strokeDasharray="6 5" vectorEffect="non-scaling-stroke" />
+            </svg>
+            {/* Trade dots in HTML so they stay round when the SVG stretches */}
+            {dots.map((d, i) => (
+              <span
+                key={i}
+                className={cn("absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--lab)] ring-4 ring-[color-mix(in_oklab,var(--lab)_25%,transparent)]", hover === i && "size-3.5")}
+                style={{ left: `${(d.x / W) * 100}%`, top: `${(d.y / H) * 100}%` }}
+                aria-hidden
+              />
+            ))}
+            {/* "Now" marker at the end of the dashed line */}
+            <span
+              className="absolute right-0 size-2 translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[var(--lab)] bg-card"
+              style={{ top: `${((dots.at(-1)?.y ?? H - ((carry - lo) / (hi - lo)) * H) / H) * 100}%` }}
+              aria-hidden
+            />
+          </div>
         )}
       </div>
+      {drawable && (
+        <div className="mt-1.5 flex justify-between text-[10px] text-muted-foreground tabular-nums" aria-hidden>
+          <span>{axisTime(startT, range)}</span>
+          <span>{axisTime(startT + (end - startT) / 2, range)}</span>
+          <span>Now</span>
+        </div>
+      )}
 
-      {points && points.length > 0 && (
-        <p className="mt-3 text-xs text-muted-foreground">
-          {points.length === 1
-            ? "Only one trading period in this range so far. "
-            : `${points.length} periods with trades. Periods without trades are skipped, not filled in. `}
-          Low {usdPrice(min)}, high {usdPrice(max)}. Earliest data {time(points[0][0])}.
+      {drawable && (
+        <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-[var(--lab)]" aria-hidden /> Trade ({points.length} {points.length === 1 ? "period" : "periods"} with trades)
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="w-4 border-t-2 border-dashed border-[var(--lab)]" aria-hidden /> Last traded price, no trades since
+          </span>
+          {points.length === 0 && <span>No trades in this range; showing the current price.</span>}
+          <span className="basis-full">Chart: trades from GeckoTerminal. Headline price: DexScreener, so the two can differ slightly.</span>
         </p>
       )}
     </figure>
