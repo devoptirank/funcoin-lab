@@ -95,9 +95,14 @@ export async function TokenTeaser() {
     <section aria-labelledby="token-title" className="relative isolate overflow-hidden px-4 py-14 sm:px-6 sm:py-24">
       <div aria-hidden className="absolute top-1/2 left-1/2 -z-10 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,var(--lab),transparent)] opacity-10" />
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">
-        <span className="grid size-14 place-items-center rounded-2xl bg-foreground/[0.06]">
-          <Wallet className="size-6 text-lab" aria-hidden />
-        </span>
+        {TOKEN.live ? (
+          // eslint-disable-next-line @next/next/no-img-element -- small static asset, already sized
+          <img src="/coins/funcoin-token.webp" alt={`$${TOKEN.ticker} coin`} width={176} height={176} loading="lazy" className="size-36 drop-shadow-[0_18px_40px_color-mix(in_oklab,var(--lab)_35%,transparent)] sm:size-44" />
+        ) : (
+          <span className="grid size-14 place-items-center rounded-2xl bg-foreground/[0.06]">
+            <Wallet className="size-6 text-lab" aria-hidden />
+          </span>
+        )}
         <h2 id="token-title" className="font-heading text-4xl leading-[1.02] font-extrabold sm:text-5xl">
           {TOKEN.live ? `$${TOKEN.ticker} is live` : "The FunCoin Lab token is coming"}
         </h2>

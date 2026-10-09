@@ -64,7 +64,7 @@ function usePolled<T>(url: string, intervalMs: number) {
 
 type ChartResponse = { range: ChartRange; points: ChartPoint[]; fetchedAt: string; source: string; pair: string }
 
-export function TokenDashboard({ ca, ticker, pumpUrl }: { ca: string; ticker: string; pumpUrl: string }) {
+export function TokenDashboard({ ca, ticker, pumpUrl, image }: { ca: string; ticker: string; pumpUrl: string; image?: string }) {
   const market = usePolled<TokenMarket>("/api/token/market", MARKET_POLL_MS)
   const m = market.data
   const [range, setRange] = useState<ChartRange>("24h")
@@ -114,7 +114,9 @@ export function TokenDashboard({ ca, ticker, pumpUrl }: { ca: string; ticker: st
     <section aria-labelledby="market-title" className="mt-10 rounded-[2rem] border border-border bg-card p-6 sm:p-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 id="market-title" className="font-heading text-2xl font-extrabold">
+          <h2 id="market-title" className="flex items-center gap-2.5 font-heading text-2xl font-extrabold">
+            {/* eslint-disable-next-line @next/next/no-img-element -- 96px static asset */}
+            {image && <img src={image} alt="" width={36} height={36} className="size-9 rounded-full" />}
             ${ticker} live market
           </h2>
           <p className="mt-1 text-sm text-muted-foreground" aria-live="polite">

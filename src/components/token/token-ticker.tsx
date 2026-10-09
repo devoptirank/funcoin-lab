@@ -59,10 +59,8 @@ export function TokenTicker({ ticker, ca, href }: { ticker: string; ca: string; 
       className="group relative z-50 flex h-9 items-center overflow-hidden border-b border-lab-fill/30 bg-[color-mix(in_oklab,var(--lab)_10%,var(--background))] text-xs sm:text-sm"
     >
       <span className="relative z-10 flex h-full shrink-0 items-center gap-1.5 bg-lab-fill px-3 font-heading font-extrabold text-lab-ink">
-        <span className="relative flex size-2" aria-hidden>
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-lab-ink/60" />
-          <span className="relative inline-flex size-2 rounded-full bg-lab-ink" />
-        </span>
+        {/* eslint-disable-next-line @next/next/no-img-element -- 96px static asset */}
+        <img src="/coins/funcoin-token-96.webp" alt="" width={22} height={22} className="size-[22px] rounded-full ring-1 ring-lab-ink/30" />
         ${ticker}
       </span>
       <span className="relative min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_3%,#000_97%,transparent)]" aria-hidden>
