@@ -8,7 +8,8 @@ import { SocialLinks } from "@/components/shared/social-icons"
 import { TokenWaitlist } from "@/components/home/token-waitlist"
 import { TokenDashboard } from "@/components/token/token-dashboard"
 
-const TOKEN_IMAGE = "/coins/funcoin-token.webp"
+// The official coin art and its share card are only used once the token is live.
+const TOKEN_IMAGE = TOKEN.live ? "/coins/funcoin-token.webp" : "/coins/funcoinlab.webp"
 const TOKEN_OG = { url: "/og-funcoin.jpg", width: 1200, height: 630, alt: `$${TOKEN.ticker}, the official ${TOKEN.name} coin`, type: "image/jpeg" }
 
 const baseMetadata = pageMetadata({
@@ -17,13 +18,15 @@ const baseMetadata = pageMetadata({
     ? `The official ${TOKEN.name} token ($${TOKEN.ticker}) contract address, trading links and community channels. Always check the contract address here before you trade.`
     : `${TOKEN.name} plans to launch its own token ($${TOKEN.ticker}) on Solana. Join the wallet waitlist and find the official channels before launch.`,
   path: "/token",
-  fileImage: true,
+  fileImage: TOKEN.live,
 })
-export const metadata = {
-  ...baseMetadata,
-  openGraph: { ...baseMetadata.openGraph, images: [TOKEN_OG] },
-  twitter: { ...baseMetadata.twitter, images: [TOKEN_OG.url] },
-}
+export const metadata = TOKEN.live
+  ? {
+      ...baseMetadata,
+      openGraph: { ...baseMetadata.openGraph, images: [TOKEN_OG] },
+      twitter: { ...baseMetadata.twitter, images: [TOKEN_OG.url] },
+    }
+  : baseMetadata
 
 const SAFETY = [
   "This page is the only official source of the contract address. Compare every character before you trade.",
@@ -48,7 +51,7 @@ export default async function TokenPage() {
               : "We plan to launch our own meme token on Solana, built with this platform. Join the waitlist with your wallet and follow the official channels so you see the real contract address first."}
           </p>
         </div>
-        <CoinImage src={TOKEN_IMAGE} fallback="/coins/funcoinlab.webp" alt={`$${TOKEN.ticker}, the official ${TOKEN.name} coin`} size={480} priority className="mx-auto w-full max-w-[18rem] drop-shadow-[0_24px_60px_color-mix(in_oklab,var(--lab)_35%,transparent)] lg:max-w-[22rem]" />
+        <CoinImage src={TOKEN_IMAGE} fallback="/coins/funcoinlab.webp" alt={TOKEN.live ? `$${TOKEN.ticker}, the official ${TOKEN.name} coin` : `${TOKEN.name} coin`} size={480} priority className={`mx-auto w-full max-w-[18rem] lg:max-w-[22rem] ${TOKEN.live ? "drop-shadow-[0_24px_60px_color-mix(in_oklab,var(--lab)_35%,transparent)]" : ""}`} />
       </header>
 
       <section aria-labelledby="ca-title" className="mt-14 rounded-[2rem] border border-border bg-card p-6 sm:p-8">
