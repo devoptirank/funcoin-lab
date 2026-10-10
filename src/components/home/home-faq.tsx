@@ -27,7 +27,7 @@ export function homeFaqs(pricing: FaqPricing): Faq[] {
     },
     {
       q: "Is any of this financial advice?",
-      a: "No. FunCoin Lab is a branding and website tool. We don't list, sell or trade tokens, show prices or tell anyone what to buy. Generated copy never promises gains, and every site carries a risk notice.",
+      a: "No. FunCoin Lab is a branding and website tool. The tools don't create, list, sell, trade or hold tokens for you, and we don't tell anyone what to buy. Generated copy never promises gains, and every site carries a risk notice. Separately, the team has, or plans to launch, its own meme token. The Token page describes it and shows third-party market data once it is live, and that isn't advice either.",
     },
     {
       q: "Can I use the names and art for my project?",

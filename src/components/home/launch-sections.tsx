@@ -27,7 +27,7 @@ export function LaunchChecklist() {
           <h2 id="checklist-title" className="font-heading text-4xl leading-[1.02] font-extrabold sm:text-5xl">
             The launch checklist
           </h2>
-          <p className="mt-4 max-w-md text-lg text-muted-foreground">Seven things every meme brand needs before day one. None of them is a price chart.</p>
+          <p className="mt-4 max-w-md text-lg text-muted-foreground">Seven things every meme brand needs before day one.</p>
         </div>
         <ol className="grid gap-3 sm:grid-cols-2">
           {CHECKLIST.map((item, i) => (
@@ -88,7 +88,7 @@ export async function PricingTeaser() {
   )
 }
 
-/** The FunCoin Lab token: a teaser only. No price, supply or value claims. */
+/** The FunCoin Lab token: a teaser with the contract address and links once live. No value claims. */
 export async function TokenTeaser() {
   const socials = await getSocials()
   return (

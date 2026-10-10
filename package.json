@@ -10,6 +10,7 @@
     "check:payments": "tsx scripts/check-payments.mts",
     "check:domains": "tsx scripts/check-dynadot.mts",
     "test:admin": "node --conditions=react-server --import tsx --test tests/admin.test.mts",
+    "test:legal": "node --conditions=react-server --import tsx --test tests/legal.test.mts",
     "test:admin:e2e": "tsx scripts/test-admin-e2e.mts"
   },
   "dependencies": {

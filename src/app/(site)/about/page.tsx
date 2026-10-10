@@ -5,14 +5,14 @@ import { mascotUrl } from "@/lib/mascots"
 
 export const metadata = pageMetadata({
   title: "About FunCoin Lab",
-  description: "FunCoin Lab is a creative studio for meme branding: names, lore, logos, social content and .fun website concepts. Built for internet culture, not speculation.",
+  description: "FunCoin Lab is a creative studio for meme branding: names, lore, logos, social content and .fun website concepts. Built for internet culture.",
   path: "/about",
 })
 
 const VALUES = [
   { art: "wizard", title: "Creative first", text: "We help you invent characters, stories and websites. That's the whole job." },
-  { art: "lab", title: "Honest by default", text: "No fake prices, charts or holder counts, ever. Every site carries a clear risk notice." },
-  { art: "king", title: "No financial promises", text: "We don't create, list or sell tokens, and we never imply anything will gain value." },
+  { art: "lab", title: "Honest by default", text: "We never invent prices, charts or holder counts. Sites made here show only what their owner adds, and every one carries a clear risk notice." },
+  { art: "king", title: "No financial promises", text: "The tools don't create, list, sell or hold tokens for anyone, and we never imply anything will gain value. The team's own meme token is separate and described on the Token page." },
   { art: "robot", title: "Open architecture", text: "Swap AI providers, connect a domain registrar and own your data in Supabase." },
 ]
 

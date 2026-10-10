@@ -16,6 +16,13 @@ export type SeoPage = {
   related: string[]
 }
 
+/**
+ * Appended to every "does FunCoin Lab create tokens?" answer. The tools don't, but the team has its
+ * own token, so a flat "no tokens here" would be untrue. Worded to hold before and after it is live.
+ */
+const TEAM_TOKEN_NOTE =
+  " Separately, the FunCoin Lab team has, or plans to launch, its own meme token. It is described on the Token page, which shows third-party market data once the token is live."
+
 export const seoPages: SeoPage[] = [
   // ---------------------------------------------------------------------------
   {
@@ -27,7 +34,7 @@ export const seoPages: SeoPage[] = [
     h1: "Meme coin ideas that start with one ridiculous thought",
     intro: [
       "Most great meme brands begin as an inside joke: a cat that looks permanently disappointed, a frog who files taxes, a potato with main-character energy. The hard part is turning that spark into something with a name, a voice and a look. FunCoin Lab gives you a playground for meme coin ideas, so you can riff on a concept until it actually feels like a character people would remember.",
-      "Type a vibe, an animal, an object or a running joke, and the generator builds a complete brand around it: a punchy name, a ticker-style tag, a short origin story, slogans, social bios, meme captions and a previewable landing page. It is built for creative experimentation, branding practice and website prototyping, not for launching or promoting a real token.",
+      "Type a vibe, an animal, an object or a running joke, and the generator builds a complete brand around it: a punchy name, a ticker-style tag, a short origin story, slogans, social bios, meme captions and a previewable landing page. It is built for creative experimentation, branding practice and website prototyping. The tools do not create a token for you.",
       "Use it to brainstorm for a comedy project, a design portfolio piece, a hackathon demo or simply to make your group chat laugh. If one of your meme coin ideas sticks, save it, tweak the lore and keep iterating until the character feels unmistakably yours. The more you play, the better you get at spotting which jokes have staying power and which ones fizzle after the first laugh.",
     ],
     toolHref: "/create",
@@ -85,7 +92,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does FunCoin Lab create or launch a real token?",
-        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, deploy, list or trade tokens, hold your funds or offer financial advice. Your wallet is only used to sign in and buy image credits. Every concept is a starting point for your brand: name it, design it and build the site.",
+        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, deploy, list or trade tokens for its users, hold your funds or offer financial advice. Your wallet is only used to sign in and buy image credits. Every concept is a starting point for your brand: name it, design it and build the site." + TEAM_TOKEN_NOTE,
       },
       {
         q: "How do I get better results from the idea generator?",
@@ -179,7 +186,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Is this a tool for launching crypto tokens?",
-        a: "No. FunCoin Lab is a creative and branding tool. It does not create, issue, list or trade tokens and does not give financial advice. The names and concepts it generates are starting points for your own brand.",
+        a: "No. FunCoin Lab is a creative and branding tool. It does not create, issue, list or trade tokens for its users and does not give financial advice. The names and concepts it generates are starting points for your own brand." + TEAM_TOKEN_NOTE,
       },
       {
         q: "Can I save the names I like?",
@@ -265,7 +272,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does generating a name create a token?",
-        a: "No. FunCoin Lab does not create, deploy, list or trade tokens, and it does not provide financial or investment advice. Names and tags are branding concepts for creative experimentation and website prototyping. Using one does not create anything on a blockchain.",
+        a: "No. FunCoin Lab's tools do not create, deploy, list or trade tokens for its users, and it does not provide financial or investment advice. Names and tags are branding concepts for creative experimentation and website prototyping. Using one does not create anything on a blockchain." + TEAM_TOKEN_NOTE,
       },
       {
         q: "Can I match the name to a .fun domain?",
@@ -355,7 +362,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Is this connected to crypto tokens or trading?",
-        a: "No. FunCoin Lab is a creative and branding tool for meme brands. It does not create, list or trade tokens and does not give financial advice. Domain ideas are simply naming suggestions for creative projects and website prototypes.",
+        a: "No. FunCoin Lab is a creative and branding tool for meme brands. It does not create, list or trade tokens for its users and does not give financial advice. Domain ideas are simply naming suggestions for creative projects and website prototypes." + TEAM_TOKEN_NOTE,
       },
     ],
     related: ["meme-website-builder", "meme-coin-name-generator", "fun-domain-vs-com"],
@@ -437,7 +444,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does FunCoin Lab help launch or promote a token?",
-        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, list, sell or trade tokens, hold your funds or provide financial advice. Generated brands are starting points you can edit and make your own.",
+        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, list, sell or trade tokens for its users, hold your funds or provide financial advice. Generated brands are starting points you can edit and make your own." + TEAM_TOKEN_NOTE,
       },
       {
         q: "Can I use the brand commercially?",
@@ -531,7 +538,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Is FunCoin Lab a crypto launch platform?",
-        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, list or trade tokens and does not give financial advice. Logos and other outputs are concepts to refine with a designer before launch.",
+        a: "No. FunCoin Lab is a creative and branding tool only. It does not create, list or trade tokens for its users and does not give financial advice. Logos and other outputs are concepts to refine with a designer before launch." + TEAM_TOKEN_NOTE,
       },
     ],
     related: ["meme-brand-generator", "meme-coin-logo-ideas", "meme-mascot-generator", "meme-coin-name-generator"],
@@ -547,7 +554,7 @@ export const seoPages: SeoPage[] = [
     h1: "Meme website builder for instant landing page prototypes",
     intro: [
       "Seeing an idea on a real-looking page changes everything. Suddenly you can tell whether the name works in a headline, whether the colors clash and whether the joke lands in the first three seconds. This meme website builder turns your concept into a previewable landing page so you can judge it the way a visitor would, before writing a line of code.",
-      "FunCoin Lab generates a hero section with headline and slogan, an about section with the origin story, a lore timeline, an example token concept block, a meme gallery, community links and a footer, all styled with your concept's palette. Illustrative placeholder sections are clearly labeled, so the page never pretends to be something it is not. You can preview it at desktop and mobile widths to check layout and readability.",
+      "FunCoin Lab generates a hero section with headline and slogan, an about section with the origin story, a lore timeline, an example token concept block, a meme gallery, community links and a footer, all styled with your concept's palette. The token block reads \"Launching soon\" until you add your own details, and every page carries a fixed risk notice. You can preview it at desktop and mobile widths to check layout and readability.",
       "It is ideal for pitching a concept to friends, practicing landing page copywriting, building a portfolio mockup or testing a few creative directions side by side. Use the meme website builder to prototype quickly, then take the parts you like into your own site project. Pair it with a few .fun domain ideas to see how the whole thing would feel as a real address, and remember to confirm availability with a registrar.",
     ],
     toolHref: "/create?goal=website",
@@ -563,7 +570,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         title: "Clearly labeled",
-        text: "Placeholder sections are labeled as illustrative, keeping the prototype honest.",
+        text: "The token block reads \"Launching soon\" until you add real details yourself.",
       },
     ],
     steps: [
@@ -613,7 +620,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does FunCoin Lab connect the site to a token or wallet?",
-        a: "No. FunCoin Lab does not create, list or trade tokens or provide financial advice. Generated sites are drafts you can edit, export or publish. There are no buy buttons or trading widgets on the page, and the token section only shows details you add yourself.",
+        a: "No. FunCoin Lab's tools do not create, list or trade tokens for its users or provide financial advice. Generated sites are drafts you can edit, export or publish. The token section only shows what you add yourself: if you enter a contract address, the page shows it with a Buy button and market links that point to third-party sites. FunCoin Lab does not verify those details." + TEAM_TOKEN_NOTE,
       },
       {
         q: "Can I use the generated copy on my own website?",
@@ -699,7 +706,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Will the captions promote a crypto token?",
-        a: "No. FunCoin Lab is a creative and branding tool and does not create, list or trade tokens or give financial advice. Captions are meant for entertainment and creative use, and you should never use them to make financial promises or misleading claims.",
+        a: "No. FunCoin Lab is a creative and branding tool and does not create, list or trade tokens for its users or give financial advice. Captions are meant for entertainment and creative use, and you should never use them to make financial promises or misleading claims." + TEAM_TOKEN_NOTE,
       },
       {
         q: "Why are some captions not funny?",
@@ -720,7 +727,7 @@ export const seoPages: SeoPage[] = [
     intro: [
       "FunCoin Lab is an AI meme coin generator in the creative sense: it uses AI to imagine the brand side of a meme project, end to end. Names, ticker-style tags, lore, slogans, social bios, meme captions, logo concepts, .fun domain ideas and a landing page preview are all generated together and stay in sync, so you do not have to copy details between tools.",
       "Under the hood, your prompt is turned into a character profile and every output draws from it. That is why the name, lore, palette, captions and website copy all feel like the same character. You stay in control the whole time: regenerate, save the versions you like and edit the final wording in the website builder. Nothing is final until you say so.",
-      "Just as important is what it does not do. The AI meme coin generator does not create tokens, hold funds, touch markets or predict anything. It is a studio for brand concepts, creative experimentation and website prototyping. Placeholder sections are labeled as such, and you are encouraged to check names and logos against existing trademarks before using them anywhere.",
+      "Just as important is what it does not do. The AI meme coin generator does not create tokens, hold funds, touch markets or predict anything. It is a studio for brand concepts, creative experimentation and website prototyping. The token block on a draft site shows only what you enter, and you are encouraged to check names and logos against existing trademarks before using them anywhere.",
     ],
     toolHref: "/create",
     toolCta: "Try the AI generator",
@@ -735,7 +742,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         title: "Transparent by design",
-        text: "Placeholder sections are clearly labeled.",
+        text: "Token details appear only when you add them.",
       },
     ],
     steps: [
@@ -777,11 +784,11 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does it create a real token or smart contract?",
-        a: "No. FunCoin Lab does not create, deploy, issue, list, sell or trade tokens, and it does not custody wallets or funds. It does not provide financial, investment or legal advice. All concepts are starting points for branding and prototyping.",
+        a: "No. FunCoin Lab's tools do not create, deploy, issue, list, sell or trade tokens for its users, and it does not custody wallets or funds. It does not provide financial, investment or legal advice. All concepts are starting points for branding and prototyping." + TEAM_TOKEN_NOTE,
       },
       {
         q: "What does the token concept section mean?",
-        a: "Some generated pages include a token concept block with values like network \"Not selected\" and supply \"Customizable\". These are illustrative placeholders that make the mockup look complete. They are not real settings and do not describe any actual asset.",
+        a: "Generated pages include a token block with your brand's name and ticker, plus network, supply and contract address fields that you fill in. Until you add a contract address the block reads \"Launching soon\". The fields describe nothing real unless you enter real details, and FunCoin Lab does not verify them.",
       },
       {
         q: "Is the AI output always accurate and original?",
@@ -875,7 +882,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does FunCoin Lab create a token on Solana?",
-        a: "No. FunCoin Lab is a creative and branding studio. Your account is a Solana wallet, but the tool does not create, deploy, list or trade tokens and does not give financial advice. Names and tags are branding concepts only.",
+        a: "No. FunCoin Lab is a creative and branding studio. Your account is a Solana wallet, but the tool does not create, deploy, list or trade tokens for its users and does not give financial advice. Names and tags are branding concepts only." + TEAM_TOKEN_NOTE,
       },
       {
         q: "Are the generated names guaranteed to be unique?",
@@ -1081,7 +1088,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Is FunCoin Lab a token launcher?",
-        a: "No. FunCoin Lab is a creative branding studio. It does not create, deploy, list or trade tokens and does not give financial advice. Mascots and concepts are creative work you can build a brand around.",
+        a: "No. FunCoin Lab is a creative branding studio. It does not create, deploy, list or trade tokens for its users and does not give financial advice. Mascots and concepts are creative work you can build a brand around." + TEAM_TOKEN_NOTE,
       },
     ],
     related: ["meme-name-generator", "meme-coin-logo-ideas", "meme-coin-lore-generator"],
@@ -1099,7 +1106,7 @@ export const seoPages: SeoPage[] = [
       "A meme brand website has one job: let a visitor understand the character, the joke and the official links within a few seconds. It does not need dozens of pages. It needs one confident scroll with a loud hero, a short story, plenty of art and clear links. This meme coin website template breaks down the layout that tends to work, section by section.",
       "Start with a hero that shows the mascot large, the name in big type, a one-line slogan and two buttons, such as Read the lore and Join the community. Next comes a short about section of two or three sentences explaining who the character is. Then a lore timeline with three to five beats, like Chapter 1: the crab loses its shell, Chapter 2: the crab finds a traffic cone. After that, a meme gallery with six to nine images, a how to join section with community links, and a footer with the official links and a clear disclaimer.",
       "Design matters as much as structure. Use your logo palette for backgrounds and buttons, one chunky display font for headings and one readable font for body text. Keep paragraphs short, put the mascot above the fold and make sure everything reads well on a phone, since most visitors arrive from social apps.",
-      "FunCoin Lab generates this layout from your brand automatically, with copy, colors and sections already filled in. You can edit headlines, toggle sections, tune fonts and animations, and preview desktop and mobile widths. Illustrative placeholder blocks are labeled as such, so the draft never pretends to be something it is not.",
+      "FunCoin Lab generates this layout from your brand automatically, with copy, colors and sections already filled in. You can edit headlines, toggle sections, tune fonts and animations, and preview desktop and mobile widths. The token block shows only the details you enter, and every page carries a fixed risk notice.",
     ],
     toolHref: "/create?goal=website",
     toolCta: "Build your site from a template",
@@ -1172,7 +1179,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does the template include buy buttons or wallet connections?",
-        a: "No. Generated sites focus on the brand: story, art and community. There are no buy buttons or trading widgets, and illustrative placeholder sections are clearly labeled.",
+        a: "There are no wallet connections, trading widgets or price charts. Generated sites focus on the brand: story, art and community. A Buy button and market links appear only if you add a contract address, and they point to third-party sites.",
       },
       {
         q: "Do I need a domain to use the template?",
@@ -1370,7 +1377,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does a name mean I have created a token?",
-        a: "No. FunCoin Lab is a branding and creative tool. It does not create, deploy, list or trade tokens, and it does not give financial advice.",
+        a: "No. FunCoin Lab is a branding and creative tool. It does not create, deploy, list or trade tokens for its users, and it does not give financial advice." + TEAM_TOKEN_NOTE,
       },
     ],
     related: ["solana-meme-coin-name-ideas", "meme-name-generator", "meme-coin-ideas"],
@@ -1465,7 +1472,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does FunCoin Lab launch a cat token?",
-        a: "No. FunCoin Lab is a creative branding studio. It does not create, deploy, list or trade tokens and does not offer financial advice.",
+        a: "No. FunCoin Lab is a creative branding studio. It does not create, deploy, list or trade tokens for its users and does not offer financial advice." + TEAM_TOKEN_NOTE,
       },
     ],
     related: ["dog-meme-coin-ideas", "meme-coin-logo-ideas", "meme-mascot-generator"],
@@ -1560,7 +1567,7 @@ export const seoPages: SeoPage[] = [
       },
       {
         q: "Does FunCoin Lab create a dog token?",
-        a: "No. FunCoin Lab is a creative branding studio. It does not create, deploy, list or trade tokens and does not give financial advice.",
+        a: "No. FunCoin Lab is a creative branding studio. It does not create, deploy, list or trade tokens for its users and does not give financial advice." + TEAM_TOKEN_NOTE,
       },
     ],
     related: ["cat-meme-coin-ideas", "meme-mascot-generator", "funny-coin-name-ideas"],

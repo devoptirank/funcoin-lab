@@ -131,10 +131,33 @@ Only `dynadot` and `http` can show "Available".
 Run the migrations in `supabase/migrations/` in order (or paste `supabase/setup-all.sql` into the SQL editor). After `0005_wallet_accounts.sql`, the tables are `billing_accounts`, `credit_ledger`, `payment_orders`, `payment_events`, `auth_nonces`, `projects`, `saved_domains`, `activity`, `bookmarks`, `generated_assets` and `domain_clicks`. RLS is on with no policies, so only the server (service role) can read or write. Supabase Auth is not used.
 
 ## Product guardrails
-- No prices, market caps, volume, holder counts, charts or buy/sell buttons anywhere. Wallets are only for sign-in and buying credits.
+- The tools never create, issue, list, trade or hold tokens for users, and they never show invented prices, market caps, volume or holder counts. Wallets are only for sign-in and buying credits.
+- A site a user publishes shows a contract address, a Buy button and market links only if its owner adds a contract address. Those point to third-party sites and are not verified.
+- The team's own token is separate. When `NEXT_PUBLIC_TOKEN_CA` is set, `/token` and a site-wide ticker show its contract address, buy links and third-party market data (DexScreener, GeckoTerminal, Helius, Solana RPC). Blank means "coming soon" and none of that is shown.
 - The prompts forbid financial language, and `lib/safety.ts` rewrites anything that slips through (for example "to the moon", "100x", "guaranteed", "invest").
 - Every generated site carries a non-removable disclaimer, and the token block tells visitors to trust only the contract address published there.
 - `src/content/legal.ts` contains **templates**. Have a lawyer review them before launch.
+
+### Legal details and "before you go live"
+The legal pages are templates (`src/content/legal.ts`) and the code is **not** legal advice. Owner details come from env (`src/lib/legal-config.ts`); a blank value leaves the matching sentence or section out, and Admin > System shows which are set.
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_LEGAL_ENTITY`, `NEXT_PUBLIC_LEGAL_ADDRESS`, `NEXT_PUBLIC_LEGAL_COUNTRY` | Who operates the site. Adds "Who operates the Service" to the Terms. |
+| `NEXT_PUBLIC_GOVERNING_LAW`, `NEXT_PUBLIC_DISPUTE_VENUE` | Adds "Governing law and disputes" to the Terms. |
+| `NEXT_PUBLIC_PRIVACY_EMAIL`, `NEXT_PUBLIC_COPYRIGHT_EMAIL` | Where privacy requests and copyright or trademark complaints go. |
+| `NEXT_PUBLIC_MIN_AGE` | Minimum age, default 18. |
+| `RESTRICTED_COUNTRIES` | Server-only, comma-separated two-letter codes where the service is not offered. |
+
+Decisions only the owner or a lawyer can make, before going live:
+1. The operating entity and its address.
+2. Governing law and where disputes are heard.
+3. The restricted-country list.
+4. Whether the team's token can be marketed at all in each target country, and what disclosures it needs.
+5. Team token holdings and whether they are locked (to publish on `/token`).
+6. Tax on credit sales and on crypto received (ask an accountant).
+7. Whether to keep Google Analytics.
+8. A lawyer's review of the Terms, Privacy Policy and Disclaimer.
 
 ### Admin panel (admin.funcoinlab.com)
 A hidden operator panel, served only on its own subdomain from the same deployment.

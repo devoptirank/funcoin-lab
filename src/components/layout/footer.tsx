@@ -45,7 +45,7 @@ export async function Footer() {
           <LogoMark />
           <p className="text-muted-foreground">Built for internet culture.</p>
           <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
-            FunCoin Lab is a creative branding and website-prototyping tool. Nothing here is financial advice.
+            FunCoin Lab is a creative branding and website tool. Its tools do not create, trade or hold tokens for you. The team&apos;s own meme token is separate and described on the Token page. Nothing here is financial advice.
           </p>
           <SocialLinks socials={socials} className="mt-2" />
         </div>

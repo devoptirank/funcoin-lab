@@ -197,6 +197,8 @@ const bool = oneOf("true", "false")
 const template = (v: string) => url(v.replace("{domain}", "example.com")) ?? (v.includes("{domain}") ? null : "Missing the {domain} placeholder")
 const positiveInt = (v: string) => (/^\d+$/.test(v) ? null : "Must be a whole number")
 
+const emailAddress = (v: string) => (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) ? null : "Not an email address")
+
 /** Mirrors .env.example. Keep both in sync when adding a variable. */
 const ENV_GROUPS: { group: string; rules: Rule[] }[] = [
   {
@@ -271,6 +273,21 @@ const ENV_GROUPS: { group: string; rules: Rule[] }[] = [
       { name: "NEXT_PUBLIC_TOKEN_TICKER" },
       { name: "NEXT_PUBLIC_TOKEN_CA", check: (v) => base58Address(v), note: "Changing it requires a redeploy" },
       ...["NEXT_PUBLIC_PUMPFUN_URL", "NEXT_PUBLIC_DEX_URL", "NEXT_PUBLIC_JUPITER_URL", "NEXT_PUBLIC_COINGECKO_URL", "NEXT_PUBLIC_CMC_URL"].map((name) => ({ name, check: (v: string) => url(v) })),
+    ],
+  },
+  {
+    // Owner and lawyer decisions. Blank is allowed: the legal pages leave the matching sentence out.
+    group: "Legal details",
+    rules: [
+      { name: "NEXT_PUBLIC_LEGAL_ENTITY", note: "Who operates the site. Shown in the Terms and Privacy Policy" },
+      { name: "NEXT_PUBLIC_LEGAL_ADDRESS", note: "Operator's address" },
+      { name: "NEXT_PUBLIC_LEGAL_COUNTRY", note: "Operator's country" },
+      { name: "NEXT_PUBLIC_GOVERNING_LAW", note: "Adds the governing law section to the Terms" },
+      { name: "NEXT_PUBLIC_DISPUTE_VENUE", note: "Courts or forum for disputes" },
+      { name: "NEXT_PUBLIC_PRIVACY_EMAIL", check: emailAddress, note: "Privacy requests" },
+      { name: "NEXT_PUBLIC_COPYRIGHT_EMAIL", check: emailAddress, note: "Copyright and trademark complaints" },
+      { name: "NEXT_PUBLIC_MIN_AGE", check: (v) => (/^\d+$/.test(v) && Number(v) >= 13 && Number(v) <= 25 ? null : "Must be a whole number from 13 to 25"), note: "Defaults to 18" },
+      { name: "RESTRICTED_COUNTRIES", check: (v) => (v.split(",").every((c) => /^[A-Za-z]{2}$/.test(c.trim())) ? null : "Comma-separated two-letter country codes, like US,GB"), note: "Where the service is not offered" },
     ],
   },
   {
