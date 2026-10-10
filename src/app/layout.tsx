@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next"
-import Script from "next/script"
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google"
 import { Providers } from "@/components/providers/providers"
 import { siteConfig } from "@/lib/site-config"
@@ -9,10 +8,6 @@ import "./globals.css"
 const display = Bricolage_Grotesque({ variable: "--font-display", subsets: ["latin"], display: "swap", axes: ["wdth", "opsz"] })
 const sans = Geist({ variable: "--font-geist-sans", subsets: ["latin"], display: "swap" })
 const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap" })
-
-// Google Analytics 4. Production builds only, so local development doesn't pollute the stats.
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-NX3Y541H85"
-const loadAnalytics = process.env.NODE_ENV === "production" && GA_ID
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -63,14 +58,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-dvh antialiased">
         <Providers>{children}</Providers>
         <div aria-hidden className="grain" />
-        {loadAnalytics && (
-          <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-            <Script id="ga4" strategy="afterInteractive">
-              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
-            </Script>
-          </>
-        )}
       </body>
     </html>
   )

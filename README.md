@@ -147,6 +147,7 @@ The legal pages are templates (`src/content/legal.ts`) and the code is **not** l
 | `NEXT_PUBLIC_GOVERNING_LAW`, `NEXT_PUBLIC_DISPUTE_VENUE` | Adds "Governing law and disputes" to the Terms. |
 | `NEXT_PUBLIC_PRIVACY_EMAIL`, `NEXT_PUBLIC_COPYRIGHT_EMAIL` | Where privacy requests and copyright or trademark complaints go. |
 | `NEXT_PUBLIC_MIN_AGE` | Minimum age, default 18. |
+| `NEXT_PUBLIC_GA_ID` | Google Analytics ID. Blank = no analytics and no cookie banner. When set, the tag loads only after a visitor accepts. |
 | `RESTRICTED_COUNTRIES` | Server-only, comma-separated two-letter codes where the service is not offered. |
 
 Decisions only the owner or a lawyer can make, before going live:

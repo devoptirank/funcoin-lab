@@ -11,7 +11,7 @@
  * depends on a blank value is left out; nothing is invented. Terms and Privacy sections are numbered
  * automatically, so write their headings without a number.
  */
-import { LEGAL as LEGAL_ENV } from "@/lib/legal-config"
+import { LEGAL as LEGAL_ENV, legalProviders, type LegalProviders } from "@/lib/legal-config"
 
 export type LegalSection = {
   heading: string
@@ -40,7 +40,7 @@ const when = (condition: unknown, ...sections: LegalSection[]): LegalSection[] =
 const TEAM_TOKEN = "Separately from the tools, the FunCoin Lab team has, or plans to launch, its own meme token. It is described on the Token page (/token)."
 
 /** Builds the three documents for a set of owner details. Tests pass their own; the site uses env. */
-export function buildLegalDocs(LEGAL: typeof LEGAL_ENV): Record<LegalDoc["slug"], LegalDoc> {
+export function buildLegalDocs(LEGAL: typeof LEGAL_ENV, P: LegalProviders = legalProviders()): Record<LegalDoc["slug"], LegalDoc> {
   const operator = [LEGAL.entity, LEGAL.address, LEGAL.country].filter(Boolean).join(", ")
 
   const terms: LegalDoc = {
@@ -175,73 +175,120 @@ export function buildLegalDocs(LEGAL: typeof LEGAL_ENV): Record<LegalDoc["slug"]
     ]),
   }
 
+  const privacyContact = LEGAL.privacyEmail || "{{CONTACT_EMAIL}}"
+  const aiNames = P.ai.join(" and ")
+  const processors = [
+    "Vercel: hosts the website and app, and handles every request to them. Like any web host, it processes IP addresses and request logs.",
+    'Supabase: our database and file storage. Everything listed in "Information we collect" that we store is stored there.',
+    ...(P.ai.length ? [`${aiNames}: ${P.aiText && P.aiImages ? "generates text and images" : P.aiImages ? "generates images" : "generates text"} from the prompts you send.`] : []),
+    ...(P.nowPayments
+      ? ["NOWPayments: processes credit purchases paid in coins other than SOL or USDC from your own wallet. It receives the order amount and reference and handles the payment itself."]
+      : []),
+    ...(P.rpc ? [`${P.rpc}: the Solana network provider we use to read the blockchain, for example to confirm a payment. Requests your wallet app makes through our site also pass through it.`] : []),
+    ...(P.walletConnect ? ["WalletConnect (Reown): if you choose to connect a phone wallet by QR code, the connection is relayed through its network."] : []),
+    ...(P.registrar ? [`${P.registrar}: the domain registrar we ask whether a domain name is available. It receives the domain name, not your account details.`] : []),
+    ...(P.analytics ? ['Google Analytics (Google): only if you accept analytics cookies. See "Cookies and similar technologies".'] : []),
+  ]
+
   const privacy: LegalDoc = {
     slug: "privacy",
     title: "Privacy Policy",
     description: "How FunCoin Lab collects, uses and protects your information, including wallet addresses, saved projects, AI prompts and payments.",
     updated: UPDATED,
     summary:
-      "We collect only what we need to run FunCoin Lab, such as your wallet address, your saved projects and the prompts you send for generation, we never sell your data, and you can ask us to export or delete it at any time.",
+      "We collect what we need to run FunCoin Lab: your public wallet address, the projects and images you make, your credit purchases, and the prompts you send for generation. We do not sell your data. Wallet addresses and transactions on a public blockchain are outside anyone's power to delete.",
     sections: numbered([
       {
-        heading: "Who we are",
+        heading: "About this policy",
         paragraphs: [
-          'This Privacy Policy explains how FunCoin Lab ("we", "us") handles personal information when you use the FunCoin Lab website and app (the "Service"). If you have questions, contact us at {{CONTACT_EMAIL}}.',
+          `This Privacy Policy explains how FunCoin Lab ("we", "us") handles personal information when you use the FunCoin Lab website and app (the "Service"). For any privacy question or request, contact us at ${privacyContact}.`,
         ],
       },
+      ...when(LEGAL.entity, {
+        heading: "Who we are",
+        paragraphs: [`The Service is operated by ${operator}, which decides how and why your personal information is used (the "controller").`],
+      }),
       {
         heading: "Information we collect",
-        paragraphs: ["Depending on how you use the Service, we may collect:"],
+        paragraphs: ["Depending on how you use the Service, we collect and store:"],
         bullets: [
-          "Wallet information: your public Solana wallet address and the signed sign-in message. Data is stored with our database provider, Supabase.",
-          "Saved projects and generations: the concepts, names, lore, captions, logos, website previews and settings you choose to save to your account.",
-          "Prompts and inputs: the text you enter to generate content, which is sent to AI providers to produce results.",
-          "Technical and log data: basic information such as IP address, browser type, device type, pages visited, timestamps and error logs, used to keep the Service secure and working.",
-          "Messages you send us: for example, support requests sent to {{CONTACT_EMAIL}}.",
+          "Your account: your public Solana wallet address, which is your account id, when the account was created and when it was last active. We never receive your seed phrase or private keys.",
+          "Sign-in records: a cookie that keeps you signed in, and a note that each single-use sign-in code has been used. That code is random, has an expiry time and is not stored with your wallet address.",
+          "Projects and websites: the ideas, names, lore, captions, site content and settings you save, and whether a site is published and at which address.",
+          "Generation history: the text you enter to generate ideas, memes, bios and other content, and the results.",
+          "Generated images: the image files, the prompt used to make each one and the model that made it.",
+          "Saved domains and bookmarks, including whether you joined the token waitlist and when.",
+          "Credits and payments: your credit balance and history, and for each purchase the pack, price, payment method, amount, receiving address, status, time and blockchain transaction id, plus the payment notices our payment providers send us.",
+          "Registrar link clicks: the domain, where on the site you clicked and your account id if you were signed in. We do not record your IP address for these.",
+          "Reports: if you report a published site or an image, the item, the reason you chose and, if you were signed in, your account id.",
+          "Moderation records: if we suspend, ban or restore an account or remove content, we keep the action, the reason and internal notes about the account.",
+          "Messages you send us, for example by email or Telegram.",
         ],
       },
       {
-        heading: "Wallet accounts",
+        heading: "Information we use but do not keep in our database",
         paragraphs: [
-          "You sign in with a Solana wallet. We store your public wallet address and link your projects, saved domains, generated images and credits to it. A wallet address is public on the blockchain. We never receive your seed phrase or private keys.",
+          "Your IP address is used in memory, for a short time, to limit how many requests one connection can make. We do not write it to our database for ordinary visitors. Our hosting provider processes IP addresses, browser details and request logs in order to serve the site, as every web host does.",
+          "For administrators only, we record the IP address and browser of each administrative action in an audit log. That log also records which account or content each action affected, and it cannot be edited or deleted.",
         ],
       },
       {
-        heading: "How we use information",
-        paragraphs: ["We use information to:"],
+        heading: "Why we use it, and on what basis",
+        paragraphs: ["Where data protection law requires a legal basis, we rely on the following:"],
         bullets: [
-          "Provide the Service, including generating content and saving your projects.",
-          "Create and secure your account and keep you signed in.",
-          "Prevent abuse, enforce our Terms and protect the Service and its users.",
-          "Fix bugs, monitor performance and improve features.",
-          "Respond to your questions and send important service notices.",
-          "Meet legal obligations.",
+          "To provide the Service you asked for (performing our agreement with you): your account, sign-in, projects, generation, images, saved items, credits and purchases.",
+          "Our legitimate interests in keeping the Service safe and working: rate limiting, preventing abuse and fraud, moderation, handling reports, the administrator audit log, fixing errors, and counting registrar link clicks.",
+          "Legal obligations: keeping payment records for accounting and tax, and answering lawful requests.",
+          'Your consent: analytics cookies. You can change your choice at any time with the "Cookie settings" link in the footer.',
         ],
       },
       {
-        heading: "AI providers",
+        heading: "AI generation",
         paragraphs: [
-          "To generate content, we send your prompts and related context (such as a saved concept you are editing) to third-party AI model providers. These providers process the data to return results to us and are bound by their own terms and data processing commitments. Where available, we choose settings that limit providers' use of your data for training their models.",
-          "Please do not include personal, confidential or sensitive information in prompts.",
+          P.ai.length
+            ? `${P.aiText ? "To generate text and images" : "Text is generated by our own templates and is not sent to an outside AI company. To generate images"}, we send your prompt and related context, such as the concept you are working on, to ${aiNames}. ${P.ai.length > 1 ? "They process" : "It processes"} that data to return a result, under ${P.ai.length > 1 ? "their" : "its"} own terms.`
+            : "Content is generated by our own templates and is not sent to an outside AI company.",
+          "Please do not put personal, confidential or sensitive information, or information about other people, in prompts.",
         ],
       },
       {
-        heading: "Wallet sign-in and payments",
+        heading: "Published sites",
         paragraphs: [
-          "If you connect a Solana wallet, we store your public wallet address, your credit balance and history, and the details of your payments (amount, method, status and transaction id). We never see or store your private keys or seed phrase, and signing in with your wallet never moves funds.",
-          "Wallet addresses and transactions are public on the Solana blockchain by design. Payments made through NOWPayments are processed by NOWPayments under their own privacy policy; we receive the payment status and amount, not your card or exchange details.",
+          "If you publish a site, its content is public at its FunCoin Lab address and may be listed in Discover. Anything you put on it, including a contract address or social links, is visible to everyone. Unpublishing removes it from our pages, but copies others have already made are outside our control.",
         ],
       },
       {
-        heading: "Sharing and no selling of data",
+        heading: "Blockchain data cannot be deleted",
         paragraphs: [
-          "We do not sell your personal information, and we do not share it for third-party advertising. We share information only with service providers who help us run the Service (such as Supabase for storage, hosting providers, AI providers and Google Analytics), when required by law, to protect rights and safety, or as part of a business transfer such as a merger, in which case this policy will continue to apply to your information.",
+          "Wallet addresses and transactions on the Solana blockchain are public and permanent by design. Nobody, including us, can change or delete them. Deleting data from FunCoin Lab removes what we hold, not what is on the blockchain.",
         ],
       },
       {
-        heading: "Data retention",
+        heading: "Who we share it with",
+        paragraphs: ["We do not sell your personal information and we do not share it for third-party advertising. These companies process data for us so the Service can run:"],
+        bullets: processors,
+      },
+      {
+        heading: "Other disclosures",
         paragraphs: [
-          "We keep account information and saved projects for as long as your account is active. If you delete a project or your account, we delete the related data from our active systems within a reasonable period, typically within 30 days, except where we must keep it for legal, security or fraud-prevention reasons. Log data is kept for a limited period and then deleted or anonymized. Backups are overwritten on a rolling schedule.",
+          "We may also disclose information when the law requires it, to protect rights and safety, or as part of a business transfer such as a merger or sale, in which case this policy continues to apply to your information.",
+          "The Token page shows market data fetched by our servers from DexScreener and GeckoTerminal. Those requests do not include any information about you. If you follow a link to a third-party site, such as a registrar, an exchange or a block explorer, that site's own privacy policy applies.",
+        ],
+      },
+      {
+        heading: "Transfers to other countries",
+        paragraphs: [
+          "The companies above operate in several countries, including the United States, so your information may be processed outside the country where you live. Where the law requires safeguards for such transfers, we rely on the safeguards those providers offer, such as standard contractual clauses.",
+        ],
+      },
+      {
+        heading: "How long we keep it",
+        paragraphs: ["We keep information for as long as it is needed for the purpose it was collected for:"],
+        bullets: [
+          "Account, projects, generation history, images, saved domains and bookmarks: until you delete them or your account is deleted.",
+          "Payment orders and the credit history: kept after an account is deleted, because we need them for accounting, tax and payment disputes.",
+          "Moderation records and the administrator audit log: kept as a record of what was done and why.",
+          "Copies held in our providers' backups are removed on those providers' schedules.",
         ],
       },
       {
@@ -253,28 +300,34 @@ export function buildLegalDocs(LEGAL: typeof LEGAL_ENV): Record<LegalDoc["slug"]
       {
         heading: "Your rights and choices",
         paragraphs: [
-          "Depending on where you live, you may have the right to access, correct, export or delete your personal information, to object to or restrict certain processing, and to withdraw consent. You can delete individual projects in the app, and you can request a copy of your data or deletion of your account by emailing {{CONTACT_EMAIL}}. We may need to verify your identity before acting on a request. You also have the right to complain to your local data protection authority.",
+          `Depending on where you live, you may have the right to access, correct, export or delete your personal information, to object to or restrict certain processing, and to withdraw consent. You can delete individual projects in the app. To ask for a copy of your data or for your account to be deleted, email ${privacyContact} from a channel we can reply to and tell us your wallet address. We will ask you to prove you control that wallet, for example by signing a message, before acting.`,
+          "You also have the right to complain to the data protection authority where you live.",
         ],
       },
       {
         heading: "Cookies and similar technologies",
         paragraphs: ["We keep cookies and similar storage to a minimum:"],
         bullets: [
-          "Session cookie: an HttpOnly cookie that keeps your wallet signed in, shared between funcoinlab.com and app.funcoinlab.com. It is necessary for the app to work.",
-          "Preferences: your theme choice (light or dark) and similar settings may be stored in a cookie or localStorage.",
-          "Analytics: we use Google Analytics to understand how visitors use the site (pages viewed, approximate location, device type). Google sets its own cookies for this. You can opt out with Google's browser add-on or by blocking these cookies.",
+          "Sign-in cookie: keeps your wallet signed in and is shared between funcoinlab.com and app.funcoinlab.com. It is necessary for the app to work.",
+          "Preferences: your theme, an idea you are working on, the wallet you last connected and notices you have dismissed are kept in your browser's local storage or a cookie. They stay on your device.",
+          ...(P.analytics
+            ? [
+                "Cookie choice: a cookie that remembers whether you accepted or declined analytics.",
+                'Analytics: Google Analytics is loaded only if you accept. It then sets its own cookies and tells us which pages are viewed, roughly where visitors are and what kind of device they use. Advertising signals are set to denied. If you decline, nothing is loaded and no analytics cookies are set. Change your choice at any time with "Cookie settings" in the footer.',
+              ]
+            : ["Analytics: we do not use analytics or advertising cookies."]),
         ],
       },
       {
         heading: "Children",
         paragraphs: [
-          "The Service is not directed to children under 13, and we do not knowingly collect personal information from them. If you believe a child has given us personal information, contact us at {{CONTACT_EMAIL}} and we will delete it.",
+          `The Service is for people aged ${LEGAL.minAge} or older. We do not knowingly collect personal information from anyone younger. If you believe someone under ${LEGAL.minAge} has given us personal information, contact us at ${privacyContact} and we will delete it.`,
         ],
       },
       {
         heading: "Changes and contact",
         paragraphs: [
-          "We may update this Privacy Policy from time to time. We will update the date at the top of this page and, for material changes, notify you in the app. For any privacy question or request, contact FunCoin Lab at {{CONTACT_EMAIL}}.",
+          `We may update this Privacy Policy from time to time. We will update the date at the top of this page and, for material changes, tell you in the app. For any privacy question or request, contact FunCoin Lab at ${privacyContact}.`,
         ],
       },
     ]),

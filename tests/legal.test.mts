@@ -70,3 +70,39 @@ test("minimum age and restricted countries parse safely", async () => {
   assert.equal(config.isRestrictedCountry(null), false)
   assert.equal((await load({ NEXT_PUBLIC_PRIVACY_EMAIL: "not-an-email" })).config.LEGAL.privacyEmail, "")
 })
+
+test("analytics consent: nothing loads before a choice or after Decline", async () => {
+  // analyticsConfigured needs a production build and an ID, like the deployed site.
+  Object.assign(process.env, { NODE_ENV: "production", NEXT_PUBLIC_GA_ID: "G-TEST12345" })
+  const c = (await import(`../src/lib/consent.ts?case=${++n}`)) as typeof import("../src/lib/consent")
+  assert.equal(c.analyticsConfigured, true)
+  assert.equal(c.readConsent(""), null)
+  assert.equal(c.readConsent("theme=dark; fcl_consent=denied"), "denied")
+  assert.equal(c.readConsent("fcl_consent=granted; x=1"), "granted")
+  assert.equal(c.readConsent("fcl_consent=yes"), null)
+  assert.equal(c.readConsent("xfcl_consent=granted"), null)
+  assert.equal(c.analyticsAllowed(null), false)
+  assert.equal(c.analyticsAllowed("denied"), false)
+  assert.equal(c.analyticsAllowed("granted"), true)
+  assert.match(c.consentCookie("denied", { domain: "funcoinlab.com", secure: true }), /^fcl_consent=denied; Path=\/; Max-Age=\d+; SameSite=Lax; Domain=funcoinlab\.com; Secure$/)
+})
+
+test("analytics is off entirely without an ID (the single switch)", async () => {
+  Object.assign(process.env, { NODE_ENV: "production", NEXT_PUBLIC_GA_ID: "" })
+  const c = (await import(`../src/lib/consent.ts?case=${++n}`)) as typeof import("../src/lib/consent")
+  assert.equal(c.analyticsConfigured, false)
+  assert.equal(c.analyticsAllowed("granted"), false)
+})
+
+test("privacy policy names only the providers that are configured", async () => {
+  const { buildLegalDocs } = await import("../src/content/legal")
+  const { LEGAL } = await import("../src/lib/legal-config")
+  const base = { ai: [] as string[], aiText: false, aiImages: false, analytics: false, nowPayments: false, registrar: "", rpc: "", walletConnect: false }
+  const none = text(buildLegalDocs(LEGAL, base).privacy)
+  assert.doesNotMatch(none, /OpenAI|Anthropic|Google Analytics \(Google\)|NOWPayments:|WalletConnect/)
+  assert.match(none, /we do not use analytics or advertising cookies/)
+  const all = text(buildLegalDocs(LEGAL, { ai: ["OpenAI"], aiText: false, aiImages: true, analytics: true, nowPayments: true, registrar: "Dynadot", rpc: "Helius", walletConnect: true }).privacy)
+  for (const name of ["Vercel", "Supabase", "OpenAI", "NOWPayments", "Helius", "WalletConnect", "Dynadot", "Google Analytics"]) assert.match(all, new RegExp(name))
+  assert.match(all, /loaded only if you accept/)
+  assert.match(all, /cannot be edited or deleted|Nobody, including us, can change or delete them/)
+})

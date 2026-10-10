@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/footer"
 import { AnnouncementBanner } from "@/components/layout/announcement-banner"
 import { TokenTicker } from "@/components/token/token-ticker"
 import { TOKEN } from "@/lib/official"
+import { AnalyticsConsent } from "@/components/consent/analytics-consent"
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +18,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         {children}
       </main>
       <Footer />
+      <AnalyticsConsent />
     </div>
   )
 }

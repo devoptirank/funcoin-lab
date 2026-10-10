@@ -2,6 +2,7 @@ import Link from "next/link"
 import { LogoMark } from "@/components/shared/logo-mark"
 import { SocialLinks } from "@/components/shared/social-icons"
 import { getSocials } from "@/lib/official"
+import { CookieSettingsLink } from "@/components/consent/analytics-consent"
 
 const columns = [
   {
@@ -66,6 +67,7 @@ export async function Footer() {
       </div>
       <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} FunCoin Lab · Made with memes
+        <CookieSettingsLink className="ml-3 underline underline-offset-4 hover:text-foreground" />
       </div>
     </footer>
   )

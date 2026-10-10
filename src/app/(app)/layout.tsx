@@ -8,6 +8,7 @@ import { AnnouncementBanner } from "@/components/layout/announcement-banner"
 import { MaintenanceScreen } from "@/components/maintenance/maintenance-screen"
 import { TokenTicker } from "@/components/token/token-ticker"
 import { TOKEN } from "@/lib/official"
+import { AnalyticsConsent } from "@/components/consent/analytics-consent"
 import { SITE_URL, SPLIT_HOSTS } from "@/lib/hosts"
 
 export const metadata: Metadata = { title: { default: "Dashboard", template: "%s | FunCoin Lab" }, robots: { index: false, follow: false } }
@@ -28,6 +29,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <WalletGate initialSignedIn={Boolean(session)}>{children}</WalletGate>
         </main>
       </div>
+      <AnalyticsConsent />
     </div>
   )
 }

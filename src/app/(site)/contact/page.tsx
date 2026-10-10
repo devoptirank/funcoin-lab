@@ -1,11 +1,13 @@
-import { Handshake, Lightbulb, Rocket, ShieldCheck, Bug } from "lucide-react"
+import { Handshake, Lightbulb, Mail, Rocket, ShieldCheck, Bug } from "lucide-react"
 import { pageMetadata } from "@/lib/seo"
 import { CoinImage } from "@/components/shared/coin-image"
 import { BrandIcon } from "@/components/shared/social-icons"
+import { siteConfig } from "@/lib/site-config"
+import { LEGAL } from "@/lib/legal-config"
 
 export const metadata = pageMetadata({
   title: "Contact FunCoin Lab",
-  description: "Questions, launch help, partnerships or a bug to report? Message the FunCoin Lab founder directly on Telegram at @ravihere0. Real person, fast replies.",
+  description: "Questions, launch help, partnerships or a bug to report? Message the FunCoin Lab founder on Telegram at @ravihere0, or write by email for anything that needs a record.",
   path: "/contact",
 })
 
@@ -17,6 +19,12 @@ const TOPICS = [
   { icon: Lightbulb, title: "Feature ideas", text: "Something the lab should make? Tell me what you need." },
   { icon: Bug, title: "Bugs and payments", text: "Anything broken, or credits that didn't arrive." },
 ]
+// Email leaves a record, which legal, privacy and copyright requests need. Extra addresses show only when set.
+const EMAILS = [
+  { label: "General and legal requests", address: siteConfig.contactEmail },
+  { label: "Privacy requests", address: LEGAL.privacyEmail },
+  { label: "Copyright and trademark complaints", address: LEGAL.copyrightEmail },
+].filter((e, i, all) => e.address && all.findIndex((x) => x.address === e.address) === i)
 const ORBIT = ["/coins/sleepy.webp", "/coins/banana.webp", "/coins/alien.webp", "/coins/moondog.webp", "/coins/frogking.webp", "/coins/capybro.webp"]
 
 export default function ContactPage() {
@@ -102,6 +110,29 @@ export default function ContactPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section aria-labelledby="email-title" className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
+        <div className="rounded-3xl border border-border bg-card p-5 sm:p-6">
+          <h2 id="email-title" className="flex items-center gap-2 font-heading text-xl font-extrabold">
+            <Mail className="size-5 text-lab" aria-hidden /> Prefer email?
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            For anything that needs a written record, such as privacy requests, copyright or trademark complaints, payment problems or legal notices, please write by email.
+          </p>
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {EMAILS.map((e) => (
+              <div key={e.address} className="min-w-0 rounded-2xl border border-border p-4">
+                <dt className="text-xs font-semibold text-muted-foreground">{e.label}</dt>
+                <dd className="mt-1">
+                  <a href={`mailto:${e.address}`} className="font-mono text-sm break-all underline underline-offset-4">
+                    {e.address}
+                  </a>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">

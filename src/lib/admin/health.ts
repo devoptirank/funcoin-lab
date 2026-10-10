@@ -279,6 +279,7 @@ const ENV_GROUPS: { group: string; rules: Rule[] }[] = [
     // Owner and lawyer decisions. Blank is allowed: the legal pages leave the matching sentence out.
     group: "Legal details",
     rules: [
+      { name: "NEXT_PUBLIC_GA_ID", check: (v) => (/^G-[A-Z0-9]{4,}$/.test(v) ? null : "Should look like G-XXXXXXXX"), note: "Optional. Blank = no analytics and no cookie banner" },
       { name: "NEXT_PUBLIC_LEGAL_ENTITY", note: "Who operates the site. Shown in the Terms and Privacy Policy" },
       { name: "NEXT_PUBLIC_LEGAL_ADDRESS", note: "Operator's address" },
       { name: "NEXT_PUBLIC_LEGAL_COUNTRY", note: "Operator's country" },
